@@ -11,8 +11,8 @@
 #'workflow especially when visualising data.
 #'
 #'A specific series from the catalog may be specified using the series catalog
-#'ID. Since the series catalog is not stable through time you may also query
-#'the database by specifying SiteID, VariableID and MethodID.
+#'ID. Since the series catalog is not stable through time you may also query the
+#'database by specifying SiteID, VariableID and MethodID.
 #'
 #'@param channel connection handle as returned by odbcConnect
 #'@param CatalogID index value for a specific record within the series catalog
@@ -28,6 +28,8 @@
 #'@examples
 #'\dontrun{ODM <- odbcConnect("Connection", "User id", "Password")
 #'Data <- ODMSelect(ODM, CatalogID = 10, "2013-06-01", "2014-06-01")}
+#'
+#'@export
 
 ODMselect <- function(channel, CatalogID = NULL, SiteID = NULL,
   VariableID = NULL, MethodID = NULL, QCLevelID = 1,
@@ -79,6 +81,8 @@ ODMselect <- function(channel, CatalogID = NULL, SiteID = NULL,
 #'@examples
 #'\dontrun{ODM <- odbcConnect("Connection", "User id", "Password")
 #'ODMload(ODM, "HP4_stage_corr")}
+#'
+#'@export
 
 ODMload <- function(channel, obj, QCcheck = 1)
 {
