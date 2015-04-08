@@ -14,7 +14,7 @@ This will all be easier to use and understand if you have a fundamental understa
 Here is a quick example. You'll need the package RODBC in order to establish a connection using an ODBC connection. `odbcConnect` establishes a connection to the specified DSN. `sqlFetch` is used to import the series catalog or any of the ODM tables.
 
 ```R
-require(RODBC)
+require(ODMr)
 ODM <- odbcConnect("Connection", "User id", "Password")
 Catalog = sqlFetch(ODM, "SeriesCatalog")
 ```
@@ -22,7 +22,6 @@ Catalog = sqlFetch(ODM, "SeriesCatalog")
 Using the established connection and referencing the series catalog we can import data from the database. The series catalog is not stable so only use this method to quickly look at certain data. A more stable reference can be had by specifying SiteID, VariableID, MethodID and QualityControlLevelID.
 
 ```R
-require(ODMr)
 Data <- ODMselect(ODM, CatalogID = 10, "2013-06-01", "2014-06-01")
 ```
 

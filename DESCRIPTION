@@ -10,10 +10,11 @@ Description: A collection of functions to aid in accessing and loading
     included to aid in the QA/QC process of data.
 License: GPL-3
 LazyData: TRUE
-Depends: R (>= 3.1.1)
-Imports:
+Depends:
+    R (>= 3.1.1),
     RODBC (>= 1.3-10),
-    xts (>= 0.9-7),
+    xts (>= 0.9-7)
+Imports:
     zoo (>= 1.7-11),
     lubridate (>= 1.3.3)
 Suggests:
