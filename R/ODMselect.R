@@ -1,0 +1,69 @@
+#'Query an ODM database
+#'
+#'The function ODMselect can be used to get data from ODM database. ODMselect
+#'returns an xts object containing required columns for working with ODM data.
+#'The xts object contains an array of values comprising your data in matrix form
+#'and an index based on the LocalDateTime.
+#'
+#'A standard SQL query is issued to the ODM database and the values are
+#'returned. Output is an xts object. The data returned can be limited by a start
+#'and/or end date defined by the user. Smaller datasets can speed up the
+#'workflow especially when visualising data.
+#'
+#'A specific series from the catalog may be specified using the series catalog
+#'ID. Since the series catalog is not stable through time you may also query the
+#'database by specifying SiteID, VariableID and MethodID.
+#'
+#'@param channel connection handle as returned by odbcConnect
+#'@param CatalogID index value for a specific record within the series catalog
+#'@param SiteID index value for the location at which the observation was made
+#'@param VariableID index value for the variable that the data represents
+#'@param MethodID index value for the method used to collect the observation
+#'@param QCLevelID the level of quality control processing
+#'@param startDate access data from this date forward
+#'@param endDate access data up to this date
+#'
+#'@return An xts object
+#'
+#'@examples
+#'\dontrun{ODM <- odbcConnect("Connection", "User id", "Password")
+#'Data <- ODMSelect(ODM, CatalogID = 10, "2013-06-01", "2014-06-01")}
+#'
+#'@export
+
+ODMselect <- function(channel, CatalogID = NULL, SiteID = NULL,
+  VariableID = NULL, MethodID = NULL, QCLevelID = 1,
+  startDate = "1970-01-1 00:00:00", endDate = Sys.Date())
+{
+  Old.TZ <- Sys.getenv("TZ")
+  Sys.setenv(TZ = "Etc/GMT")
+  Catalog <- RODBC::sqlFetch(channel, "SeriesCatalog")
+  Data <- RODBC::sqlQuery(channel, {
+    paste ("SELECT DataValues.ValueID,DataValues.DataValue,
+            DataValues.LocalDateTime,DataValues.UTCOffset,
+            DataValues.SiteID,DataValues.VariableID,
+            DataValues.QualifierID,DataValues.MethodID,
+            DataValues.SourceID,DataValues.QualityControlLevelID
+          FROM OD.dbo.DataValues DataValues
+          WHERE     (DataValues.SiteID = ",
+      if (!is.null(CatalogID ))
+        Catalog[CatalogID, "SiteID"] else SiteID,")
+            AND (DataValues.VariableID = ",
+      if (!is.null(CatalogID ))
+        Catalog[CatalogID, "VariableID"] else VariableID,")
+            AND (DataValues.MethodID = ",
+      if (!is.null(CatalogID ))
+        Catalog[CatalogID, "MethodID"] else MethodID,")
+            AND (DataValues.QualityControlLevelID = ",
+      if (!is.null(CatalogID ))
+        Catalog[CatalogID, "QualityControlLevelID"] else QCLevelID,")
+            AND ((DataValues.LocalDateTime > '", startDate,"')
+            AND (DataValues.LocalDateTime < '", endDate,"'))
+          ORDER BY DataValues.LocalDateTime ASC", sep = "")
+  })
+  Data <- xts::xts(Data[, -3], order.by = Data[, 3])
+  zoo::index(Data) = lubridate::force_tz(zoo::index(Data),
+    gsub("!", Data$UTCOffset[1], "Etc/GMT!"))
+  Sys.setenv(TZ=Old.TZ)
+  return(Data)
+}

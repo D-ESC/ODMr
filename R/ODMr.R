@@ -15,6 +15,4 @@
 #'
 #' @docType package
 #' @name ODMr
-#' @import RODBC
-#' @import xts
 NULL

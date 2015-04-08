@@ -25,10 +25,10 @@ Using the established connection and referencing the series catalog we can impor
 Data <- ODMselect(ODM, CatalogID = 10, "2013-06-01", "2014-06-01")
 ```
 
-If you have to deal alot with time series data then it is well worth your time to become familiar with the dygraphs package. You can find out more about it at it's gitgub page http://rstudio.github.io/dygraphs/
+If you have to deal a lot with time series data then it is well worth your time to become familiar with the dygraphs package. You can find out more about it at it's gitgub page http://rstudio.github.io/dygraphs/
 
 ```R
 # install.packages("dygraphs")
-library(dygraphs)
+require(dygraphs)
 dygraph(Data$DataValue)
 ```
