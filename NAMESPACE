@@ -2,3 +2,5 @@
 
 export(ODMload)
 export(ODMselect)
+export(odbcConnect)
+importFrom(RODBC,odbcConnect)

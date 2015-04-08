@@ -16,3 +16,9 @@
 #' @docType package
 #' @name ODMr
 NULL
+
+#' @importFrom RODBC odbcConnect
+#' @name odbcConnect
+#' @export
+#' @usage \dontrun{ODM <- odbcConnect("Connection", "User id", "Password")}
+NULL
