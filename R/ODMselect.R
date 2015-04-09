@@ -15,7 +15,7 @@
 #'database by specifying SiteID, VariableID and MethodID.
 #'
 #'@param channel connection handle as returned by odbcConnect
-#'@param CatalogID index value for a specific record within the series catalog
+#'@param SeriesID index value for a specific record within the series catalog
 #'@param SiteID index value for the location at which the observation was made
 #'@param VariableID index value for the variable that the data represents
 #'@param MethodID index value for the method used to collect the observation
@@ -26,12 +26,21 @@
 #'@return An xts object
 #'
 #'@examples
-#'\dontrun{ODM <- odbcConnect("Connection", "User id", "Password")
-#'Data <- ODMSelect(ODM, CatalogID = 10, "2013-06-01", "2014-06-01")}
+#'# Establish connection with database
+#'ODM <- odbcConnect("ODM", "update", "update")
 #'
+#'# Extract data by SeriesID
+#'Data <- ODMselect(ODM, SeriesID = 10, startDate = "2013-06-01",
+#'  endDate = "2014-06-01")
+#'
+#'# Extract data by site, variable, method and QC level. Clear and consistent
+#'# method to extract data.
+#'Data <- ODMselect(ODM, SiteID = 1, VariableID = 1, MethodID = 9, QCLevelID = 0)
+#'
+#'@import RODBC
 #'@export
 
-ODMselect <- function(channel, CatalogID = NULL, SiteID = NULL,
+ODMselect <- function(channel, SeriesID = NULL, SiteID = NULL,
   VariableID = NULL, MethodID = NULL, QCLevelID = 1,
   startDate = "1970-01-1 00:00:00", endDate = Sys.Date())
 {
@@ -46,17 +55,17 @@ ODMselect <- function(channel, CatalogID = NULL, SiteID = NULL,
             DataValues.SourceID,DataValues.QualityControlLevelID
           FROM OD.dbo.DataValues DataValues
           WHERE     (DataValues.SiteID = ",
-      if (!is.null(CatalogID ))
-        Catalog[CatalogID, "SiteID"] else SiteID,")
+      if (!is.null(SeriesID ))
+        Catalog[SeriesID, "SiteID"] else SiteID,")
             AND (DataValues.VariableID = ",
-      if (!is.null(CatalogID ))
-        Catalog[CatalogID, "VariableID"] else VariableID,")
+      if (!is.null(SeriesID ))
+        Catalog[SeriesID, "VariableID"] else VariableID,")
             AND (DataValues.MethodID = ",
-      if (!is.null(CatalogID ))
-        Catalog[CatalogID, "MethodID"] else MethodID,")
+      if (!is.null(SeriesID ))
+        Catalog[SeriesID, "MethodID"] else MethodID,")
             AND (DataValues.QualityControlLevelID = ",
-      if (!is.null(CatalogID ))
-        Catalog[CatalogID, "QualityControlLevelID"] else QCLevelID,")
+      if (!is.null(SeriesID ))
+        Catalog[SeriesID, "QualityControlLevelID"] else QCLevelID,")
             AND ((DataValues.LocalDateTime > '", startDate,"')
             AND (DataValues.LocalDateTime < '", endDate,"'))
           ORDER BY DataValues.LocalDateTime ASC", sep = "")

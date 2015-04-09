@@ -19,10 +19,17 @@ ODM <- odbcConnect("Connection", "User id", "Password")
 Catalog = sqlFetch(ODM, "SeriesCatalog")
 ```
 
-Using the established connection and referencing the series catalog we can import data from the database. The series catalog is not stable so only use this method to quickly look at certain data. A more stable reference can be had by specifying SiteID, VariableID, MethodID and QualityControlLevelID.
+Using the established connection and referencing the series catalog we can import data from the database. The series catalog is not stable so only use this method to quickly look at certain data.
 
 ```R
-Data <- ODMselect(ODM, CatalogID = 10, "2013-06-01", "2014-06-01")
+Data <- ODMselect(ODM, SeriesID = 10, startDate = "2013-06-01",
+  endDate = "2014-06-01")
+```
+
+A more stable reference can be had by specifying SiteID, VariableID, MethodID and QualityControlLevelID.
+
+```R
+Data <- ODMselect(ODM, SiteID = 1, VariableID = 1, MethodID = 9, QCLevelID = 0)
 ```
 
 If you have to deal a lot with time series data then it is well worth your time to become familiar with the dygraphs package. You can find out more about it at it's gitgub page http://rstudio.github.io/dygraphs/

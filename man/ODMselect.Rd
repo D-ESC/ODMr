@@ -4,14 +4,14 @@
 \alias{ODMselect}
 \title{Query an ODM database}
 \usage{
-ODMselect(channel, CatalogID = NULL, SiteID = NULL, VariableID = NULL,
+ODMselect(channel, SeriesID = NULL, SiteID = NULL, VariableID = NULL,
   MethodID = NULL, QCLevelID = 1, startDate = "1970-01-1 00:00:00",
   endDate = Sys.Date())
 }
 \arguments{
 \item{channel}{connection handle as returned by odbcConnect}
 
-\item{CatalogID}{index value for a specific record within the series catalog}
+\item{SeriesID}{index value for a specific record within the series catalog}
 
 \item{SiteID}{index value for the location at which the observation was made}
 
@@ -45,7 +45,15 @@ ID. Since the series catalog is not stable through time you may also query the
 database by specifying SiteID, VariableID and MethodID.
 }
 \examples{
-\dontrun{ODM <- odbcConnect("Connection", "User id", "Password")
-Data <- ODMSelect(ODM, CatalogID = 10, "2013-06-01", "2014-06-01")}
+# Establish connection with database
+ODM <- odbcConnect("ODM", "update", "update")
+
+# Extract data by SeriesID
+Data <- ODMselect(ODM, SeriesID = 10, startDate = "2013-06-01",
+   endDate = "2014-06-01")
+
+# Extract data by site, variable, method and QC level. Clear and consistent
+# method to extract data.
+Data <- ODMselect(ODM, SiteID = 1, VariableID = 1, MethodID = 9, QCLevelID = 0)
 }
 
