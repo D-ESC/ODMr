@@ -49,11 +49,12 @@ database by specifying SiteID, VariableID and MethodID.
 ODM <- odbcConnect("ODM", "update", "update")
 
 # Extract data by SeriesID
-Data <- ODMselect(ODM, SeriesID = 10, startDate = "2013-06-01",
-   endDate = "2014-06-01")
+tmp <- ODMselect(ODM, SeriesID = 10, startDate = "2013-06-01",
+ endDate = "2013-07-01")
 
 # Extract data by site, variable, method and QC level. Clear and consistent
 # method to extract data.
-Data <- ODMselect(ODM, SiteID = 1, VariableID = 1, MethodID = 9, QCLevelID = 0)
+tmp <- ODMselect(ODM, SiteID = 1, VariableID = 1, MethodID = 9,
+ QCLevelID = 0, startDate = "2013-06-01", endDate = "2013-07-01")
 }
 

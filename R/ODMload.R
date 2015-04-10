@@ -10,26 +10,34 @@
 #'any QClevel data can be used by setting the argument to the appropriate value.
 #'
 #'@param channel connection handle as returned by odbcConnect
-#'@param obj xts object containing the appropriate data
+#'@param Data xts object containing the appropriate data
 #'@param QCcheck must match the quality control level of the data to be loaded
 #'
 #'@examples
-#'\dontrun{ODM <- odbcConnect("Connection", "User id", "Password")
-#'ODMload(ODM, "HP4_stage_corr")}
+#'# Establish connection with database
+#'ODM <- odbcConnect("ODM", "update", "update")
 #'
+#'# Query the database
+#'tmp <- ODMselect(ODM, SiteID = 1, VariableID = 1, MethodID = 9,
+#'  QCLevelID = 0, startDate = "2013-06-01", endDate = "2013-07-01")
+#'
+#'# Load values back to ODM
+#'ODMload(ODM, Data = tmp, QCcheck = 0)
+#'
+#'@import RODBC
 #'@export
 
-ODMload <- function(channel, obj, QCcheck = 1)
+ODMload <- function(channel, Data, QCcheck = 1)
 {
-  stopifnot(QCcheck == obj$QualityControlLevelID)
+  stopifnot(QCcheck == Data$QualityControlLevelID)
   ValueID = "NULL"
-  zoo::coredata(obj)[is.na(obj)] <- "NULL"
+  zoo::coredata(Data)[is.na(Data)] <- "NULL"
   chunk <- 100
-  if (nrow(obj) < 100)
+  if (nrow(Data) < 100)
   {
-    chunk <- nrow(obj)
+    chunk <- nrow(Data)
   }
-  Data <- split(obj, 1:round(nrow(obj)/chunk))
+  Data <- split(Data, 1:round(nrow(Data)/chunk))
   mergeSQL <- function(x)
   {
     Q2 <- with(data.frame(LocalDateTime = zoo::index(x), zoo::coredata(x)),
