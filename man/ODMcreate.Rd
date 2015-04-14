@@ -29,7 +29,7 @@ ODMcreate(LocalDateTime, DataValue, UTCOffset = -5, SiteID, VariableID,
 \description{
 The function ODMcreate can be used to help in formating new data. ODMcreate
 takes a vector of dates and data and outputs a xts object formated for use
-with the functions in this package.Site ID, VariableID, and MethodID need to
+with the functions in this package. Site ID, VariableID, and MethodID need to
 already exist in their respective tables in the ODM.
 }
 \details{

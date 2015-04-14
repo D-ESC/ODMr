@@ -55,21 +55,25 @@ ODMselect <- function(channel, SeriesID = NULL, SiteID = NULL,
             DataValues.QualifierID,DataValues.MethodID,
             DataValues.SourceID,DataValues.QualityControlLevelID
           FROM OD.dbo.DataValues DataValues
-          WHERE     (DataValues.SiteID = ",
+          WHERE     (DataValues.SiteID IN (",
       if (!is.null(SeriesID ))
-        Catalog[SeriesID, "SiteID"] else SiteID,")
-            AND (DataValues.VariableID = ",
+        paste(Catalog[SeriesID, "SiteID"], collapse = ",") else
+        paste(SiteID, collapse = ","),"))
+            AND (DataValues.VariableID IN (",
       if (!is.null(SeriesID ))
-        Catalog[SeriesID, "VariableID"] else VariableID,")
-            AND (DataValues.MethodID = ",
+        paste(Catalog[SeriesID, "VariableID"], collapse = ",") else
+        paste(VariableID, collapse = ","),"))
+            AND (DataValues.MethodID IN (",
       if (!is.null(SeriesID ))
-        Catalog[SeriesID, "MethodID"] else MethodID,")
-            AND (DataValues.QualityControlLevelID = ",
+        paste(Catalog[SeriesID, "MethodID"], collapse = ",") else
+        paste(MethodID, collapse = ","),"))
+            AND (DataValues.QualityControlLevelID IN (",
       if (!is.null(SeriesID ))
-        Catalog[SeriesID, "QualityControlLevelID"] else QCLevelID,")
+        paste(Catalog[SeriesID, "QualityControlLevelID"], collapse = ",") else
+        paste(QCLevelID, collapse = ","),"))
             AND ((DataValues.LocalDateTime > '", startDate,"')
             AND (DataValues.LocalDateTime < '", endDate,"'))
-          ORDER BY DataValues.LocalDateTime ASC", sep = "")
+          ORDER BY DataValues.SiteID ASC, DataValues.LocalDateTime ASC", sep = "")
   })
   Data <- xts::xts(Data[, -3], order.by = Data[, 3])
   zoo::index(Data) = lubridate::force_tz(zoo::index(Data),

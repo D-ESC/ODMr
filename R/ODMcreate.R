@@ -2,7 +2,7 @@
 #'
 #'The function ODMcreate can be used to help in formating new data. ODMcreate
 #'takes a vector of dates and data and outputs a xts object formated for use
-#'with the functions in this package.Site ID, VariableID, and MethodID need to
+#'with the functions in this package. Site ID, VariableID, and MethodID need to
 #'already exist in their respective tables in the ODM.
 #'
 #'The vectors are given with the arguments for SiteID, VariableID and MethodID.
@@ -22,7 +22,7 @@
 #'@examples
 #'# dates
 #'date = seq(as.Date("2010/1/1"), as.Date("2011/1/1"), "days")
-#'# matching data values
+#'# dummy data values
 #'value = 1:366
 #'
 #'# creation of formated xts object
