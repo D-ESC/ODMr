@@ -40,7 +40,7 @@ workflows involving this package.
 \examples{
 # dates
 date = seq(as.Date("2010/1/1"), as.Date("2011/1/1"), "days")
-# matching data values
+# dummy data values
 value = 1:366
 
 # creation of formated xts object

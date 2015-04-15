@@ -32,6 +32,14 @@ A more stable reference can be had by specifying SiteID, VariableID, MethodID an
 Data <- ODMselect(ODM, SiteID = 1, VariableID = 1, MethodID = 9, QCLevelID = 0)
 ```
 
+Multiple data series can be queried at once. The function makes use of the IN
+operator in the underlying SQL statement to specify multiple values. 
+
+```R
+tmp = ODMselect(ODM, SiteID = c(1,5) , VariableID = 1, MethodID = 9,
+  QCLevelID = 0, startDate = "2013-06-01", endDate = "2013-07-01")
+```
+
 If you have to deal a lot with time series data then it is well worth your time to become familiar with the dygraphs package. You can find out more about it at it's gitgub page http://rstudio.github.io/dygraphs/
 
 ```R
@@ -39,3 +47,6 @@ If you have to deal a lot with time series data then it is well worth your time 
 require(dygraphs)
 dygraph(Data$DataValue)
 ```
+
+###The Functions
+[ODMselect](/man/ODMselect.Rd)

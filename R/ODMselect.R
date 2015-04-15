@@ -38,6 +38,10 @@
 #'tmp <- ODMselect(ODM, SiteID = 1, VariableID = 1, MethodID = 9,
 #'  QCLevelID = 0, startDate = "2013-06-01", endDate = "2013-07-01")
 #'
+#'# Extract multiple data series.
+#'tmp = ODMselect(ODM, SiteID = c(1,5) , VariableID = 1, MethodID = 9,
+#'  QCLevelID = 0, startDate = "2013-06-01", endDate = "2013-07-01")
+#'
 #'@import RODBC
 #'@export
 
@@ -73,7 +77,9 @@ ODMselect <- function(channel, SeriesID = NULL, SiteID = NULL,
         paste(QCLevelID, collapse = ","),"))
             AND ((DataValues.LocalDateTime > '", startDate,"')
             AND (DataValues.LocalDateTime < '", endDate,"'))
-          ORDER BY DataValues.SiteID ASC, DataValues.LocalDateTime ASC", sep = "")
+          ORDER BY DataValues.SiteID ASC, DataValues.VariableID ASC,
+            DataValues.MethodID ASC, DataValues.QualityControlLevelID ASC,
+            DataValues.LocalDateTime ASC", sep = "")
   })
   Data <- xts::xts(Data[, -3], order.by = Data[, 3])
   zoo::index(Data) = lubridate::force_tz(zoo::index(Data),
