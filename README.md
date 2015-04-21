@@ -47,6 +47,3 @@ If you have to deal a lot with time series data then it is well worth your time 
 require(dygraphs)
 dygraph(Data$DataValue)
 ```
-
-###The Functions
-[ODMselect](/man/ODMselect.Rd)

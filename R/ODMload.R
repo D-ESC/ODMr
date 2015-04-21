@@ -63,22 +63,22 @@ ODMload <- function(channel, Data, QCcheck = 1)
     Q1 <- "MERGE DataValues AS T USING (VALUES"
     Q2 <- paste(Q2, collapse = ",")
     Q3 <- ") AS S(ValueID, DataValue, ValueAccuracy, LocalDateTime, UTCOffset,
-    DateTimeUTC, SiteID, VariableID, OffsetValue, OffsetTypeID,
-    CensorCode, QualifierID, MethodID, SourceID, SampleID, DerivedFromID,
-    QualityControlLevelID)
+      DateTimeUTC, SiteID, VariableID, OffsetValue, OffsetTypeID,
+      CensorCode, QualifierID, MethodID, SourceID, SampleID, DerivedFromID,
+      QualityControlLevelID)
     ON (T.LocalDateTime = S.LocalDateTime AND T.SiteID = S.SiteID AND
-    T.VariableID = S.VariableID AND T.MethodID = S.MethodID AND
-    T.QualityControlLevelID = S.QualityControlLevelID)
+      T.VariableID = S.VariableID AND T.MethodID = S.MethodID AND
+      T.QualityControlLevelID = S.QualityControlLevelID)
     WHEN NOT MATCHED THEN INSERT (DataValue, ValueAccuracy, LocalDateTime,
-    UTCOffset, DateTimeUTC, SiteID, VariableID, OffsetValue,
-    OffsetTypeID, CensorCode, QualifierID, MethodID, SourceID, SampleID,
-    DerivedFromID, QualityControlLevelID)
+      UTCOffset, DateTimeUTC, SiteID, VariableID, OffsetValue,
+      OffsetTypeID, CensorCode, QualifierID, MethodID, SourceID, SampleID,
+      DerivedFromID, QualityControlLevelID)
     VALUES (S.DataValue, S.ValueAccuracy, S.LocalDateTime, S.UTCOffset,
-    S.DateTimeUTC, S.SiteID, S.VariableID, S.OffsetValue, S.OffsetTypeID,
-    S.CensorCode, S.QualifierID, S.MethodID, S.SourceID, S.SampleID,
-    S.DerivedFromID, S.QualityControlLevelID)
+      S.DateTimeUTC, S.SiteID, S.VariableID, S.OffsetValue, S.OffsetTypeID,
+      S.CensorCode, S.QualifierID, S.MethodID, S.SourceID, S.SampleID,
+      S.DerivedFromID, S.QualityControlLevelID)
     WHEN MATCHED THEN UPDATE SET T.DataValue = S.DataValue,
-    T.QualifierID = S.QualifierID
+      T.QualifierID = S.QualifierID
     OUTPUT $action, inserted.ValueID;"
     Q <- paste(Q1, Q2, Q3)
     RODBC::sqlQuery(channel, {

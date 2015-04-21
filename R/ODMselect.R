@@ -62,19 +62,19 @@ ODMselect <- function(channel, SeriesID = NULL, SiteID = NULL,
           WHERE     (DataValues.SiteID IN (",
       if (!is.null(SeriesID ))
         paste(Catalog[SeriesID, "SiteID"], collapse = ",") else
-        paste(SiteID, collapse = ","),"))
+          paste(SiteID, collapse = ","),"))
             AND (DataValues.VariableID IN (",
       if (!is.null(SeriesID ))
         paste(Catalog[SeriesID, "VariableID"], collapse = ",") else
-        paste(VariableID, collapse = ","),"))
+          paste(VariableID, collapse = ","),"))
             AND (DataValues.MethodID IN (",
       if (!is.null(SeriesID ))
         paste(Catalog[SeriesID, "MethodID"], collapse = ",") else
-        paste(MethodID, collapse = ","),"))
+          paste(MethodID, collapse = ","),"))
             AND (DataValues.QualityControlLevelID IN (",
       if (!is.null(SeriesID ))
         paste(Catalog[SeriesID, "QualityControlLevelID"], collapse = ",") else
-        paste(QCLevelID, collapse = ","),"))
+          paste(QCLevelID, collapse = ","),"))
             AND ((DataValues.LocalDateTime > '", startDate,"')
             AND (DataValues.LocalDateTime < '", endDate,"'))
           ORDER BY DataValues.SiteID ASC, DataValues.VariableID ASC,
@@ -83,7 +83,9 @@ ODMselect <- function(channel, SeriesID = NULL, SiteID = NULL,
   })
   Data <- xts::xts(Data[, -3], order.by = Data[, 3])
   zoo::index(Data) = lubridate::force_tz(zoo::index(Data),
-    gsub("!", Data$UTCOffset[1], "Etc/GMT!"))
+    if(-Data$UTCOffset[1] > 0)
+      gsub("!", -Data$UTCOffset[1], "Etc/GMT+!") else
+        gsub("!", -Data$UTCOffset[1], "Etc/GMT!"))
   Sys.setenv(TZ=Old.TZ)
   return(Data)
 }
