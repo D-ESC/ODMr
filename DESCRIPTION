@@ -16,6 +16,7 @@ Depends:
 Imports:
     xts (>= 0.9-7),
     zoo (>= 1.7-12),
-    lubridate (>= 1.3.3)
-Suggests:
-    dygraphs
+    lubridate (>= 1.3.3),
+    ggplot2 (>= 1.0),
+    shiny (>= 0.12.2),
+    shinyAce (>= 0.1.0)
