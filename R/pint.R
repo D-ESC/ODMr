@@ -13,21 +13,21 @@
 #'@param geom or list of geoms to draw. Defaults to geom_point()
 #'
 #'@examples
+#'\dontrun{
 #'df <- data.frame(x = rnorm(100), y = rnorm(100))
 #'pint("x", "y", df)
 #'pint("x","y",df, geom = geom_line())
+#'}
 #'
 #'@import ggplot2
 #'@export
 
 pint <- function(x, y, data, geom = geom_point()) {
 
-  is.POSIXct <- function(x) inherits(x, "POSIXct")
-
   shiny::shinyApp(ui <- shiny::basicPage(
     shiny::plotOutput("plot", brush = "plot_brush", dblclick = "plot_dblclick"),
     shinyAce::aceEditor("code",
-      "#values <<- brushed() %>% mutate(x = ifelse(selected_ == TRUE, x, x))",
+      "#brushed() \n#summary(brushed()) \n#values <<- editData(values, index(brushed()), FUN = function (x) x + 1)",
       mode = "r", height = "100px"),
     shiny::actionButton("eval", "Enter"),
     shiny::verbatimTextOutput("output")),
@@ -38,7 +38,7 @@ pint <- function(x, y, data, geom = geom_point()) {
       values <- data
 
       brushed <- function(df = values, brush = input$plot_brush, ...) {
-        return(shiny::brushedPoints(df = df, brush = brush, ...))
+        return(brushedPoints(df = df, brush = brush, ...))
       }
 
       output$output <- shiny::renderPrint({
@@ -48,14 +48,21 @@ pint <- function(x, y, data, geom = geom_point()) {
 
       output$plot <- shiny::renderPlot({
         input$eval
-        ggplot(values, aes_string(x, y)) + geom +
+        ggplot(
+          if (xts::is.xts(values)) {
+            zoo::fortify.zoo(values)
+          }
+          else {
+            values
+          },
+          aes_string(x, y)) + geom +
           coord_cartesian(xlim = ranges$x, ylim = ranges$y) + theme_minimal()
       })
 
       shiny::observeEvent(input$plot_dblclick, {
         brush <- input$plot_brush
         if (!is.null(brush)) {
-          if (is.POSIXct(values[, x])) {
+          if (is.POSIXct(values[, x]) | xts::is.xts(values)) {
             ranges$x <- as.POSIXct(c(brush$xmin, brush$xmax), origin = "1970-01-01")
           }
           else {

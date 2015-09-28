@@ -24,8 +24,10 @@ arguments are "x" and "y", giving the x- and y-coordinates for the objects on
 the plot. There is also a data argument used to declare the input data frame.
 }
 \examples{
+\dontrun{
 df <- data.frame(x = rnorm(100), y = rnorm(100))
 pint("x", "y", df)
 pint("x","y",df, geom = geom_line())
+}
 }
 
