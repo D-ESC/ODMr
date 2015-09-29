@@ -6,7 +6,7 @@ A R package for working with an instance of the CUAHSI ODM running on MS-SQL. Wo
 devtools::install_github("D-ESC/ODMr")
 ```
 ### ODBC
-In order to talk to the database, you'll need to an ODBC connection to the ODM database on the machine that you're working on. To do this in Win7, go to Control Panel -> Administrative Tools, then choose "Data Sources (ODBC)". You'll want to add a "User DSN".
+In order to talk to the database, you'll need to establish an ODBC connection to the ODM database on the machine that you're working on. To do this in Win7, go to Control Panel -> Administrative Tools, then choose "Data Sources (ODBC)". You'll want to add a "User DSN".
 
 ### The Basics
 This will all be easier to use and understand if you have a fundamental understanding of the underlying data model. The model and the underlying motives for it's design can be found at http://www.cuahsi.org 
