@@ -45,9 +45,10 @@
 #'@import RODBC
 #'@export
 
-ODMselect <- function(channel, SeriesID = NULL, SiteID = NULL,
-  VariableID = NULL, MethodID = NULL, QCLevelID = 1,
-  startDate = "1970-01-1 00:00:00", endDate = Sys.Date())
+ODMselect <- function(channel, SeriesID = NULL, SiteID = "SiteID",
+  VariableID = "VariableID", MethodID = "MethodID",
+  QCLevelID = "QualityControlLevelID", startDate = "1970-01-1 00:00:00",
+  endDate = Sys.Date())
 {
   Old.TZ <- Sys.getenv("TZ")
   Sys.setenv(TZ = "Etc/GMT")
