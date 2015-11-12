@@ -10,19 +10,20 @@
 #'
 #'@param x,y Name value pairs giving aesthetics to map
 #'@param data Data frame to use
+#'@param aes x,y,... List of name value pairs giving aesthetics to map
 #'@param geom or list of geoms to draw. Defaults to geom_point()
 #'
 #'@examples
 #'\dontrun{
 #'df <- data.frame(x = rnorm(100), y = rnorm(100))
-#'pint("x", "y", df)
-#'pint("x","y",df, geom = geom_line())
+#'pint(df, aes(x, y))
+#'pint(df, aes(x, y), geom = geom_line())
 #'}
 #'
 #'@import ggplot2
 #'@export
 
-pint <- function(x, y, data, geom = geom_point()) {
+pint <- function(data, aes, geom = geom_point()) {
 
   shiny::shinyApp(ui <- shiny::basicPage(
     shiny::plotOutput("plot", brush = "plot_brush", dblclick = "plot_dblclick"),
@@ -55,14 +56,14 @@ pint <- function(x, y, data, geom = geom_point()) {
           else {
             values
           },
-          aes_string(x, y)) + geom +
+          aes) + geom +
           coord_cartesian(xlim = ranges$x, ylim = ranges$y) + theme_minimal()
       })
 
       shiny::observeEvent(input$plot_dblclick, {
         brush <- input$plot_brush
         if (!is.null(brush)) {
-          if (is.POSIXct(values[, x]) | xts::is.xts(values)) {
+          if (TRUE %in%  sapply(values , is.POSIXct) | xts::is.xts(values)) {
             ranges$x <- as.POSIXct(c(brush$xmin, brush$xmax), origin = "1970-01-01")
           }
           else {
