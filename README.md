@@ -39,11 +39,3 @@ operator in the underlying SQL statement to specify multiple values.
 tmp = ODMselect(ODM, SiteID = c(1,5) , VariableID = 1, MethodID = 9,
   QCLevelID = 0, startDate = "2013-06-01", endDate = "2013-07-01")
 ```
-
-If you have to deal a lot with time series data then it is well worth your time to become familiar with the dygraphs package. You can find out more about it at it's gitgub page http://rstudio.github.io/dygraphs/
-
-```R
-# install.packages("dygraphs")
-require(dygraphs)
-dygraph(Data$DataValue)
-```

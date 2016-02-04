@@ -1,12 +1,12 @@
-#'Create ODM formated xts object
+#'Create ODM formated dataframe
 #'
 #'The function ODMcreate can be used to help in formating new data. ODMcreate
-#'takes a vector of dates and data and outputs a xts object formated for use
+#'takes a vector of dates and data and outputs a dataframe formated for use
 #'with the functions in this package. Site ID, VariableID, and MethodID need to
 #'already exist in their respective tables in the ODM.
 #'
 #'The vectors are given with the arguments for SiteID, VariableID and MethodID.
-#'The output is a properly formated xts object suitable for further use in
+#'The output is a properly formated dataframe suitable for further use in
 #'workflows involving this package.
 #'
 #'@param LocalDateTime local date time for each record
@@ -34,8 +34,9 @@
 ODMcreate <- function(LocalDateTime, DataValue, UTCOffset = -5, SiteID, VariableID,
   QualifierID = NA, MethodID, SourceID = 1, QCLevelID = 0)
 {
-  Data <- data.frame(LocalDateTime = LocalDateTime)
+  Data <- data.frame(ValueID = rep(NA, length(DataValue)))
   Data$DataValue <- DataValue
+  Data$LocalDateTime <- LocalDateTime
   Data$UTCOffset <- UTCOffset
   Data$SiteID <- SiteID
   Data$VariableID <- VariableID
@@ -43,6 +44,5 @@ ODMcreate <- function(LocalDateTime, DataValue, UTCOffset = -5, SiteID, Variable
   Data$MetohdID <- MethodID
   Data$SourceID <- SourceID
   Data$QualityControlLevelID <- QCLevelID
-  Data <- xts::xts(Data[, -1], order.by = as.POSIXct(Data[, 1]))
   return(Data)
 }

@@ -1,8 +1,8 @@
 #'Load data to an ODM database
 #'
 #'The function ODMload can be used to get data into an ODM database. ODMload
-#'takes an xts object containing the required columns for working with ODM data
-#'and loads it. The xts objects will either have been acquired using ODMselect
+#'takes a dataframe containing the required columns for working with ODM data
+#'and loads it. The dataframes will either have been acquired using ODMselect
 #'or created using ODM create.
 #'
 #'A standard SQL query is issued to the ODM database and the values are uploaded
@@ -10,7 +10,7 @@
 #'any QClevel data can be used by setting the argument to the appropriate value.
 #'
 #'@param channel connection handle as returned by odbcConnect
-#'@param Data xts object containing the appropriate data
+#'@param Dataframe containing the required columns
 #'@param QCcheck must match the quality control level of the data to be loaded
 #'
 #'@examples
@@ -31,7 +31,7 @@ ODMload <- function(channel, Data, QCcheck = 1)
 {
   stopifnot(QCcheck == Data$QualityControlLevelID)
   ValueID = "NULL"
-  zoo::coredata(Data)[is.na(Data)] <- "NULL"
+  Data[is.na(Data)] <- "NULL"
   chunk <- 100
   if (nrow(Data) < 100)
   {
@@ -40,7 +40,7 @@ ODMload <- function(channel, Data, QCcheck = 1)
   Data <- split(Data, 1:round(nrow(Data)/chunk))
   mergeSQL <- function(x)
   {
-    Q2 <- with(data.frame(LocalDateTime = zoo::index(x), zoo::coredata(x)),
+    Q2 <- with(x,
       paste("(",
         ValueID,",",
         DataValue,",",
