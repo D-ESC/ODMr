@@ -3,5 +3,4 @@
 export(ODMcreate)
 export(ODMload)
 export(ODMselect)
-export(editData)
 import(RODBC)
