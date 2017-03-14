@@ -41,7 +41,7 @@ ODMcreate <- function(LocalDateTime, DataValue, UTCOffset = -5, SiteID, Variable
   Data$SiteID <- SiteID
   Data$VariableID <- VariableID
   Data$QualifierID <- QualifierID
-  Data$MetohdID <- MethodID
+  Data$MethodID <- MethodID
   Data$SourceID <- SourceID
   Data$QualityControlLevelID <- QCLevelID
   return(Data)
