@@ -1,0 +1,4 @@
+Name: getODM
+Description: Set RODBC connection and load data from ODM database.
+Binding: getODMdataAddin
+Interactive: true

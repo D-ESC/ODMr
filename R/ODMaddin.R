@@ -24,7 +24,6 @@ getODMdataAddin <- function() {
     )
   )
 
-
   server <- function(input, output, session) {
 
     ODMconnect <- shiny::eventReactive(input$connect, {
@@ -47,7 +46,10 @@ getODMdataAddin <- function() {
     output$table <- DT::renderDataTable({
       ODM <- shiny::req(ODMconnect())
       Catalog <- ODMcatalog()
-      Catalog[,c("SiteCode", "VariableCode", "MethodDescription", "QualityControlLevelCode")]
+      Catalog <- Catalog[,c("SiteCode", "VariableCode", "MethodDescription",
+        "QualityControlLevelCode", "BeginDateTime", "EndDateTime", "ValueCount")]
+      colnames(Catalog) <- c("Site", "Variable", "Method", "QCLevel", "Start", "End", "Count")
+      return(Catalog)
     })
 
     shiny::observeEvent(input$done, {
@@ -65,10 +67,13 @@ getODMdataAddin <- function() {
             " <- ODMr::ODMselect(ODM, ",rows,")"
             , sep = "")
       }
-      rstudioapi::sendToConsole(paste(code1, code2, sep = "; "), execute = TRUE)
+      rstudioapi::sendToConsole(paste(
+        tryCatch(code1, error = function(e) NA),
+        tryCatch(code2, error = function(e) NA), sep = "; "),
+        execute = TRUE)
       invisible(shiny::stopApp())
     })
 
   }
-  shiny::runGadget(ui, server, viewer = dialogViewer(""))
+  shiny::runGadget(ui, server, viewer = shiny::dialogViewer(dialogName = "", width = 900))
 }
