@@ -25,6 +25,8 @@
 #'ODMload(ODM, Data = tmp, QCcheck = 0)
 #'
 #'@import RODBC
+#'@import progress
+#'@import dplyr
 #'@export
 
 ODMload <- function(channel, Data, QCcheck = 1)
@@ -37,7 +39,8 @@ ODMload <- function(channel, Data, QCcheck = 1)
   {
     chunk <- nrow(Data)
   }
-  Data <- split(Data, 1:round(nrow(Data)/chunk))
+  Data <- suppressWarnings(split(Data, 1:round(nrow(Data)/chunk)))
+  pb <- progress::progress_bar$new(total = length(Data))
   mergeSQL <- function(x)
   {
     Q2 <- with(x,
@@ -81,9 +84,15 @@ ODMload <- function(channel, Data, QCcheck = 1)
       T.QualifierID = S.QualifierID
     OUTPUT $action, inserted.ValueID;"
     Q <- paste(Q1, Q2, Q3)
-    RODBC::sqlQuery(channel, {
+    success <- RODBC::sqlQuery(channel, {
       Q
     })
+    pb$tick()
+    return(success)
   }
-  lapply(Data, mergeSQL)
+  success_summary <- dplyr::bind_rows(lapply(Data, mergeSQL))
+  success_summary <- success_summary  %>%
+    dplyr::group_by(Action = `$action`) %>%
+    dplyr::summarise(Count = nrow(.)) %>% as.data.frame()
+  return(success_summary)
 }

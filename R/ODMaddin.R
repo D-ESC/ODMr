@@ -75,5 +75,5 @@ getODMdataAddin <- function() {
     })
 
   }
-  shiny::runGadget(ui, server, viewer = shiny::dialogViewer(dialogName = "", width = 900))
+  shiny::runGadget(ui, server, viewer = shiny::dialogViewer(dialogName = "", width = 1024))
 }
