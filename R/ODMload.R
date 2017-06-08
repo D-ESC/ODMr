@@ -29,6 +29,8 @@
 #'@import dplyr
 #'@export
 
+library(dplyr)
+
 ODMload <- function(channel, Data, QCcheck = 1)
 {
   stopifnot(QCcheck == Data$QualityControlLevelID)
@@ -93,6 +95,8 @@ ODMload <- function(channel, Data, QCcheck = 1)
   success_summary <- dplyr::bind_rows(lapply(Data, mergeSQL))
   success_summary <- success_summary  %>%
     dplyr::group_by(Action = `$action`) %>%
-    dplyr::summarise(Count = nrow(.)) %>% as.data.frame()
+    dplyr::summarise(Count = nrow(.)) %>%
+    as.data.frame()
+
   return(success_summary)
 }
