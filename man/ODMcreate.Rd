@@ -48,4 +48,3 @@ tmp = ODMcreate(LocalDateTime = date, DataValue = value, SiteID = 1,
  VariableID = 1, MethodID = 9)
 
 }
-

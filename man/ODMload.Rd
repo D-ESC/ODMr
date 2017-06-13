@@ -3,15 +3,12 @@
 \name{ODMload}
 \alias{ODMload}
 \title{Load data to an ODM database}
-\usage{
-ODMload(channel, Data, QCcheck = 1)
-}
 \arguments{
 \item{channel}{connection handle as returned by odbcConnect}
 
-\item{QCcheck}{must match the quality control level of the data to be loaded}
-
 \item{Dataframe}{containing the required columns}
+
+\item{QCcheck}{must match the quality control level of the data to be loaded}
 }
 \description{
 The function ODMload can be used to get data into an ODM database. ODMload
@@ -36,4 +33,3 @@ tmp <- ODMselect(ODM, SiteID = 1, VariableID = 1, MethodID = 9,
 ODMload(ODM, Data = tmp, QCcheck = 0)
 
 }
-

@@ -28,41 +28,47 @@
 #'@import progress
 #'@import dplyr
 #'@export
+#'@name ODMload
 
-library(dplyr)
+require(dplyr)
 
-ODMload <- function(channel, Data, QCcheck = 1)
-{
+ODMload <- function(channel, Data, QCcheck = 1) {
   stopifnot(QCcheck == Data$QualityControlLevelID)
-  ValueID = "NULL"
+
+  DS <- ODMr:::ODMsummary(channel, Data)
+  Catalog <- ODMgetCatalog(channel) %>%
+    filter(SiteID == DS$SiteID,
+      VariableID == DS$VariableID,
+      MethodID == DS$MethodID,
+      QualityControlLevelID == DS$QualityControlLevelID)
+
+  ValueID <- "NULL"
   Data[is.na(Data)] <- "NULL"
   chunk <- 100
-  if (nrow(Data) < 100)
-  {
+  if (nrow(Data) < 100) {
     chunk <- nrow(Data)
   }
-  Data <- suppressWarnings(split(Data, 1:round(nrow(Data)/chunk)))
+  Data <- suppressWarnings(split(Data, 1:round(nrow(Data) / chunk)))
   pb <- progress::progress_bar$new(total = length(Data))
-  mergeSQL <- function(x)
-  {
+  mergeSQL <- function(x){
     Q2 <- with(x,
       paste("(",
-        ValueID,",",
-        DataValue,",",
-        "NULL",",",
-        "'",LocalDateTime,"'",",",
-        UTCOffset,",",
-        "'",LocalDateTime - (60*60*(as.numeric(UTCOffset))),"'",",",
-        SiteID,",",
-        VariableID,",",
-        "NULL",",",
-        "NULL",",",
-        "'","nc","'",",",
-        QualifierID,",",
-        MethodID,",",
-        SourceID,",",
-        "NULL",",",
-        "NULL",",",
+        ValueID, ",",
+        DataValue, ",",
+        "NULL", ",",
+        "'", LocalDateTime, "'", ",",
+        UTCOffset, ",",
+        "'", LocalDateTime - (60 * 60 * (as.numeric(UTCOffset))), "'", ",",
+        SiteID, ",",
+        VariableID, ",",
+        "NULL", ",",
+        "NULL", ",",
+        "'", "nc", "'", ",",
+        QualifierID, ",",
+        MethodID, ",",
+        SourceID, ",",
+        "NULL", ",",
+        "NULL", ",",
         QualityControlLevelID,
         ")", sep = ""))
     Q1 <- "MERGE DataValues AS T USING (VALUES"
@@ -97,6 +103,19 @@ ODMload <- function(channel, Data, QCcheck = 1)
     dplyr::group_by(Action = `$action`) %>%
     dplyr::summarise(Count = nrow(.)) %>%
     as.data.frame()
-
+  INSERTS <- success_summary %>%
+    filter(Action == "INSERT") %>%
+    select(Count)
+  if(nrow(Catalog) > 0) {
+    Catalog <- DS
+  } else if(INSERTS > 0) {
+    Catalog <- Catalog %>%
+      mutate(EndDateTime = DS$EndDateTime, ValueCount = ValueCount + INSERTS)
+  } else {
+    Catalog
+  }
+  SQL = ODMr:::sqlmerge(Catalog, "SeriesCatalog",
+    c("SiteID", "VariableID", "MethodID", "QualityControlLevelID"))
+  RODBC::sqlQuery(channel, SQL)
   return(success_summary)
 }
