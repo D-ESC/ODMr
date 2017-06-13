@@ -110,7 +110,7 @@ ODMload <- function(channel, Data, QCcheck = 1) {
      Catalog <- DS
    } else if(nrow(INSERTS) > 0) {
      Catalog <- Catalog %>%
-       mutate(EndDateTime = DS$EndDateTime, ValueCount = ValueCount + INSERTS$Count)
+       mutate(EndDateTime = DS$EndDateTime)
    } else {
      Catalog
    }
