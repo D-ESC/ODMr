@@ -106,7 +106,7 @@ ODMload <- function(channel, Data, QCcheck = 1) {
   INSERTS <- success_summary %>%
     filter(Action == "INSERT") %>%
     select(Count)
-  if(nrow(Catalog) > 0) {
+  if(nrow(Catalog) < 1) {
     Catalog <- DS
   } else if(INSERTS > 0) {
     Catalog <- Catalog %>%
