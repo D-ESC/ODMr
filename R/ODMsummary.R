@@ -13,11 +13,11 @@ DataSeries <- DataSeries %>%
   left_join(ODMgetQCLevel(channel, .$QualityControlLevelID), by = "QualityControlLevelID") %>%
   mutate(VariableUnitsName = ODMgetUnits(channel, .$VariableUnitsID)$UnitsName) %>%
   mutate(TimeUnitsName = ODMgetUnits(channel, .$TimeUnitsID)$UnitsName) %>%
-  mutate(BeginDateTime = min(HP4$LocalDateTime)) %>%
-  mutate(EndDateTime = max(HP4$LocalDateTime)) %>%
+  mutate(BeginDateTime = min(Data$LocalDateTime)) %>%
+  mutate(EndDateTime = max(Data$LocalDateTime)) %>%
   mutate(BeginDateTimeUTC = BeginDateTime - (60 * 60 * (as.numeric(UTCOffset)))) %>%
   mutate(EndDateTimeUTC = EndDateTime - (60 * 60 * (as.numeric(UTCOffset)))) %>%
-  mutate(ValueCount = length(HP4$DataValue))  %>%
+  mutate(ValueCount = length(Data$DataValue))  %>%
   .[,N[which(N %in% colnames(.))]]
 DataSeries
 }
