@@ -36,7 +36,7 @@ ODMload <- function(channel, Data, QCcheck = 1) {
   stopifnot(QCcheck == Data$QualityControlLevelID)
 
   DS <- ODMr:::ODMsummary(channel, Data)
-  Catalog <- ODMgetCatalog(channel) %>%
+  Catalog <- ODMr::ODMgetCatalog(channel) %>%
     filter(SiteID == DS$SiteID,
       VariableID == DS$VariableID,
       MethodID == DS$MethodID,
@@ -106,14 +106,14 @@ ODMload <- function(channel, Data, QCcheck = 1) {
   INSERTS <- success_summary %>%
     filter(Action == "INSERT") %>%
     select(Count)
-  if(nrow(Catalog) < 1) {
-    Catalog <- DS
-  } else if(INSERTS > 0) {
-    Catalog <- Catalog %>%
-      mutate(EndDateTime = DS$EndDateTime, ValueCount = ValueCount + INSERTS)
-  } else {
-    Catalog
-  }
+  if(nrow(Catalog) == 0) {
+     Catalog <- DS
+   } else if(nrow(INSERTS)) {
+     Catalog <- Catalog %>%
+       mutate(EndDateTime = DS$EndDateTime, ValueCount = ValueCount + INSERTS)
+   } else {
+     Catalog
+   }
   SQL = ODMr:::sqlmerge(Catalog, "SeriesCatalog",
     c("SiteID", "VariableID", "MethodID", "QualityControlLevelID"))
   RODBC::sqlQuery(channel, SQL)
