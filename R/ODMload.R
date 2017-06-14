@@ -109,13 +109,13 @@ ODMload <- function(channel, Data, QCcheck = 1) {
   if(nrow(Catalog) == 0) {
      Catalog <- DS
    } else if(nrow(INSERTS) > 0) {
-     Catalog <- Catalog %>%
-       mutate(EndDateTime = DS$EndDateTime)
+     Catalog[,"EndDateTime"] <- DS$EndDateTime
+     Catalog[,"ValueCount"] <- Catalog[,"ValueCount"] + INSERTS$Count
    } else {
      Catalog
    }
-  SQL = ODMr:::sqlmerge(Catalog, "SeriesCatalog",
-    c("SiteID", "VariableID", "MethodID", "QualityControlLevelID"))
+  SQL = ODMr:::sqlmerge(Catalog, TableName = "SeriesCatalog",
+    By = c("SiteID", "VariableID", "MethodID", "QualityControlLevelID"))
   RODBC::sqlQuery(channel, SQL)
   return(success_summary)
 }
