@@ -34,9 +34,9 @@
 ODMcreate <- function(LocalDateTime, DataValue, UTCOffset = -5, SiteID, VariableID,
   QualifierID = NA, MethodID, SourceID = 1, QCLevelID = 0)
 {
-  if(Data$UTCOffset[1] > 0)
-    TZ = gsub("!", -Data$UTCOffset[1], "Etc/GMT!+") else
-      TZ = gsub("!", Data$UTCOffset[1], "Etc/GMT!")
+  if(UTCOffset > 0)
+    TZ = gsub("!", -UTCOffset, "Etc/GMT!+") else
+      TZ = gsub("!", UTCOffset, "Etc/GMT!")
   Data <- data.frame(ValueID = rep(NA, length(DataValue)))
   Data$DataValue <- DataValue
   Data$LocalDateTime <- lubridate::force_tz(anytime::anytime(LocalDateTime), TZ)
