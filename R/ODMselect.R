@@ -82,9 +82,9 @@ ODMselect <- function(channel, SeriesID = NULL, SiteID = "SiteID",
   })
 
  Data$LocalDateTime = lubridate::force_tz(Data$LocalDateTime,
-    if(-Data$UTCOffset[1] > 0)
-      gsub("!", -Data$UTCOffset[1], "Etc/GMT+!") else
-        gsub("!", -Data$UTCOffset[1], "Etc/GMT!"))
+    if(Data$UTCOffset[1] > 0)
+      gsub("!", -Data$UTCOffset[1], "Etc/GMT!+") else
+        gsub("!", Data$UTCOffset[1], "Etc/GMT!"))
   Sys.setenv(TZ=Old.TZ)
   return(Data)
 }

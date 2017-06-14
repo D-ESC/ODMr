@@ -15,8 +15,8 @@ DataSeries <- DataSeries %>%
   mutate(TimeUnitsName = ODMgetUnits(channel, .$TimeUnitsID)$UnitsName) %>%
   mutate(BeginDateTime = min(Data$LocalDateTime)) %>%
   mutate(EndDateTime = max(Data$LocalDateTime)) %>%
-  mutate(BeginDateTimeUTC = BeginDateTime - (60 * 60 * (as.numeric(UTCOffset)))) %>%
-  mutate(EndDateTimeUTC = EndDateTime - (60 * 60 * (as.numeric(UTCOffset)))) %>%
+  mutate(BeginDateTimeUTC = BeginDateTime - (60 * 60 * (as.numeric(.$UTCOffset)))) %>%
+  mutate(EndDateTimeUTC = EndDateTime - (60 * 60 * (as.numeric(.$UTCOffset)))) %>%
   mutate(ValueCount = length(Data$DataValue))  %>%
   .[,N[which(N %in% colnames(.))]]
 DataSeries
