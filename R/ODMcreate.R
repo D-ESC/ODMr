@@ -38,14 +38,14 @@ ODMcreate <- function(LocalDateTime, DataValue, UTCOffset = -5, SiteID, Variable
     TZ = gsub("!", -UTCOffset, "Etc/GMT!+") else
       TZ = gsub("!", UTCOffset, "Etc/GMT!")
   Data <- data.frame(ValueID = rep(NA, length(DataValue)))
-  Data$DataValue <- DataValue
-  Data$LocalDateTime <- lubridate::force_tz(anytime::anytime(LocalDateTime), TZ)
-  Data$UTCOffset <- UTCOffset
-  Data$SiteID <- SiteID
-  Data$VariableID <- VariableID
-  Data$QualifierID <- QualifierID
-  Data$MethodID <- MethodID
-  Data$SourceID <- SourceID
-  Data$QualityControlLevelID <- QCLevelID
+  Data$DataValue <- try(as.numeric(DataValue))
+  Data$LocalDateTime <- try(lubridate::force_tz(anytime::anytime(LocalDateTime), TZ))
+  Data$UTCOffset <- try(as.integer(UTCOffset))
+  Data$SiteID <- try(as.integer(SiteID))
+  Data$VariableID <- try(as.integer(VariableID))
+  Data$QualifierID <- try(as.integer(QualifierID))
+  Data$MethodID <- try(as.integer(MethodID))
+  Data$SourceID <- try(as.integer(SourceID))
+  Data$QualityControlLevelID <- try(as.integer(QCLevelID))
   return(Data)
 }
