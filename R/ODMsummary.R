@@ -12,7 +12,7 @@ ODMsummary <- function(channel = ODM, Data) {
   if (!is.data.frame(Data))
     stop("Needs to be a data frame.")
   if (nrow(Data) < 1)
-    stop("No data to load.")
+    stop("No data.")
   if (!("DataValue" %in% colnames(Data)))
     stop("Data values should be in a column named 'DataValue'.")
   if (!is.numeric(Data$DataValue))

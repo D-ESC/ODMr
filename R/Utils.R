@@ -5,7 +5,7 @@ sqlmerge <- function(Data, TableName, By) {
   Names <- paste0(names(Data), collapse = ',')
   Source <- paste0('S.', names(Data), collapse = ',')
   Matching <- paste0(lapply(By, function(x) paste0('T.', x, ' = S.', x)), collapse = ' AND ')
-  Updating <- paste0(lapply(By, function(x) paste0('T.', x, ' = S.', x)), collapse = ',')
+  Updating <- paste0(lapply(Names, function(x) paste0('T.', x, ' = S.', x)), collapse = ',')
   glue::glue(
     "MERGE {TableName} AS T
     USING (VALUES({Values})) AS S({Names})
