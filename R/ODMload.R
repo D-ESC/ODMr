@@ -95,11 +95,15 @@ ODMload <- function(channel, Data, QCcheck = 1) {
     success <- RODBC::sqlQuery(channel, {
       Q
     })
+    if(is.character(success))
+    {
+      stop(paste(success, collapse = "\n"))
+    }
     pb$tick()
     return(success)
   }
 
-  success_summary <- dplyr::bind_rows(lapply(Data, mergeSQL))
+  success_summary <- lapply(Data, mergeSQL)
   success_summary <- success_summary  %>%
     dplyr::group_by(Action = `$action`) %>%
     dplyr::summarise(Count = nrow(.)) %>%
