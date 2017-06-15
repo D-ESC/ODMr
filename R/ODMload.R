@@ -103,7 +103,7 @@ ODMload <- function(channel, Data, QCcheck = 1) {
     return(success)
   }
 
-  success_summary <- lapply(Data, mergeSQL)
+  success_summary <- dplyr::bind_rows(lapply(Data, mergeSQL))
   success_summary <- success_summary  %>%
     dplyr::group_by(Action = `$action`) %>%
     dplyr::summarise(Count = nrow(.)) %>%
