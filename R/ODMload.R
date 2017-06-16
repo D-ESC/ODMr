@@ -121,7 +121,8 @@ ODMload <- function(channel, Data, QCcheck = 1) {
   }
   Catalog <- data.frame(lapply(Catalog, gsub, pattern = "'", replacement = " "))
   SQL = ODMr:::sqlmerge(Catalog, TableName = "SeriesCatalog",
-    By = c("SiteID", "VariableID", "MethodID", "QualityControlLevelID"))
+    By = c("SiteID", "VariableID", "MethodID", "QualityControlLevelID"),
+    Key = "SeriesID")
   RODBC::sqlQuery(channel, SQL)
   return(success_summary)
 }
