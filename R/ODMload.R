@@ -46,7 +46,7 @@ ODMload <- function(channel, Data, QCcheck = 1) {
   Data[is.na(Data)] <- "NULL"
   chunk <- 100
   if (nrow(Data) < 100) {
-    chunk <- nrow(Data)
+    chunk <- 1
   }
   Data <- suppressWarnings(split(Data, 1:round(nrow(Data) / chunk)))
   pb <- progress::progress_bar$new(total = length(Data))
@@ -112,13 +112,13 @@ ODMload <- function(channel, Data, QCcheck = 1) {
     filter(Action == "INSERT") %>%
     select(Count)
   if(nrow(Catalog) == 0) {
-     Catalog <- DS
-   } else if(nrow(INSERTS) > 0) {
-     Catalog[,"EndDateTime"] <- DS$EndDateTime
-     Catalog[,"ValueCount"] <- Catalog[,"ValueCount"] + INSERTS$Count
-   } else {
-     Catalog
-   }
+    Catalog <- DS
+  } else if(nrow(INSERTS) > 0) {
+    Catalog$EndDateTime <- DS$EndDateTime
+    Catalog$ValueCount <- Catalog$ValueCount + INSERTS$Count
+  } else if(DS$EndDateTime > Catalog$EndDateTime) {
+    Catalog$EndDateTime <- DS$EndDateTime
+  }
   Catalog <- data.frame(lapply(Catalog, gsub, pattern = "'", replacement = " "))
   SQL = ODMr:::sqlmerge(Catalog, TableName = "SeriesCatalog",
     By = c("SiteID", "VariableID", "MethodID", "QualityControlLevelID"))
