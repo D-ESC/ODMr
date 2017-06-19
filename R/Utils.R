@@ -1,7 +1,9 @@
 sqlmerge <- function(Data, TableName, By, Key) {
   Data[is.na(Data)] <- "NULL"
-  ind <- which(names(Data) %in% Key)
-  Data <- Data[,-ind]
+  if (Key %in% names(Data)) {
+    ind <- which(names(Data) %in% Key)
+    Data <- Data[,-ind]
+  }
   Values <- paste0(
     "(",
     apply(X = Data, FUN = function (x)
