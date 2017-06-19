@@ -46,8 +46,7 @@
 ODMselect <- function(channel, SeriesID = NULL, SiteID = "SiteID",
   VariableID = "VariableID", MethodID = "MethodID",
   QCLevelID = "QualityControlLevelID", startDate = "1970-01-1 00:00:00",
-  endDate = Sys.Date())
-{
+  endDate = Sys.Date()) {
   Old.TZ <- Sys.getenv("TZ")
   Sys.setenv(TZ = "Etc/GMT")
   Catalog <- RODBC::sqlFetch(channel, "SeriesCatalog")
@@ -61,30 +60,30 @@ ODMselect <- function(channel, SeriesID = NULL, SiteID = "SiteID",
           WHERE     (DataValues.SiteID IN (",
       if (!is.null(SeriesID ))
         paste(Catalog[SeriesID, "SiteID"], collapse = ",") else
-          paste(SiteID, collapse = ","),"))
+          paste(SiteID, collapse = ","), "))
             AND (DataValues.VariableID IN (",
       if (!is.null(SeriesID ))
         paste(Catalog[SeriesID, "VariableID"], collapse = ",") else
-          paste(VariableID, collapse = ","),"))
+          paste(VariableID, collapse = ","), "))
             AND (DataValues.MethodID IN (",
       if (!is.null(SeriesID ))
         paste(Catalog[SeriesID, "MethodID"], collapse = ",") else
-          paste(MethodID, collapse = ","),"))
+          paste(MethodID, collapse = ","), "))
             AND (DataValues.QualityControlLevelID IN (",
       if (!is.null(SeriesID ))
         paste(Catalog[SeriesID, "QualityControlLevelID"], collapse = ",") else
-          paste(QCLevelID, collapse = ","),"))
-            AND ((DataValues.LocalDateTime > '", startDate,"')
-            AND (DataValues.LocalDateTime < '", endDate,"'))
+          paste(QCLevelID, collapse = ","), "))
+            AND ((DataValues.LocalDateTime > '", startDate, "')
+            AND (DataValues.LocalDateTime < '", endDate, "'))
           ORDER BY DataValues.SiteID ASC, DataValues.VariableID ASC,
             DataValues.MethodID ASC, DataValues.QualityControlLevelID ASC,
             DataValues.LocalDateTime ASC", sep = "")
   })
 
- Data$LocalDateTime = lubridate::force_tz(Data$LocalDateTime,
-    if(Data$UTCOffset[1] > 0)
+ Data$LocalDateTime <- lubridate::force_tz(Data$LocalDateTime,
+    if (Data$UTCOffset[1] > 0)
       gsub("!", -Data$UTCOffset[1], "Etc/GMT!+") else
         gsub("!", Data$UTCOffset[1], "Etc/GMT!"))
-  Sys.setenv(TZ=Old.TZ)
+  Sys.setenv(TZ = Old.TZ)
   return(Data)
 }

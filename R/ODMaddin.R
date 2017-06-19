@@ -46,9 +46,11 @@ getODMdataAddin <- function() {
     output$table <- DT::renderDataTable({
       ODM <- shiny::req(ODMconnect())
       Catalog <- ODMcatalog()
-      Catalog <- Catalog[,c("SiteCode", "VariableCode", "MethodDescription",
-        "QualityControlLevelCode", "BeginDateTime", "EndDateTime", "ValueCount")]
-      colnames(Catalog) <- c("Site", "Variable", "Method", "QCLevel", "Start", "End", "Count")
+      Catalog <- Catalog[, c("SiteCode", "VariableCode", "MethodDescription",
+        "QualityControlLevelCode", "BeginDateTime", "EndDateTime",
+        "ValueCount")]
+      colnames(Catalog) <- c("Site", "Variable", "Method", "QCLevel",
+        "Start", "End", "Count")
       return(Catalog)
     })
 
@@ -56,15 +58,15 @@ getODMdataAddin <- function() {
       if (nzchar(input$dsn) && nzchar(input$uid) && nzchar(input$pwd)) {
         code1 <-
           paste(input$dsn,
-            " <- RODBC::odbcConnect('",input$dsn, "','", input$uid, "','", input$pwd, "')"
-            , sep = "")
+            " <- RODBC::odbcConnect('", input$dsn, "','", input$uid, "','",
+            input$pwd, "')", sep = "")
       }
       if (!is.null(input$table_rows_selected)) {
         Catalog <- ODMcatalog()
         rows <- input$table_rows_selected
         code2 <-
           paste(Catalog$SiteCode[rows],
-            " <- ODMr::ODMselect(ODM, ",rows,")"
+            " <- ODMr::ODMselect(ODM, ", rows, ")"
             , sep = "")
       }
       rstudioapi::sendToConsole(paste(

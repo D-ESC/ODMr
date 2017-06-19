@@ -26,8 +26,8 @@
 #'@export
 
 ODMgetCatalog <- function(channel = ODM, ID = NA) {
-  tmp <- RODBC::sqlFetch(channel, "SeriesCatalog", stringsAsFactors=FALSE)
-  if(!is.na(ID)) tmp <- subset(tmp, VariableID == ID)
+  tmp <- RODBC::sqlFetch(channel, "SeriesCatalog", stringsAsFactors = FALSE)
+  if (!is.na(ID)) tmp <- subset(tmp, VariableID == ID)
   return(tmp)
 }
 
@@ -61,9 +61,9 @@ ODMgetCatalog <- function(channel = ODM, ID = NA) {
 #'@export
 
 ODMgetSites <-  function(channel = ODM, ID = NA, Code = NA) {
-  tmp <- RODBC::sqlFetch(channel, "Sites", stringsAsFactors=FALSE)
-  if(!is.na(ID)) tmp <- subset(tmp, SiteID == ID)
-  if(!is.na(Code)) tmp <- subset(tmp, SiteCode == Code)
+  tmp <- RODBC::sqlFetch(channel, "Sites", stringsAsFactors = FALSE)
+  if (!is.na(ID)) tmp <- subset(tmp, SiteID == ID)
+  if (!is.na(Code)) tmp <- subset(tmp, SiteCode == Code)
   return(tmp)
 }
 
@@ -97,9 +97,9 @@ ODMgetSites <-  function(channel = ODM, ID = NA, Code = NA) {
 #'@export
 
 ODMgetMethods <-  function(channel = ODM, ID = NA, Code = NA) {
-  tmp <- RODBC::sqlFetch(channel, "Methods", stringsAsFactors=FALSE)
-  if(!is.na(ID)) tmp <- subset(tmp, MethodID == ID)
-  if(!is.na(Code)) tmp <- subset(tmp, MethodCode == Code)
+  tmp <- RODBC::sqlFetch(channel, "Methods", stringsAsFactors = FALSE)
+  if (!is.na(ID)) tmp <- subset(tmp, MethodID == ID)
+  if (!is.na(Code)) tmp <- subset(tmp, MethodCode == Code)
   return(tmp)
 }
 
@@ -133,9 +133,9 @@ ODMgetMethods <-  function(channel = ODM, ID = NA, Code = NA) {
 #'@export
 
 ODMgetVariables <-  function(channel = ODM, ID = NA, Code = NA) {
-  tmp <- RODBC::sqlFetch(channel, "Variables", stringsAsFactors=FALSE)
-  if(!is.na(ID)) tmp <- subset(tmp, VariableID == ID)
-  if(!is.na(Code)) tmp <- subset(tmp, VariableCode == Code)
+  tmp <- RODBC::sqlFetch(channel, "Variables", stringsAsFactors = FALSE)
+  if (!is.na(ID)) tmp <- subset(tmp, VariableID == ID)
+  if (!is.na(Code)) tmp <- subset(tmp, VariableCode == Code)
   return(tmp)
 }
 
@@ -167,8 +167,8 @@ ODMgetVariables <-  function(channel = ODM, ID = NA, Code = NA) {
 #'@export
 
 ODMgetUnits <-  function(channel = ODM, ID = NA) {
-  tmp <- RODBC::sqlFetch(channel, "Units", stringsAsFactors=FALSE)
-  if(!is.na(ID)) tmp <- subset(tmp, UnitsID == ID)
+  tmp <- RODBC::sqlFetch(channel, "Units", stringsAsFactors = FALSE)
+  if (!is.na(ID)) tmp <- subset(tmp, UnitsID == ID)
   return(tmp)
 }
 
@@ -200,8 +200,8 @@ ODMgetUnits <-  function(channel = ODM, ID = NA) {
 #'@export
 
 ODMgetSource <-  function(channel = ODM, ID = NA) {
-  tmp <- RODBC::sqlFetch(channel, "Sources", stringsAsFactors=FALSE)
-  if(!is.na(ID)) tmp <- subset(tmp, SourceID == ID)
+  tmp <- RODBC::sqlFetch(channel, "Sources", stringsAsFactors = FALSE)
+  if (!is.na(ID)) tmp <- subset(tmp, SourceID == ID)
   return(tmp)
 }
 
@@ -233,7 +233,8 @@ ODMgetSource <-  function(channel = ODM, ID = NA) {
 #'@export
 
 ODMgetQCLevel <-  function(channel = ODM, ID = NA) {
-  tmp <- RODBC::sqlFetch(channel, "QualityControlLevels", stringsAsFactors=FALSE)
-  if(!is.na(ID)) tmp <- subset(tmp, QualityControlLevelID == ID)
+  tmp <- RODBC::sqlFetch(channel, "QualityControlLevels",
+    stringsAsFactors = FALSE)
+  if (!is.na(ID)) tmp <- subset(tmp, QualityControlLevelID == ID)
   return(tmp)
 }

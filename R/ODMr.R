@@ -17,5 +17,3 @@
 #' @docType package
 #' @name ODMr
 NULL
-
-

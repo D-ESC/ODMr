@@ -31,15 +31,15 @@
 #'
 #'@export
 
-ODMcreate <- function(LocalDateTime, DataValue, UTCOffset = -5, SiteID, VariableID,
-  QualifierID = NA, MethodID, SourceID = 1, QCLevelID = 0)
-{
-  if(UTCOffset > 0)
-    TZ = gsub("!", -UTCOffset, "Etc/GMT!+") else
-      TZ = gsub("!", UTCOffset, "Etc/GMT!")
+ODMcreate <- function(LocalDateTime, DataValue, UTCOffset = -5, SiteID,
+  VariableID, QualifierID = NA, MethodID, SourceID = 1, QCLevelID = 0) {
+  if (UTCOffset > 0)
+    TZ <- gsub("!", -UTCOffset, "Etc/GMT!+") else
+      TZ <- gsub("!", UTCOffset, "Etc/GMT!")
   Data <- data.frame(ValueID = rep(NA, length(DataValue)))
   Data$DataValue <- try(as.numeric(DataValue))
-  Data$LocalDateTime <- try(lubridate::force_tz(anytime::anytime(LocalDateTime), TZ))
+  Data$LocalDateTime <-
+    try(lubridate::force_tz(anytime::anytime(LocalDateTime), TZ))
   Data$UTCOffset <- try(as.integer(UTCOffset))
   Data$SiteID <- try(as.integer(SiteID))
   Data$VariableID <- try(as.integer(VariableID))

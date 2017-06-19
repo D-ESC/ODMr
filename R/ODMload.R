@@ -1,9 +1,9 @@
 #'Load data to an ODM database
 #'
-#'The function ODMload can be used to get data into an ODM database. ODMload
-#'takes a dataframe containing the required columns for working with ODM data
-#'and loads it. The dataframes will either have been acquired using ODMselect
-#'or created using ODM create.
+#'The function ODMload can be used to get data into the DataValues table in an
+#'ODM database. ODMload takes a dataframe containing the required columns for
+#'working with ODM data and loads it. The dataframes will either have been
+#'acquired using ODMselect or created using ODMcreate.
 #'
 #'A standard SQL query is issued to the ODM database and the values are uploaded
 #'in 100 row chunks. QClevel 1 data is handled by default but data containing
@@ -42,61 +42,27 @@ ODMload <- function(channel, Data, QCcheck = 1) {
       MethodID == DS$MethodID,
       QualityControlLevelID == DS$QualityControlLevelID)
 
-  ValueID <- "NULL"
-  Data[is.na(Data)] <- "NULL"
+  Data$DateTimeUTC <- Data$LocalDateTime -
+    (60 * 60 * (as.numeric(Data$UTCOffset)))
+  Data$CensorCode <- "nc"
+
   chunk <- 100
   if (nrow(Data) < 100) {
     chunk <- 1
   }
+
   Data <- suppressWarnings(split(Data, 1:round(nrow(Data) / chunk)))
   pb <- progress::progress_bar$new(total = length(Data))
+
   mergeSQL <- function(x){
-    Q2 <- with(x,
-      paste("(",
-        ValueID, ",",
-        DataValue, ",",
-        "NULL", ",",
-        "'", LocalDateTime, "'", ",",
-        UTCOffset, ",",
-        "'", LocalDateTime - (60 * 60 * (as.numeric(UTCOffset))), "'", ",",
-        SiteID, ",",
-        VariableID, ",",
-        "NULL", ",",
-        "NULL", ",",
-        "'", "nc", "'", ",",
-        QualifierID, ",",
-        MethodID, ",",
-        SourceID, ",",
-        "NULL", ",",
-        "NULL", ",",
-        QualityControlLevelID,
-        ")", sep = ""))
-    Q1 <- "MERGE DataValues AS T USING (VALUES"
-    Q2 <- paste(Q2, collapse = ",")
-    Q3 <- ") AS S(ValueID, DataValue, ValueAccuracy, LocalDateTime, UTCOffset,
-      DateTimeUTC, SiteID, VariableID, OffsetValue, OffsetTypeID,
-      CensorCode, QualifierID, MethodID, SourceID, SampleID, DerivedFromID,
-      QualityControlLevelID)
-    ON (T.LocalDateTime = S.LocalDateTime AND T.SiteID = S.SiteID AND
-      T.VariableID = S.VariableID AND T.MethodID = S.MethodID AND
-      T.QualityControlLevelID = S.QualityControlLevelID)
-    WHEN NOT MATCHED THEN INSERT (DataValue, ValueAccuracy, LocalDateTime,
-      UTCOffset, DateTimeUTC, SiteID, VariableID, OffsetValue,
-      OffsetTypeID, CensorCode, QualifierID, MethodID, SourceID, SampleID,
-      DerivedFromID, QualityControlLevelID)
-    VALUES (S.DataValue, S.ValueAccuracy, S.LocalDateTime, S.UTCOffset,
-      S.DateTimeUTC, S.SiteID, S.VariableID, S.OffsetValue, S.OffsetTypeID,
-      S.CensorCode, S.QualifierID, S.MethodID, S.SourceID, S.SampleID,
-      S.DerivedFromID, S.QualityControlLevelID)
-    WHEN MATCHED THEN UPDATE SET T.DataValue = S.DataValue,
-      T.QualifierID = S.QualifierID
-    OUTPUT $action, inserted.ValueID;"
-    Q <- paste(Q1, Q2, Q3)
+    SQL <- ODMr:::sqlmerge(x, TableName = "DataValues",
+      By = c("LocalDateTime", "SiteID", "VariableID", "MethodID",
+        "QualityControlLevelID", "SourceID"),
+      Key = "ValueID")
     success <- RODBC::sqlQuery(channel, {
-      Q
+      SQL
     })
-    if(is.character(success))
-    {
+    if (is.character(success)) {
       stop(paste(success, collapse = "\n"))
     }
     pb$tick()
@@ -111,16 +77,16 @@ ODMload <- function(channel, Data, QCcheck = 1) {
   INSERTS <- success_summary %>%
     filter(Action == "INSERT") %>%
     select(Count)
-  if(nrow(Catalog) == 0) {
+  if (nrow(Catalog) == 0) {
     Catalog <- DS
-  } else if(nrow(INSERTS) > 0) {
+  } else if (nrow(INSERTS) > 0) {
     Catalog$EndDateTime <- DS$EndDateTime
     Catalog$ValueCount <- Catalog$ValueCount + INSERTS$Count
-  } else if(DS$EndDateTime > Catalog$EndDateTime) {
+  } else if (DS$EndDateTime > Catalog$EndDateTime) {
     Catalog$EndDateTime <- DS$EndDateTime
   }
   Catalog <- data.frame(lapply(Catalog, gsub, pattern = "'", replacement = " "))
-  SQL = ODMr:::sqlmerge(Catalog, TableName = "SeriesCatalog",
+  SQL <- ODMr:::sqlmerge(Catalog, TableName = "SeriesCatalog",
     By = c("SiteID", "VariableID", "MethodID", "QualityControlLevelID"),
     Key = "SeriesID")
   RODBC::sqlQuery(channel, SQL)
