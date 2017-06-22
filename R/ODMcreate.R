@@ -25,7 +25,7 @@
 #'# dummy data values
 #'value = 1:366
 #'
-#'# creation of formated xts object
+#'# creation of dataframe that meets the requirements of the ODM.
 #'tmp = ODMcreate(LocalDateTime = date, DataValue = value, SiteID = 1,
 #'  VariableID = 1, MethodID = 9)
 #'
@@ -33,13 +33,31 @@
 
 ODMcreate <- function(LocalDateTime, DataValue, UTCOffset = -5, SiteID,
   VariableID, QualifierID = NA, MethodID, SourceID = 1, QCLevelID = 0) {
+
+  if (!is.numeric(DataValue))
+    stop("DataValue should be numeric")
+  if (!lubridate::is.POSIXt(LocalDateTime))
+    stop("LocalDateTime should be class POSIXlt or POSIXct.")
+  if (!is.integer(SiteID))
+    stop("SiteID should be an integer value.")
+  if (!is.integer(VariableID))
+    stop("VariableID should be an integer value.")
+  if (!is.integer(Data$MethodID))
+    stop("MethodID should be an integer value.")
+  if (!is.integer(QCLevelID))
+    stop("QCLevelID should be an integer value.")
+  if (!is.integer(SourceID))
+    stop("SourceID should be an integer value.")
+  if (Data$UTCOffset[1] < -12 | Data$UTCOffset[1] > 12)
+    stop("Invalid UTCOffset. Value should be between -12 and 12.")
+
   if (UTCOffset > 0)
     TZ <- gsub("!", -UTCOffset, "Etc/GMT!+") else
       TZ <- gsub("!", UTCOffset, "Etc/GMT!")
   Data <- data.frame(ValueID = rep(NA, length(DataValue)))
   Data$DataValue <- try(as.numeric(DataValue))
   Data$LocalDateTime <-
-    try(lubridate::force_tz(anytime::anytime(LocalDateTime), TZ))
+    try(lubridate::force_tz(LocalDateTime, TZ))
   Data$UTCOffset <- try(as.integer(UTCOffset))
   Data$SiteID <- try(as.integer(SiteID))
   Data$VariableID <- try(as.integer(VariableID))
