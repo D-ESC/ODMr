@@ -48,7 +48,7 @@ ODMcreate <- function(LocalDateTime, DataValue, UTCOffset = -5, SiteID,
     stop("QCLevelID should be an integer value.")
   if (!is.integer(SourceID))
     stop("SourceID should be an integer value.")
-  if (Data$UTCOffset[1] < -12 | Data$UTCOffset[1] > 12)
+  if (UTCOffset[1] < -12 | UTCOffset[1] > 12)
     stop("Invalid UTCOffset. Value should be between -12 and 12.")
 
   if (UTCOffset > 0)
