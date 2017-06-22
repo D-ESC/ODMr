@@ -42,7 +42,7 @@ ODMcreate <- function(LocalDateTime, DataValue, UTCOffset = -5, SiteID,
     stop("SiteID should be an integer value.")
   if (!is.integer(VariableID))
     stop("VariableID should be an integer value.")
-  if (!is.integer(Data$MethodID))
+  if (!is.integer(MethodID))
     stop("MethodID should be an integer value.")
   if (!is.integer(QCLevelID))
     stop("QCLevelID should be an integer value.")
