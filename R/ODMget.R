@@ -1,6 +1,6 @@
 #'ODM utility functions
 #'
-#'Set of uility functions to retrieve meta data from an ODM database
+#'Set of utility functions to retrieve meta data from an ODM database
 #'
 #'ODMgetCatalog()
 #'Pass nothing - get a list of all datasets
@@ -33,7 +33,7 @@ ODMgetCatalog <- function(channel = ODM, ID = NA) {
 
 #'ODM utility functions
 #'
-#'Set of uility functions to retrieve meta data from an ODM database
+#'Set of utility functions to retrieve meta data from an ODM database
 #'
 #'ODMgetSites
 #'Pass nothing - returns a full list of stations
@@ -69,7 +69,7 @@ ODMgetSites <-  function(channel = ODM, ID = NA, Code = NA) {
 
 #'ODM utility functions
 #'
-#'Set of uility functions to retrieve meta data from an ODM database
+#'Set of utility functions to retrieve meta data from an ODM database
 #'
 #'ODMgetMethods
 #'Pass nothing - returns a full list of methods
@@ -105,7 +105,7 @@ ODMgetMethods <-  function(channel = ODM, ID = NA, Code = NA) {
 
 #'ODM utility functions
 #'
-#'Set of uility functions to retrieve meta data from an ODM database
+#'Set of utility functions to retrieve meta data from an ODM database
 #'
 #'ODMgetVariables
 #'Pass nothing - returns full list of variables
@@ -141,7 +141,7 @@ ODMgetVariables <-  function(channel = ODM, ID = NA, Code = NA) {
 
 #'ODM utility functions
 #'
-#'Set of uility functions to retrieve meta data from an ODM database
+#'Set of utility functions to retrieve meta data from an ODM database
 #'
 #'ODMgetUnits
 #'Pass nothing - returns full list of units objects
@@ -174,7 +174,7 @@ ODMgetUnits <-  function(channel = ODM, ID = NA) {
 
 #'ODM utility functions
 #'
-#'Set of uility functions to retrieve meta data from an ODM database
+#'Set of utility functions to retrieve meta data from an ODM database
 #'
 #'ODMgetSource
 #'Pass nothing - returns full list of sources
@@ -207,7 +207,7 @@ ODMgetSource <-  function(channel = ODM, ID = NA) {
 
 #'ODM utility functions
 #'
-#'Set of uility functions to retrieve meta data from an ODM database
+#'Set of utility functions to retrieve meta data from an ODM database
 #'
 #'ODMgetQCLevel
 #'Pass nothing - returns full list of Quality Control Levels

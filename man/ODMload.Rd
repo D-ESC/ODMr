@@ -11,10 +11,10 @@
 \item{QCcheck}{must match the quality control level of the data to be loaded}
 }
 \description{
-The function ODMload can be used to get data into an ODM database. ODMload
-takes a dataframe containing the required columns for working with ODM data
-and loads it. The dataframes will either have been acquired using ODMselect
-or created using ODM create.
+The function ODMload can be used to get data into the DataValues table in an
+ODM database. ODMload takes a dataframe containing the required columns for
+working with ODM data and loads it. The dataframes will either have been
+acquired using ODMselect or created using ODMcreate.
 }
 \details{
 A standard SQL query is issued to the ODM database and the values are uploaded

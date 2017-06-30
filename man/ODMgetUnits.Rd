@@ -15,7 +15,7 @@ ODMgetUnits(channel = ODM, ID = NA)
 A data frame
 }
 \description{
-Set of uility functions to retrieve meta data from an ODM database
+Set of utility functions to retrieve meta data from an ODM database
 }
 \details{
 ODMgetUnits

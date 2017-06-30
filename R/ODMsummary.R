@@ -1,3 +1,24 @@
+#'Summarise data formated for use with the ODM
+#'
+#'The function ODMsummary can be used to verify the proper structure and use of
+#'ID variables. Will return a meta data summary consistent with the
+#'SeriesCatalog in the database.
+#'
+#'@param channel connection handle as returned by odbcConnect
+#'@param Data containing the data in a format consistent with the ODM data model
+#'
+#'@examples
+#'# Establish connection with database
+#'ODM <- odbcConnect("ODM", "update", "update")
+#'
+#'# Return meta data for the data file
+#'ODMsummary(ODM, HP4)
+#'
+#'@import RODBC
+#'@import dplyr
+#'@export
+#'@name ODMsummary
+
 require(dplyr)
 
 ODMsummary <- function(channel = ODM, Data) {
