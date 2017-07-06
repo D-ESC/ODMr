@@ -8,26 +8,25 @@
 #'@param Data containing the data in a format consistent with the ODM data model
 #'
 #'@examples
+#'
+#'\dontrun{
 #'# Establish connection with database
 #'ODM <- odbcConnect("ODM", "update", "update")
 #'
 #'# Return meta data for the data file
 #'ODMsummary(ODM, HP4)
+#'}
 #'
-#'@import RODBC
-#'@import dplyr
 #'@export
 #'@name ODMsummary
 
-require(dplyr)
+ODMsummary <- function(channel, Data) {
 
-ODMsummary <- function(channel = ODM, Data) {
-
-  Sites <- ODMr::ODMgetSites(channel)
-  Variables <- ODMr::ODMgetVariables(channel)
-  Methods <- ODMr::ODMgetMethods(channel)
-  Sources <- ODMr::ODMgetSource(channel)
-  QCLevels <- ODMr::ODMgetQCLevel(channel)
+  Sites <- ODMgetSites(channel)
+  Variables <- ODMgetVariables(channel)
+  Methods <- ODMgetMethods(channel)
+  Sources <- ODMgetSource(channel)
+  QCLevels <- ODMgetQCLevel(channel)
 
 
   if (!is.data.frame(Data))
@@ -85,26 +84,26 @@ ODMsummary <- function(channel = ODM, Data) {
     stop("Invalid UTCOffset. Value should be between -12 and 12.")
 
 DataSeries <- Data %>%
-  select(UTCOffset, SiteID, VariableID, MethodID, SourceID,
+  dplyr::select(UTCOffset, SiteID, VariableID, MethodID, SourceID,
     QualityControlLevelID) %>%
-  distinct()
+  dplyr::distinct()
 N <-  names(ODMgetCatalog(channel))
 DataSeries <- DataSeries %>%
-  left_join(ODMgetSites(channel, .$SiteID), by = "SiteID") %>%
-  left_join(ODMgetVariables(channel, .$VariableID), by = "VariableID") %>%
-  left_join(ODMgetMethods(channel, .$MethodID), by = "MethodID") %>%
-  left_join(ODMgetSource(channel, .$SourceID), by = "SourceID") %>%
-  left_join(ODMgetQCLevel(channel, .$QualityControlLevelID),
+  dplyr::left_join(ODMgetSites(channel, .$SiteID), by = "SiteID") %>%
+  dplyr::left_join(ODMgetVariables(channel, .$VariableID), by = "VariableID") %>%
+  dplyr::left_join(ODMgetMethods(channel, .$MethodID), by = "MethodID") %>%
+  dplyr::left_join(ODMgetSource(channel, .$SourceID), by = "SourceID") %>%
+  dplyr::left_join(ODMgetQCLevel(channel, .$QualityControlLevelID),
     by = "QualityControlLevelID") %>%
-  mutate(VariableUnitsName = ODMgetUnits(channel, .$VariableUnitsID)$UnitsName) %>%
-  mutate(TimeUnitsName = ODMgetUnits(channel, .$TimeUnitsID)$UnitsName) %>%
-  mutate(BeginDateTime = min(Data$LocalDateTime)) %>%
-  mutate(EndDateTime = max(Data$LocalDateTime)) %>%
-  mutate(BeginDateTimeUTC = BeginDateTime -
+  dplyr::mutate(VariableUnitsName = ODMgetUnits(channel, .$VariableUnitsID)$UnitsName) %>%
+  dplyr::mutate(TimeUnitsName = ODMgetUnits(channel, .$TimeUnitsID)$UnitsName) %>%
+  dplyr::mutate(BeginDateTime = min(Data$LocalDateTime)) %>%
+  dplyr::mutate(EndDateTime = max(Data$LocalDateTime)) %>%
+  dplyr::mutate(BeginDateTimeUTC = BeginDateTime -
       (60 * 60 * (as.numeric(.$UTCOffset)))) %>%
-  mutate(EndDateTimeUTC = EndDateTime -
+  dplyr::mutate(EndDateTimeUTC = EndDateTime -
       (60 * 60 * (as.numeric(.$UTCOffset)))) %>%
-  mutate(ValueCount = length(Data$DataValue))  %>%
+  dplyr::mutate(ValueCount = length(Data$DataValue))  %>%
   .[, N[which(N %in% colnames(.))]]
 DataSeries
 }

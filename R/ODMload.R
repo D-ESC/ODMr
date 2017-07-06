@@ -10,10 +10,12 @@
 #'any QClevel data can be used by setting the argument to the appropriate value.
 #'
 #'@param channel connection handle as returned by odbcConnect
-#'@param Dataframe containing the required columns
+#'@param Data containing the required columns
 #'@param QCcheck must match the quality control level of the data to be loaded
 #'
 #'@examples
+#'
+#'\dontrun{
 #'# Establish connection with database
 #'ODM <- odbcConnect("ODM", "update", "update")
 #'
@@ -23,21 +25,17 @@
 #'
 #'# Load values back to ODM
 #'ODMload(ODM, Data = tmp, QCcheck = 0)
+#'}
 #'
-#'@import RODBC
-#'@import progress
-#'@import dplyr
 #'@export
 #'@name ODMload
-
-require(dplyr)
 
 ODMload <- function(channel, Data, QCcheck = 1) {
   stopifnot(QCcheck == Data$QualityControlLevelID)
 
-  DS <- ODMr:::ODMsummary(channel, Data)
-  Catalog <- ODMr::ODMgetCatalog(channel) %>%
-    filter(SiteID == DS$SiteID,
+  DS <- ODMsummary(channel, Data)
+  Catalog <- ODMgetCatalog(channel) %>%
+    dplyr::filter(SiteID == DS$SiteID,
       VariableID == DS$VariableID,
       MethodID == DS$MethodID,
       QualityControlLevelID == DS$QualityControlLevelID)
@@ -55,7 +53,7 @@ ODMload <- function(channel, Data, QCcheck = 1) {
   pb <- progress::progress_bar$new(total = length(Data))
 
   mergeSQL <- function(x){
-    SQL <- ODMr:::sqlmerge(x, TableName = "DataValues",
+    SQL <- sqlmerge(x, TableName = "DataValues",
       By = c("LocalDateTime", "SiteID", "VariableID", "MethodID",
         "QualityControlLevelID", "SourceID"),
       Key = "ValueID")
@@ -75,16 +73,16 @@ ODMload <- function(channel, Data, QCcheck = 1) {
     dplyr::summarise(Count = nrow(.)) %>%
     as.data.frame()
   INSERTS <- success_summary %>%
-    filter(Action == "INSERT") %>%
-    select(Count)
+    dplyr::filter(Action == "INSERT") %>%
+    dplyr::select(Count)
   if (nrow(Catalog) == 0) {
     Catalog <- DS
   } else if (nrow(INSERTS) > 0) {
-    Catalog$EndDateTime <- max(c(DS$EndDateTime,Catalog$EndDateTime))
+    Catalog$EndDateTime <- max(c(DS$EndDateTime, Catalog$EndDateTime))
     Catalog$ValueCount <- Catalog$ValueCount + INSERTS$Count
   }
   Catalog <- data.frame(lapply(Catalog, gsub, pattern = "'", replacement = " "))
-  SQL <- ODMr:::sqlmerge(Catalog, TableName = "SeriesCatalog",
+  SQL <- sqlmerge(Catalog, TableName = "SeriesCatalog",
     By = c("SiteID", "VariableID", "MethodID",
       "QualityControlLevelID", "SourceID"),
     Key = "SeriesID")

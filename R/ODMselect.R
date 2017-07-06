@@ -24,6 +24,8 @@
 #'@return A data frame
 #'
 #'@examples
+#'
+#'\dontrun{
 #'# Establish connection with database
 #'ODM <- odbcConnect("ODM", "update", "update")
 #'
@@ -39,8 +41,8 @@
 #'# Extract multiple data series.
 #'tmp = ODMselect(ODM, SiteID = c(1,5) , VariableID = 1, MethodID = 9,
 #'  QCLevelID = 0, startDate = "2013-06-01", endDate = "2013-07-01")
+#'}
 #'
-#'@import RODBC
 #'@export
 
 ODMselect <- function(channel, SeriesID = NULL, SiteID = "SiteID",

@@ -3,10 +3,13 @@
 \name{ODMload}
 \alias{ODMload}
 \title{Load data to an ODM database}
+\usage{
+ODMload(channel, Data, QCcheck = 1)
+}
 \arguments{
 \item{channel}{connection handle as returned by odbcConnect}
 
-\item{Dataframe}{containing the required columns}
+\item{Data}{containing the required columns}
 
 \item{QCcheck}{must match the quality control level of the data to be loaded}
 }
@@ -22,6 +25,8 @@ in 100 row chunks. QClevel 1 data is handled by default but data containing
 any QClevel data can be used by setting the argument to the appropriate value.
 }
 \examples{
+
+\dontrun{
 # Establish connection with database
 ODM <- odbcConnect("ODM", "update", "update")
 
@@ -31,5 +36,6 @@ tmp <- ODMselect(ODM, SiteID = 1, VariableID = 1, MethodID = 9,
 
 # Load values back to ODM
 ODMload(ODM, Data = tmp, QCcheck = 0)
+}
 
 }

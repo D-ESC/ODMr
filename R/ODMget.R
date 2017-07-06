@@ -13,6 +13,7 @@
 #'
 #'@examples
 #'
+#'\dontrun{
 #'# Establish connection with database
 #'ODM <- odbcConnect("ODM", "update", "update")
 #'
@@ -21,6 +22,7 @@
 #'
 #'# Get a list of data series in the database
 #'ODMgetCatalog()
+#'}
 #'
 #'@import RODBC
 #'@export
@@ -48,6 +50,7 @@ ODMgetCatalog <- function(channel = ODM, ID = NA) {
 #'
 #'@examples
 #'
+#'\dontrun{
 #'# Establish connection with database
 #'ODM <- odbcConnect("ODM", "update", "update")
 #'
@@ -56,6 +59,7 @@ ODMgetCatalog <- function(channel = ODM, ID = NA) {
 #'
 #'# Get a list of data series in the database
 #'ODMgetCatalog()
+#'}
 #'
 #'@import RODBC
 #'@export
@@ -84,6 +88,7 @@ ODMgetSites <-  function(channel = ODM, ID = NA, Code = NA) {
 #'
 #'@examples
 #'
+#'\dontrun{
 #'# Establish connection with database
 #'ODM <- odbcConnect("ODM", "update", "update")
 #'
@@ -92,6 +97,7 @@ ODMgetSites <-  function(channel = ODM, ID = NA, Code = NA) {
 #'
 #'# Get a list of data series in the database
 #'ODMgetCatalog()
+#'}
 #'
 #'@import RODBC
 #'@export
@@ -120,6 +126,7 @@ ODMgetMethods <-  function(channel = ODM, ID = NA, Code = NA) {
 #'
 #'@examples
 #'
+#'\dontrun{
 #'# Establish connection with database
 #'ODM <- odbcConnect("ODM", "update", "update")
 #'
@@ -128,6 +135,7 @@ ODMgetMethods <-  function(channel = ODM, ID = NA, Code = NA) {
 #'
 #'# Get a list of data series in the database
 #'ODMgetCatalog()
+#'}
 #'
 #'@import RODBC
 #'@export
@@ -154,6 +162,7 @@ ODMgetVariables <-  function(channel = ODM, ID = NA, Code = NA) {
 #'
 #'@examples
 #'
+#'\dontrun{
 #'# Establish connection with database
 #'ODM <- odbcConnect("ODM", "update", "update")
 #'
@@ -162,6 +171,7 @@ ODMgetVariables <-  function(channel = ODM, ID = NA, Code = NA) {
 #'
 #'# Get a list of data series in the database
 #'ODMgetCatalog()
+#'}
 #'
 #'@import RODBC
 #'@export
@@ -187,6 +197,7 @@ ODMgetUnits <-  function(channel = ODM, ID = NA) {
 #'
 #'@examples
 #'
+#'\dontrun{
 #'# Establish connection with database
 #'ODM <- odbcConnect("ODM", "update", "update")
 #'
@@ -195,6 +206,7 @@ ODMgetUnits <-  function(channel = ODM, ID = NA) {
 #'
 #'# Get a list of data series in the database
 #'ODMgetCatalog()
+#'}
 #'
 #'@import RODBC
 #'@export
@@ -220,6 +232,7 @@ ODMgetSource <-  function(channel = ODM, ID = NA) {
 #'
 #'@examples
 #'
+#'\dontrun{
 #'# Establish connection with database
 #'ODM <- odbcConnect("ODM", "update", "update")
 #'
@@ -228,6 +241,7 @@ ODMgetSource <-  function(channel = ODM, ID = NA) {
 #'
 #'# Get a list of data series in the database
 #'ODMgetCatalog()
+#'}
 #'
 #'@import RODBC
 #'@export

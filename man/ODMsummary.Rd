@@ -3,6 +3,9 @@
 \name{ODMsummary}
 \alias{ODMsummary}
 \title{Summarise data formated for use with the ODM}
+\usage{
+ODMsummary(channel, Data)
+}
 \arguments{
 \item{channel}{connection handle as returned by odbcConnect}
 
@@ -14,10 +17,13 @@ ID variables. Will return a meta data summary consistent with the
 SeriesCatalog in the database.
 }
 \examples{
+
+\dontrun{
 # Establish connection with database
 ODM <- odbcConnect("ODM", "update", "update")
 
 # Return meta data for the data file
 ODMsummary(ODM, HP4)
+}
 
 }

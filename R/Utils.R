@@ -1,3 +1,13 @@
+#' Pipe operator
+#'
+#' @name %>%
+#' @rdname pipe
+#' @keywords internal
+#' @export
+#' @importFrom magrittr %>%
+#' @usage lhs \%>\% rhs
+NULL
+
 sqlmerge <- function(Data, TableName, By, Key) {
   Data[is.na(Data)] <- "NULL"
   if (Key %in% names(Data)) {

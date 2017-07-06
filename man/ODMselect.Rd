@@ -44,6 +44,8 @@ ID. Since the series catalog is not stable through time you may also query the
 database by specifying SiteID, VariableID and MethodID.
 }
 \examples{
+
+\dontrun{
 # Establish connection with database
 ODM <- odbcConnect("ODM", "update", "update")
 
@@ -59,5 +61,6 @@ tmp <- ODMselect(ODM, SiteID = 1, VariableID = 1, MethodID = 9,
 # Extract multiple data series.
 tmp = ODMselect(ODM, SiteID = c(1,5) , VariableID = 1, MethodID = 9,
  QCLevelID = 0, startDate = "2013-06-01", endDate = "2013-07-01")
+}
 
 }

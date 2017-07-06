@@ -38,6 +38,8 @@ The output is a properly formated dataframe suitable for further use in
 workflows involving this package.
 }
 \examples{
+
+\dontrun{
 # dates
 date = seq(as.Date("2010/1/1"), as.Date("2011/1/1"), "days")
 # dummy data values
@@ -46,5 +48,6 @@ value = 1:366
 # creation of dataframe that meets the requirements of the ODM.
 tmp = ODMcreate(LocalDateTime = date, DataValue = value, SiteID = 1,
  VariableID = 1, MethodID = 9)
+}
 
 }

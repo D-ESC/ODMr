@@ -24,6 +24,7 @@ Pass a UnitsID - returns a single units object
 }
 \examples{
 
+\dontrun{
 # Establish connection with database
 ODM <- odbcConnect("ODM", "update", "update")
 
@@ -32,5 +33,6 @@ ODMgetSites()
 
 # Get a list of data series in the database
 ODMgetCatalog()
+}
 
 }

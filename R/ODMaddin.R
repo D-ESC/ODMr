@@ -24,13 +24,13 @@ ODMtools <- function(...) {
 
   server <- function(input, output, session) {
 
-    values <- reactiveValues(ODMdata = NULL, Refdata = NULL)
+    values <- shiny::reactiveValues(ODMdata = NULL, Refdata = NULL)
 
-    observeEvent(input$data, {
+    shiny::observeEvent(input$data, {
       values$ODMdata <- get(input$data, envir=.GlobalEnv)
     })
 
-    observeEvent(input$ref, {
+    shiny::observeEvent(input$ref, {
       values$Refdata <- get(input$ref, envir=.GlobalEnv)
     })
 
@@ -56,14 +56,14 @@ ODMtools <- function(...) {
       })
       P
     })
-    observe({
+    shiny::observe({
       shinyAce::updateAceEditor(session, "code",
-        isolate(eval(parse(text=input$code))),
+        shiny::isolate(eval(parse(text=input$code))),
         mode="r")
     })
     output$output <- shiny::renderPrint({
       input$eval
-      return(isolate(eval(parse(text=input$code))))
+      return(shiny::isolate(eval(parse(text=input$code))))
     })
     shiny::observeEvent(input$done, {
       shiny::stopApp(returnValue = values$ODMdata)
