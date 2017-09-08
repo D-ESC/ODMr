@@ -12,8 +12,10 @@ ODMtools <- function(...) {
         shiny::fillCol(
           rbokeh::rbokehOutput("rbokeh", width = "100%", height = "100%")),
         shiny::fillCol(flex = NA,
-          shiny::selectInput("data", "Data:", choices = dataChoices),
-          shiny::selectInput("ref", "Reference:", choices = dataChoices),
+          shiny::selectInput("data", "Data:",
+            choices = c('Select data' = '', dataChoices), selected = NULL),
+          shiny::selectInput("ref", "Reference:",
+            choices = c('Select reference' = '', dataChoices), selected = NULL),
           shinyAce::aceEditor("code", mode="r", height = 100),
           shiny::actionButton("eval", "Evaluate"),
           shiny::br(),
@@ -27,10 +29,12 @@ ODMtools <- function(...) {
     values <- shiny::reactiveValues(ODMdata = NULL, Refdata = NULL)
 
     shiny::observeEvent(input$data, {
+      shiny::req(input$data)
       values$ODMdata <- get(input$data, envir=.GlobalEnv)
     })
 
     shiny::observeEvent(input$ref, {
+      shiny::req(input$ref)
       values$Refdata <- get(input$ref, envir=.GlobalEnv)
     })
 
@@ -41,6 +45,7 @@ ODMtools <- function(...) {
     }
 
     output$rbokeh <- rbokeh::renderRbokeh({
+      req(values$ODMdata)
       P = rbokeh::figure(webgl = TRUE, lod_threshold = 0,
         width = 900, height = 700,
         tools = c("pan", "box_zoom", "resize", "reset")) %>%
@@ -105,7 +110,11 @@ ODMgetDataValuesAddin <- function() {
         rows <- input$table_rows_selected
         code <-
           paste(Catalog$SiteCode[rows], "_", Catalog$VariableCode[rows],
-            " <- ODMr::ODMselect(ODM, ", rows, ")"
+            " <- ODMr::ODMselect(ODM, SiteID = ", Catalog$SiteID[rows],
+            ", VariableID = ", Catalog$VariableID[rows],
+            ", MethodID = ", Catalog$MethodID[rows],
+            ", QCLevelID = ", Catalog$QualityControlLevelID[rows],
+            ")"
             , sep = "")
       }
       rstudioapi::sendToConsole(paste(
