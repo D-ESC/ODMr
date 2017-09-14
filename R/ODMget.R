@@ -252,3 +252,39 @@ ODMgetQCLevel <-  function(channel = ODM, ID = NA) {
   if (!is.na(ID)) tmp <- subset(tmp, QualityControlLevelID == ID)
   return(tmp)
 }
+
+#'ODM utility functions
+#'
+#'Set of utility functions to retrieve meta data from an ODM database
+#'
+#'ODMgetQualifiers
+#'Pass nothing - returns full list of Quality Control Levels
+#'Pass a SourceID - returns a single Quality Control Level
+#'
+#'@param channel connection handle as returned by odbcConnect (default value = ODM)
+#'@param ID index value for the specified object type
+#'
+#'@return A data frame
+#'
+#'@examples
+#'
+#'\dontrun{
+#'# Establish connection with database
+#'ODM <- odbcConnect("ODM", "update", "update")
+#'
+#'# Get a list of sites in the database
+#'ODMgetSites()
+#'
+#'# Get a list of data series in the database
+#'ODMgetCatalog()
+#'}
+#'
+#'@import RODBC
+#'@export
+
+ODMgetQualifiers <-  function(channel = ODM, ID = NA) {
+  tmp <- RODBC::sqlFetch(channel, "Qualifiers",
+                         stringsAsFactors = FALSE)
+  if (!is.na(ID)) tmp <- subset(tmp, QualifierID == ID)
+  return(tmp)
+}

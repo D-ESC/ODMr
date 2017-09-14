@@ -57,7 +57,7 @@ ODMtools <- function(...) {
         rbokeh::tool_lasso_select(rbokeh::shiny_callback("selection_info"), "points")
       if(!is.null(values$Refdata)) ({
         P = P %>% rbokeh::ly_points(x = LocalDateTime, y = DataValue, data = values$Refdata,
-          glyph = 1, size = 2, alpha = 0.5, lname = "reference", line_color = "grey", ...)
+          glyph = 1, size = 5, lname = "reference", line_color = "red", ...)
       })
       P
     })
@@ -71,7 +71,8 @@ ODMtools <- function(...) {
       return(shiny::isolate(eval(parse(text=input$code))))
     })
     shiny::observeEvent(input$done, {
-      shiny::stopApp(returnValue = values$ODMdata)
+      assign(paste(input$data), values$ODMdata, envir=.GlobalEnv)
+      shiny::stopApp(returnValue <- values$ODMdata)
     })
   }
 
@@ -100,7 +101,7 @@ ODMgetDataValuesAddin <- function() {
         "ValueCount")]
       colnames(Catalog) <- c("Site", "Variable", "Method", "QCLevel",
         "Start", "End", "Count")
-      DT::datatable(Catalog, selection = 'single')
+      DT::datatable(Catalog, selection = 'single', filter = "top")
     })
 
     shiny::observeEvent(input$done, {
@@ -110,6 +111,7 @@ ODMgetDataValuesAddin <- function() {
         rows <- input$table_rows_selected
         code <-
           paste(Catalog$SiteCode[rows], "_", Catalog$VariableCode[rows],
+                "_", Catalog$QualityControlLevelID[rows],
             " <- ODMr::ODMselect(ODM, SiteID = ", Catalog$SiteID[rows],
             ", VariableID = ", Catalog$VariableID[rows],
             ", MethodID = ", Catalog$MethodID[rows],
