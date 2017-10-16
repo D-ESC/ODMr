@@ -41,6 +41,8 @@ ODMsummary <- function(channel, Data) {
     stop("Date and time should be in a column named 'LocalDateTime'.")
   if (!lubridate::is.POSIXt(Data$LocalDateTime))
     stop("LocalDateTime should be class POSIXlt or POSIXct.")
+  if (anyNA(Data$LocalDateTime))
+    stop("LocalDateTime should not contain any NA values.")
   if (!("SiteID" %in% colnames(Data)))
     stop("A site ID referenced from the 'Sites' table should
       be in a column named 'SiteID'.")

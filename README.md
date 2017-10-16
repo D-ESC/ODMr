@@ -11,12 +11,12 @@ In order to talk to the database, you'll need to establish an ODBC connection to
 ### The Basics
 This will all be easier to use and understand if you have a fundamental understanding of the underlying data model. The model and the underlying motives for it's design can be found at http://www.cuahsi.org 
 
-Here is a quick example. You'll need the package RODBC in order to establish a connection using an ODBC connection. `odbcConnect` establishes a connection to the specified DSN. `sqlFetch` is used to import the series catalog or any of the ODM tables.
+Here is a quick example. You'll need the package RODBC in order to establish a connection using an ODBC connection. `RODBC::odbcConnect` establishes a connection to the specified DSN and `ODMgetCatalog()` can be used to import the series catalog.
 
 ```R
-require(ODMr)
+library(ODMr)
 ODM <- odbcConnect("Connection", "User id", "Password")
-Catalog = sqlFetch(ODM, "SeriesCatalog")
+Catalog = ODMgetCatalog()
 ```
 
 Using the established connection and referencing the series catalog we can import data from the database. The series catalog is not stable so only use this method to quickly look at certain data.

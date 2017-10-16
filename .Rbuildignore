@@ -1,2 +1,4 @@
-^.*\.Rproj$
+^.*\\.Rproj$
+^\\.Rproj\\.user$
+^C:\\Users\\mcconnellch\\Documents\\GitHub\\ODMr\\docs$
 ^\.Rproj\.user$
