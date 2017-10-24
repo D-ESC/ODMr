@@ -1,0 +1,209 @@
+---
+title: "Working with ODMr"
+author: "Chris McConnell"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Working_ODMr}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+## Projects
+
+Any process running on your computer has a notion of its "working directory". In R, this is where R will look, by default, for files you ask it to load. It is also where, by default, any files you write to disk will go. 
+
+RStudio provides a very useful “project” feature that allows a user to switch quickly between projects. Each project may have different working directories and collection of files. The current project name is listed on the far right of the main application toolbar in a combobox that allows one to switch between an open project, open an existing project, or create a new project.
+
+Do this: Within the project combobox select New Project. The directory name you choose here will be the project name. Call it whatever you want (good names are short and informative). Keep your "good" R code in a script for future reuse. Click on the floppy disk to save. Give it a name; it will go in the directory associated with your project.
+
+## Calculating Flow
+
+```R
+flow <- function(h, p, e, n) {
+  p * (h - e) ^n
+}
+
+Q <-
+  ifelse (Stage$DataValue > 0.534, flow(Stage$DataValue, 1241.9, 0.489, 1.32),
+          ifelse (Stage$DataValue > 0.353, flow(Stage$DataValue, 985.52, 0.353, 2.26),
+                  0))
+```
+
+## Combining Series
+
+```R
+ODM_combine <- function (x, y) {
+ left_join(x, y[,c("LocalDateTime", "DataValue", "QualifierID")], 
+   by = "LocalDateTime") %>%
+ mutate(
+   QualifierID = 
+     ifelse(is.na(.data$DataValue.x), .data$QualifierID.y, .data$QualifierID.x),
+   DataValue = 
+     ifelse(is.na(.data$DataValue.x), .data$DataValue.y, .data$DataValue.x)) %>%
+ select(-DataValue.x, -DataValue.y, -QualifierID.x, -QualifierID.y)
+}   
+```
+
+## Data profiling
+
+```R
+ggplot(PC1_Stage_10min_53_2, aes(DataValue)) + geom_density()
+ggplot(PC1_Stage_10min_53_2, aes(x = as.factor(month(LocalDateTime)), 
+  y = DataValue)) + geom_boxplot()
+ggplot(PC1_Stage_10min_53_2, aes(LocalDateTime, is.na(DataValue))) + geom_raster()
+summary(PC1_Stage_10min_53_2)
+xtabs(~ round(DataValue,2), data = PC1_Stage_10min_53_2)
+quantile(PC1_Stage_10min_53_2$DataValue, na.rm = T, 
+         probs = c(0,0.01,0.1,0.25,0.5,0.75,0.9,0.99,1))
+```
+
+## Example workflow – Manual Barometric Compensation
+
+Convert the barometric data column from its barometric measurement units (typically atm, mm Hg, psi, mbar or kPa) to meters of water column equivalent. 
+
+```R
+PTMET_BarPre_10minAvg_2m_12_1 <- 
+    ODMr::ODMselect(ODM, SiteID = 13, 
+    VariableID = 100, MethodID = 12, QCLevelID = 1)
+```
+
+How many hPa in 1 meter of head? The answer is 98.04139432.
+
+```R
+Adj <- PTMET_BarPre_10minAvg_2m_12_1 %>% 
+    mutate(DataValue = DataValue / 98.04139432)
+```
+
+Merge the barometric corrections with the stage data and calculate the corrected stage values.
+
+```R
+PC1_Stage_10minAvg_42_1 %>% 
+    left_join(Adj[,c("LocalDateTime","DataValue")], by = "LocalDateTime") %>% 
+    mutate(DataValue = DataValue.x - DataValue.y)
+```
+
+## Useful packages - lubridate
+
+Parsing dates and times. Getting R to agree that your data contains the dates and times you think it does can be tricky. Lubridate simplifies that. Identify the order in which the year, month, and day appears in your dates. Now arrange “y”, “m”, and “d” in the same order.
+
+```R
+library(lubridate)
+mdy("06-04-2011")
+```
+
+If your date includes time information, add h, m, and/or s to the name of the function.
+
+```R
+ymd_hms("2011-06-04 12:00:00")
+```
+
+Using paste to combine dates and times to create datetime objects.
+
+```R
+Date = "2011-06-04"
+Time = "12:00:00"
+ymd_hms(paste(Date, Time))
+```
+
+Rounding to the nearest unit or multiple of a unit are supported. All meaningful specifications in English language are supported - secs, min, mins, 2 minutes, 3 years etc.
+
+```R
+round_date(ymd_hms("2011-06-04 12:03:00"), unit = "10 minutes")
+floor_date(ymd_hms("2011-06-04 12:03:00"), unit = "month")
+ceiling_date(ymd_hms("2011-06-04 12:03:00"), unit = "10 minutes")
+```
+
+## Useful packages - robfilter
+
+robfilter is a package of functions for robust extraction of an underlying signal from time series. The simplest and quickest functions to use in the package are those applying robust regression techniques to moving time windows.
+
+```R
+library(robfilter)
+PC1_filtered <- robreg.filter(PC1_Stage_10minAvg_1_1$DataValue, width = 7)
+plot(PC1_filtered)
+```
+robreg.filter returns an object of class robreg.filter containing the signal level extracted by the filter(s) specified.
+
+## Useful packages - padr
+
+When getting time series data ready for analysis, you might be confronted with the following two challenges:
+-The observations are done on too low a level, e.g. time recorded to the second, where your analysis is on a daily level.
+-There are no records for the time points where observations were absent.
+padr aims to make light work of preparing time series data by offering the two main functions thicken and pad.
+
+```R
+library(padr)
+PTMET_pad <- PTMET_BarPre_10minAvg_2m_12_1 %>% pad()
+```
+The pad function figures out what the datetime variable in the data frame is, and then assesses its interval. It inserts a row in the data frame for every time point that is lacking from the data set. All non-datetime values will get missing values at the added rows.
+
+Sometimes this can be too memory intensive. An alternative is to use `complete()` from tidyr.
+
+```R
+PTMET_pad <- complete(PTMET_BarPre_10minAvg_2m_12_1, LocalDateTime = 
+  seq(
+    min(PTMET_BarPre_10minAvg_2m_12_1$LocalDateTime), 
+    max(PTMET_BarPre_10minAvg_2m_12_1$LocalDateTime), by = "10 min"))
+```
+
+## Useful packages - zoo
+
+In zoo there are a few useful NA functions in particular:
+na.locf()
+na.appox()
+na.spline()
+
+na.locf() stands for last observation carried forward and does just what it says. The last observation before NA or a string before NA is used to replace the NA. Runs of more than `maxgap` NAs are retained, other NAs are filled.
+
+```R
+library(zoo)
+PTMET_pad %>% mutate(DataValue = na.locf(DataValue, maxgap = 1))
+```
+
+na.approx() uses linear interpolation to fill in missing values.
+
+```R
+PTMET_pad %>% mutate(DataValue = na.approx(DataValue, maxgap = 6))
+```
+
+na.spline() uses polynomial interpolation to fill in missing data.
+
+```R
+PTMET_filled <- PTMET_pad %>% mutate(DataValue = na.spline(DataValue, maxgap = 6))
+```
+
+Using tidyr you'll need to fill missing values in using the previous entry to ensure records contain all the required meta data fields like SiteID.
+
+```R
+library(tidyr)
+PTMET_filled %>% fill(UTCOffset, SiteID, VariableID, MethodID, SourceID, QualityControlLevelID)
+```
+## Useful code bits - tsoutliers
+
+From Rob Hyndman - "Here is a simple R function that will find time series outliers. It will handle seasonal and non-seasonal time series. The basic idea is to find robust estimates of the trend and seasonal components and subtract them. Then find outliers in the residuals. The test for residual outliers is the same as for the standard boxplot -- points greater than 1.5IQR above or below the upper and lower quartiles are assumed outliers. The number of IQRs above/below these thresholds is returned as an outlier "score". So the score can be any positive number, and will be zero for non-outliers."
+
+```R
+tsoutliers <- function(x)
+{
+    x <- as.ts(x)
+    if(frequency(x)>1)
+        resid <- stl(x,s.window="periodic",robust=TRUE)$time.series[,3]
+    else
+    {
+        tt <- 1:length(x)
+        resid <- residuals(loess(x ~ tt))
+    }
+    resid.q <- quantile(resid,prob=c(0.25,0.75))
+    iqr <- diff(resid.q)
+    limits <- resid.q + 1.5*iqr*c(-1,1)
+    score <- abs(pmin((resid-limits[1])/iqr,0) + pmax((resid - limits[2])/iqr,0))
+    return(score)
+}
+```
+
+```R
+OUT <- PTMET_BarPre_10minAvg_2m_12_1 %>%
+    mutate(ol = tsoutliers(DataValue)) %>% 
+    filter(ol > 1.5)
+```
