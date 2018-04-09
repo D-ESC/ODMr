@@ -30,10 +30,10 @@
 #'@export
 #'@name ODMload
 
-ODMload <- function(channel, Data, QCcheck = 1) {
+ODMload <- function(Data, QCcheck = 1, channel = ODM) {
   stopifnot(QCcheck == Data$QualityControlLevelID)
 
-  DS <- ODMsummary(channel, Data)
+  DS <- ODMsummary(Data, channel)
   Catalog <- ODMgetCatalog(channel) %>%
     dplyr::filter(SiteID == DS$SiteID,
       VariableID == DS$VariableID,
@@ -57,7 +57,7 @@ ODMload <- function(channel, Data, QCcheck = 1) {
       By = c("LocalDateTime", "SiteID", "VariableID", "MethodID",
         "QualityControlLevelID", "SourceID"),
       Key = "ValueID")
-    success <- RODBC::sqlQuery(channel, {
+    success <- DBI::dbExecute(channel, {
       SQL
     })
     if (is.character(success)) {
@@ -68,24 +68,13 @@ ODMload <- function(channel, Data, QCcheck = 1) {
   }
 
   success_summary <- dplyr::bind_rows(lapply(Data, mergeSQL))
-  success_summary <- success_summary  %>%
-    dplyr::group_by(Action = `$action`) %>%
-    dplyr::summarise(Count = nrow(.)) %>%
-    as.data.frame()
-  INSERTS <- success_summary %>%
-    dplyr::filter(Action == "INSERT") %>%
-    dplyr::select(Count)
-  if (nrow(Catalog) == 0) {
-    Catalog <- DS
-  } else if (nrow(INSERTS) > 0) {
-    Catalog$EndDateTime <- max(c(DS$EndDateTime, Catalog$EndDateTime))
-    Catalog$ValueCount <- Catalog$ValueCount + INSERTS$Count
-  }
+  success_summary <- sum(t(success_summary))
+
   Catalog <- data.frame(lapply(Catalog, gsub, pattern = "'", replacement = " "))
   SQL <- sqlmerge(Catalog, TableName = "SeriesCatalog",
     By = c("SiteID", "VariableID", "MethodID",
       "QualityControlLevelID", "SourceID"),
     Key = "SeriesID")
-  RODBC::sqlQuery(channel, SQL)
+  DBI::dbExecute(channel, SQL)
   return(success_summary)
 }

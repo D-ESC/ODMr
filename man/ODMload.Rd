@@ -4,14 +4,14 @@
 \alias{ODMload}
 \title{Load data to an ODM database}
 \usage{
-ODMload(channel, Data, QCcheck = 1)
+ODMload(Data, QCcheck = 1, channel = ODM)
 }
 \arguments{
-\item{channel}{connection handle as returned by odbcConnect}
-
 \item{Data}{containing the required columns}
 
 \item{QCcheck}{must match the quality control level of the data to be loaded}
+
+\item{channel}{connection handle as returned by odbcConnect}
 }
 \description{
 The function ODMload can be used to get data into the DataValues table in an

@@ -1,14 +1,9 @@
-Name: ODMconnect
-Description: Set RODBC connection
-Binding: odbcconnectAddin
-Interactive: true
-
-Name: ODMgetDataValues
-Description: Load data from an ODM database
-Binding: ODMgetDataValuesAddin
-Interactive: true
-
 Name: ODMtools
-Description: Interactively visualise and edit ODM data
+Description: Edit ODM data
 Binding: ODMtools
+Interactive: true
+
+Name: ODMdashboard
+Description: Interactively visualise and access ODM data
+Binding: ODMDashboard
 Interactive: true

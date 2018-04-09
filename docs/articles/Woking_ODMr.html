@@ -8,14 +8,17 @@
 <title>Working with ODMr • ODMr</title>
 <!-- jquery --><script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script><!-- Font Awesome icons --><link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
-<!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
-<script src="../jquery.sticky-kit.min.js"></script><script src="../pkgdown.js"></script><!-- mathjax --><script src="https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><!--[if lt IE 9]>
+<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
+<script src="../jquery.sticky-kit.min.js"></script><script src="../pkgdown.js"></script><meta property="og:title" content="Working with ODMr">
+<meta property="og:description" content="">
+<meta name="twitter:card" content="summary">
+<!-- mathjax --><script src="https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
 </head>
 <body>
-    <div class="container template-vignette">
+    <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
@@ -24,18 +27,22 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="../index.html">ODMr</a>
+      <span class="navbar-brand">
+        <a class="navbar-link" href="../index.html">ODMr</a>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.0.1</span>
+      </span>
     </div>
+
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
 <li>
-  <a href="..//index.html">
+  <a href="../index.html">
     <span class="fa fa-home fa-lg"></span>
      
   </a>
 </li>
 <li>
-  <a href="../articles/ODMr.html">Get Started</a>
+  <a href="../articles/ODMr.html">Get started</a>
 </li>
 <li>
   <a href="../reference/index.html">Reference</a>
@@ -63,17 +70,20 @@
 
       
       </header><div class="row">
-  <div class="col-md-9">
+  <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1>Working with ODMr</h1>
                         <h4 class="author">Chris McConnell</h4>
             
-            <h4 class="date">2017-10-24</h4>
-          </div>
+            <h4 class="date">2018-04-09</h4>
+      
+      
+      <div class="hidden name"><code>Woking_ODMr.Rmd</code></div>
+
+    </div>
 
     
     
-<div class="contents">
 <div id="projects" class="section level2">
 <h2 class="hasAnchor">
 <a href="#projects" class="anchor"></a>Projects</h2>
@@ -84,55 +94,55 @@
 <div id="calculating-flow" class="section level2">
 <h2 class="hasAnchor">
 <a href="#calculating-flow" class="anchor"></a>Calculating Flow</h2>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">flow &lt;-<span class="st"> </span>function(h, p, e, n) {
-  p *<span class="st"> </span>(h -<span class="st"> </span>e) ^n
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">flow &lt;-<span class="st"> </span><span class="cf">function</span>(h, p, e, n) {
+  p <span class="op">*</span><span class="st"> </span>(h <span class="op">-</span><span class="st"> </span>e) <span class="op">^</span>n
 }
 
 Q &lt;-
-<span class="st">  </span><span class="kw">ifelse</span> (Stage$DataValue &gt;<span class="st"> </span><span class="fl">0.534</span>, <span class="kw">flow</span>(Stage$DataValue, <span class="fl">1241.9</span>, <span class="fl">0.489</span>, <span class="fl">1.32</span>),
-          <span class="kw">ifelse</span> (Stage$DataValue &gt;<span class="st"> </span><span class="fl">0.353</span>, <span class="kw">flow</span>(Stage$DataValue, <span class="fl">985.52</span>, <span class="fl">0.353</span>, <span class="fl">2.26</span>),
+<span class="st">  </span><span class="kw">ifelse</span> (Stage<span class="op">$</span>DataValue <span class="op">&gt;</span><span class="st"> </span><span class="fl">0.534</span>, <span class="kw">flow</span>(Stage<span class="op">$</span>DataValue, <span class="fl">1241.9</span>, <span class="fl">0.489</span>, <span class="fl">1.32</span>),
+          <span class="kw">ifelse</span> (Stage<span class="op">$</span>DataValue <span class="op">&gt;</span><span class="st"> </span><span class="fl">0.353</span>, <span class="kw">flow</span>(Stage<span class="op">$</span>DataValue, <span class="fl">985.52</span>, <span class="fl">0.353</span>, <span class="fl">2.26</span>),
                   <span class="dv">0</span>))</code></pre></div>
 </div>
 <div id="combining-series" class="section level2">
 <h2 class="hasAnchor">
 <a href="#combining-series" class="anchor"></a>Combining Series</h2>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ODM_combine &lt;-<span class="st"> </span>function (x, y) {
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ODM_combine &lt;-<span class="st"> </span><span class="cf">function</span> (x, y) {
  <span class="kw">left_join</span>(x, y[,<span class="kw">c</span>(<span class="st">"LocalDateTime"</span>, <span class="st">"DataValue"</span>, <span class="st">"QualifierID"</span>)], 
-   <span class="dt">by =</span> <span class="st">"LocalDateTime"</span>) %&gt;%
+   <span class="dt">by =</span> <span class="st">"LocalDateTime"</span>) <span class="op">%&gt;%</span>
 <span class="st"> </span><span class="kw">mutate</span>(
    <span class="dt">QualifierID =</span> 
-     <span class="kw">ifelse</span>(<span class="kw">is.na</span>(.data$DataValue.x), .data$QualifierID.y, .data$QualifierID.x),
+     <span class="kw">ifelse</span>(<span class="kw">is.na</span>(.data<span class="op">$</span>DataValue.x), .data<span class="op">$</span>QualifierID.y, .data<span class="op">$</span>QualifierID.x),
    <span class="dt">DataValue =</span> 
-     <span class="kw">ifelse</span>(<span class="kw">is.na</span>(.data$DataValue.x), .data$DataValue.y, .data$DataValue.x)) %&gt;%
-<span class="st"> </span><span class="kw">select</span>(-DataValue.x, -DataValue.y, -QualifierID.x, -QualifierID.y)
+     <span class="kw">ifelse</span>(<span class="kw">is.na</span>(.data<span class="op">$</span>DataValue.x), .data<span class="op">$</span>DataValue.y, .data<span class="op">$</span>DataValue.x)) <span class="op">%&gt;%</span>
+<span class="st"> </span><span class="kw">select</span>(<span class="op">-</span>DataValue.x, <span class="op">-</span>DataValue.y, <span class="op">-</span>QualifierID.x, <span class="op">-</span>QualifierID.y)
 }   </code></pre></div>
 </div>
 <div id="data-profiling" class="section level2">
 <h2 class="hasAnchor">
 <a href="#data-profiling" class="anchor"></a>Data profiling</h2>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(PC1_Stage_10min_53_2, <span class="kw">aes</span>(DataValue)) +<span class="st"> </span><span class="kw">geom_density</span>()
-<span class="kw">ggplot</span>(PC1_Stage_10min_53_2, <span class="kw">aes</span>(<span class="dt">x =</span> <span class="kw">as.factor</span>(<span class="kw">month</span>(LocalDateTime)), 
-  <span class="dt">y =</span> DataValue)) +<span class="st"> </span><span class="kw">geom_boxplot</span>()
-<span class="kw">ggplot</span>(PC1_Stage_10min_53_2, <span class="kw">aes</span>(LocalDateTime, <span class="kw">is.na</span>(DataValue))) +<span class="st"> </span><span class="kw">geom_raster</span>()
-<span class="kw">summary</span>(PC1_Stage_10min_53_2)
-<span class="kw">xtabs</span>(~<span class="st"> </span><span class="kw">round</span>(DataValue,<span class="dv">2</span>), <span class="dt">data =</span> PC1_Stage_10min_53_2)
-<span class="kw">quantile</span>(PC1_Stage_10min_53_2$DataValue, <span class="dt">na.rm =</span> T, 
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(PC1_Stage_10min_53_<span class="dv">2</span>, <span class="kw">aes</span>(DataValue)) <span class="op">+</span><span class="st"> </span><span class="kw">geom_density</span>()
+<span class="kw">ggplot</span>(PC1_Stage_10min_53_<span class="dv">2</span>, <span class="kw">aes</span>(<span class="dt">x =</span> <span class="kw">as.factor</span>(<span class="kw">month</span>(LocalDateTime)), 
+  <span class="dt">y =</span> DataValue)) <span class="op">+</span><span class="st"> </span><span class="kw">geom_boxplot</span>()
+<span class="kw">ggplot</span>(PC1_Stage_10min_53_<span class="dv">2</span>, <span class="kw">aes</span>(LocalDateTime, <span class="kw">is.na</span>(DataValue))) <span class="op">+</span><span class="st"> </span><span class="kw">geom_raster</span>()
+<span class="kw">summary</span>(PC1_Stage_10min_53_<span class="dv">2</span>)
+<span class="kw">xtabs</span>(<span class="op">~</span><span class="st"> </span><span class="kw">round</span>(DataValue,<span class="dv">2</span>), <span class="dt">data =</span> PC1_Stage_10min_53_<span class="dv">2</span>)
+<span class="kw">quantile</span>(PC1_Stage_10min_53_<span class="dv">2</span><span class="op">$</span>DataValue, <span class="dt">na.rm =</span> T, 
          <span class="dt">probs =</span> <span class="kw">c</span>(<span class="dv">0</span>,<span class="fl">0.01</span>,<span class="fl">0.1</span>,<span class="fl">0.25</span>,<span class="fl">0.5</span>,<span class="fl">0.75</span>,<span class="fl">0.9</span>,<span class="fl">0.99</span>,<span class="dv">1</span>))</code></pre></div>
 </div>
 <div id="example-workflow-manual-barometric-compensation" class="section level2">
 <h2 class="hasAnchor">
 <a href="#example-workflow-manual-barometric-compensation" class="anchor"></a>Example workflow – Manual Barometric Compensation</h2>
 <p>Convert the barometric data column from its barometric measurement units (typically atm, mm Hg, psi, mbar or kPa) to meters of water column equivalent.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">PTMET_BarPre_10minAvg_2m_12_1 &lt;-<span class="st"> </span>
-<span class="st">    </span>ODMr::<span class="kw"><a href="../reference/ODMselect.html">ODMselect</a></span>(ODM, <span class="dt">SiteID =</span> <span class="dv">13</span>, 
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">PTMET_BarPre_10minAvg_2m_12_<span class="dv">1</span> &lt;-<span class="st"> </span>
+<span class="st">    </span>ODMr<span class="op">::</span><span class="kw">ODMselect</span>(ODM, <span class="dt">SiteID =</span> <span class="dv">13</span>, 
     <span class="dt">VariableID =</span> <span class="dv">100</span>, <span class="dt">MethodID =</span> <span class="dv">12</span>, <span class="dt">QCLevelID =</span> <span class="dv">1</span>)</code></pre></div>
 <p>How many hPa in 1 meter of head? The answer is 98.04139432.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Adj &lt;-<span class="st"> </span>PTMET_BarPre_10minAvg_2m_12_1 %&gt;%<span class="st"> </span>
-<span class="st">    </span><span class="kw">mutate</span>(<span class="dt">DataValue =</span> DataValue /<span class="st"> </span><span class="fl">98.04139432</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Adj &lt;-<span class="st"> </span>PTMET_BarPre_10minAvg_2m_12_<span class="dv">1</span> <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">    </span><span class="kw">mutate</span>(<span class="dt">DataValue =</span> DataValue <span class="op">/</span><span class="st"> </span><span class="fl">98.04139432</span>)</code></pre></div>
 <p>Merge the barometric corrections with the stage data and calculate the corrected stage values.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">PC1_Stage_10minAvg_42_1 %&gt;%<span class="st"> </span>
-<span class="st">    </span><span class="kw">left_join</span>(Adj[,<span class="kw">c</span>(<span class="st">"LocalDateTime"</span>,<span class="st">"DataValue"</span>)], <span class="dt">by =</span> <span class="st">"LocalDateTime"</span>) %&gt;%<span class="st"> </span>
-<span class="st">    </span><span class="kw">mutate</span>(<span class="dt">DataValue =</span> DataValue.x -<span class="st"> </span>DataValue.y)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">PC1_Stage_10minAvg_42_<span class="dv">1</span> <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">    </span><span class="kw">left_join</span>(Adj[,<span class="kw">c</span>(<span class="st">"LocalDateTime"</span>,<span class="st">"DataValue"</span>)], <span class="dt">by =</span> <span class="st">"LocalDateTime"</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">    </span><span class="kw">mutate</span>(<span class="dt">DataValue =</span> DataValue.x <span class="op">-</span><span class="st"> </span>DataValue.y)</code></pre></div>
 </div>
 <div id="useful-packages---lubridate" class="section level2">
 <h2 class="hasAnchor">
@@ -156,7 +166,7 @@ Time =<span class="st"> "12:00:00"</span>
 <a href="#useful-packages---robfilter" class="anchor"></a>Useful packages - robfilter</h2>
 <p>robfilter is a package of functions for robust extraction of an underlying signal from time series. The simplest and quickest functions to use in the package are those applying robust regression techniques to moving time windows.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(robfilter)
-PC1_filtered &lt;-<span class="st"> </span><span class="kw">robreg.filter</span>(PC1_Stage_10minAvg_1_1$DataValue, <span class="dt">width =</span> <span class="dv">7</span>)
+PC1_filtered &lt;-<span class="st"> </span><span class="kw">robreg.filter</span>(PC1_Stage_10minAvg_1_<span class="dv">1</span><span class="op">$</span>DataValue, <span class="dt">width =</span> <span class="dv">7</span>)
 <span class="kw">plot</span>(PC1_filtered)</code></pre></div>
 <p>robreg.filter returns an object of class robreg.filter containing the signal level extracted by the filter(s) specified.</p>
 </div>
@@ -165,13 +175,13 @@ PC1_filtered &lt;-<span class="st"> </span><span class="kw">robreg.filter</span>
 <a href="#useful-packages---padr" class="anchor"></a>Useful packages - padr</h2>
 <p>When getting time series data ready for analysis, you might be confronted with the following two challenges: -The observations are done on too low a level, e.g. time recorded to the second, where your analysis is on a daily level. -There are no records for the time points where observations were absent. padr aims to make light work of preparing time series data by offering the two main functions thicken and pad.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(padr)
-PTMET_pad &lt;-<span class="st"> </span>PTMET_BarPre_10minAvg_2m_12_1 %&gt;%<span class="st"> </span><span class="kw">pad</span>()</code></pre></div>
+PTMET_pad &lt;-<span class="st"> </span>PTMET_BarPre_10minAvg_2m_12_<span class="dv">1</span> <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">pad</span>()</code></pre></div>
 <p>The pad function figures out what the datetime variable in the data frame is, and then assesses its interval. It inserts a row in the data frame for every time point that is lacking from the data set. All non-datetime values will get missing values at the added rows.</p>
 <p>Sometimes this can be too memory intensive. An alternative is to use <code>complete()</code> from tidyr.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">PTMET_pad &lt;-<span class="st"> </span><span class="kw">complete</span>(PTMET_BarPre_10minAvg_2m_12_1, <span class="dt">LocalDateTime =</span> 
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">PTMET_pad &lt;-<span class="st"> </span><span class="kw">complete</span>(PTMET_BarPre_10minAvg_2m_12_<span class="dv">1</span>, <span class="dt">LocalDateTime =</span> 
   <span class="kw">seq</span>(
-    <span class="kw">min</span>(PTMET_BarPre_10minAvg_2m_12_1$LocalDateTime), 
-    <span class="kw">max</span>(PTMET_BarPre_10minAvg_2m_12_1$LocalDateTime), <span class="dt">by =</span> <span class="st">"10 min"</span>))</code></pre></div>
+    <span class="kw">min</span>(PTMET_BarPre_10minAvg_2m_12_<span class="dv">1</span><span class="op">$</span>LocalDateTime), 
+    <span class="kw">max</span>(PTMET_BarPre_10minAvg_2m_12_<span class="dv">1</span><span class="op">$</span>LocalDateTime), <span class="dt">by =</span> <span class="st">"10 min"</span>))</code></pre></div>
 </div>
 <div id="useful-packages---zoo" class="section level2">
 <h2 class="hasAnchor">
@@ -179,39 +189,38 @@ PTMET_pad &lt;-<span class="st"> </span>PTMET_BarPre_10minAvg_2m_12_1 %&gt;%<spa
 <p>In zoo there are a few useful NA functions in particular: na.locf() na.appox() na.spline()</p>
 <p>na.locf() stands for last observation carried forward and does just what it says. The last observation before NA or a string before NA is used to replace the NA. Runs of more than <code>maxgap</code> NAs are retained, other NAs are filled.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(zoo)
-PTMET_pad %&gt;%<span class="st"> </span><span class="kw">mutate</span>(<span class="dt">DataValue =</span> <span class="kw">na.locf</span>(DataValue, <span class="dt">maxgap =</span> <span class="dv">1</span>))</code></pre></div>
+PTMET_pad <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">mutate</span>(<span class="dt">DataValue =</span> <span class="kw">na.locf</span>(DataValue, <span class="dt">maxgap =</span> <span class="dv">1</span>))</code></pre></div>
 <p>na.approx() uses linear interpolation to fill in missing values.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">PTMET_pad %&gt;%<span class="st"> </span><span class="kw">mutate</span>(<span class="dt">DataValue =</span> <span class="kw">na.approx</span>(DataValue, <span class="dt">maxgap =</span> <span class="dv">6</span>))</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">PTMET_pad <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">mutate</span>(<span class="dt">DataValue =</span> <span class="kw">na.approx</span>(DataValue, <span class="dt">maxgap =</span> <span class="dv">6</span>))</code></pre></div>
 <p>na.spline() uses polynomial interpolation to fill in missing data.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">PTMET_filled &lt;-<span class="st"> </span>PTMET_pad %&gt;%<span class="st"> </span><span class="kw">mutate</span>(<span class="dt">DataValue =</span> <span class="kw">na.spline</span>(DataValue, <span class="dt">maxgap =</span> <span class="dv">6</span>))</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">PTMET_filled &lt;-<span class="st"> </span>PTMET_pad <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">mutate</span>(<span class="dt">DataValue =</span> <span class="kw">na.spline</span>(DataValue, <span class="dt">maxgap =</span> <span class="dv">6</span>))</code></pre></div>
 <p>Using tidyr you’ll need to fill missing values in using the previous entry to ensure records contain all the required meta data fields like SiteID.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(tidyr)
-PTMET_filled %&gt;%<span class="st"> </span><span class="kw">fill</span>(UTCOffset, SiteID, VariableID, MethodID, SourceID, QualityControlLevelID)</code></pre></div>
+PTMET_filled <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">fill</span>(UTCOffset, SiteID, VariableID, MethodID, SourceID, QualityControlLevelID)</code></pre></div>
 </div>
 <div id="useful-code-bits---tsoutliers" class="section level2">
 <h2 class="hasAnchor">
 <a href="#useful-code-bits---tsoutliers" class="anchor"></a>Useful code bits - tsoutliers</h2>
 <p>From Rob Hyndman - “Here is a simple R function that will find time series outliers. It will handle seasonal and non-seasonal time series. The basic idea is to find robust estimates of the trend and seasonal components and subtract them. Then find outliers in the residuals. The test for residual outliers is the same as for the standard boxplot – points greater than 1.5IQR above or below the upper and lower quartiles are assumed outliers. The number of IQRs above/below these thresholds is returned as an outlier”score“. So the score can be any positive number, and will be zero for non-outliers.”</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">tsoutliers &lt;-<span class="st"> </span>function(x)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">tsoutliers &lt;-<span class="st"> </span><span class="cf">function</span>(x)
 {
     x &lt;-<span class="st"> </span><span class="kw">as.ts</span>(x)
-    if(<span class="kw">frequency</span>(x)&gt;<span class="dv">1</span>)
-        resid &lt;-<span class="st"> </span><span class="kw">stl</span>(x,<span class="dt">s.window=</span><span class="st">"periodic"</span>,<span class="dt">robust=</span><span class="ot">TRUE</span>)$time.series[,<span class="dv">3</span>]
-    else
+    <span class="cf">if</span>(<span class="kw">frequency</span>(x)<span class="op">&gt;</span><span class="dv">1</span>)
+        resid &lt;-<span class="st"> </span><span class="kw">stl</span>(x,<span class="dt">s.window=</span><span class="st">"periodic"</span>,<span class="dt">robust=</span><span class="ot">TRUE</span>)<span class="op">$</span>time.series[,<span class="dv">3</span>]
+    <span class="cf">else</span>
     {
-        tt &lt;-<span class="st"> </span><span class="dv">1</span>:<span class="kw">length</span>(x)
-        resid &lt;-<span class="st"> </span><span class="kw">residuals</span>(<span class="kw">loess</span>(x ~<span class="st"> </span>tt))
+        tt &lt;-<span class="st"> </span><span class="dv">1</span><span class="op">:</span><span class="kw">length</span>(x)
+        resid &lt;-<span class="st"> </span><span class="kw">residuals</span>(<span class="kw">loess</span>(x <span class="op">~</span><span class="st"> </span>tt))
     }
     resid.q &lt;-<span class="st"> </span><span class="kw">quantile</span>(resid,<span class="dt">prob=</span><span class="kw">c</span>(<span class="fl">0.25</span>,<span class="fl">0.75</span>))
     iqr &lt;-<span class="st"> </span><span class="kw">diff</span>(resid.q)
-    limits &lt;-<span class="st"> </span>resid.q +<span class="st"> </span><span class="fl">1.5</span>*iqr*<span class="kw">c</span>(-<span class="dv">1</span>,<span class="dv">1</span>)
-    score &lt;-<span class="st"> </span><span class="kw">abs</span>(<span class="kw">pmin</span>((resid-limits[<span class="dv">1</span>])/iqr,<span class="dv">0</span>) +<span class="st"> </span><span class="kw">pmax</span>((resid -<span class="st"> </span>limits[<span class="dv">2</span>])/iqr,<span class="dv">0</span>))
+    limits &lt;-<span class="st"> </span>resid.q <span class="op">+</span><span class="st"> </span><span class="fl">1.5</span><span class="op">*</span>iqr<span class="op">*</span><span class="kw">c</span>(<span class="op">-</span><span class="dv">1</span>,<span class="dv">1</span>)
+    score &lt;-<span class="st"> </span><span class="kw">abs</span>(<span class="kw">pmin</span>((resid<span class="op">-</span>limits[<span class="dv">1</span>])<span class="op">/</span>iqr,<span class="dv">0</span>) <span class="op">+</span><span class="st"> </span><span class="kw">pmax</span>((resid <span class="op">-</span><span class="st"> </span>limits[<span class="dv">2</span>])<span class="op">/</span>iqr,<span class="dv">0</span>))
     <span class="kw">return</span>(score)
 }</code></pre></div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">OUT &lt;-<span class="st"> </span>PTMET_BarPre_10minAvg_2m_12_1 %&gt;%
-<span class="st">    </span><span class="kw">mutate</span>(<span class="dt">ol =</span> <span class="kw">tsoutliers</span>(DataValue)) %&gt;%<span class="st"> </span>
-<span class="st">    </span><span class="kw">filter</span>(ol &gt;<span class="st"> </span><span class="fl">1.5</span>)</code></pre></div>
-</div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">OUT &lt;-<span class="st"> </span>PTMET_BarPre_10minAvg_2m_12_<span class="dv">1</span> <span class="op">%&gt;%</span>
+<span class="st">    </span><span class="kw">mutate</span>(<span class="dt">ol =</span> <span class="kw">tsoutliers</span>(DataValue)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">    </span><span class="kw">filter</span>(ol <span class="op">&gt;</span><span class="st"> </span><span class="fl">1.5</span>)</code></pre></div>
 </div>
   </div>
 
@@ -242,11 +251,13 @@ PTMET_filled %&gt;%<span class="st"> </span><span class="kw">fill</span>(UTCOffs
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="http://hadley.github.io/pkgdown/">pkgdown</a>.</p>
+  <p>Site built with <a href="http://pkgdown.r-lib.org/">pkgdown</a>.</p>
 </div>
 
       </footer>
 </div>
+
+  
 
   </body>
 </html>

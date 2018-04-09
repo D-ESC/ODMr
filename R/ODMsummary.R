@@ -11,23 +11,24 @@
 #'
 #'\dontrun{
 #'# Establish connection with database
-#'ODM <- odbcConnect("ODM", "update", "update")
+#'ODM <- odbc::dbConnect(odbc::odbc(), dsn = "ODM", database = "OD",
+#'  UID = "update", PWD = rstudioapi::askForPassword("Database password"),
+#'  Port = 1433)
 #'
 #'# Return meta data for the data file
-#'ODMsummary(ODM, HP4)
+#'ODMsummary(HP4, ODM)
 #'}
 #'
 #'@export
 #'@name ODMsummary
 
-ODMsummary <- function(channel, Data) {
+ODMsummary <- function(Data, channel = ODM) {
 
-  Sites <- ODMgetSites(channel)
-  Variables <- ODMgetVariables(channel)
-  Methods <- ODMgetMethods(channel)
-  Sources <- ODMgetSource(channel)
-  QCLevels <- ODMgetQCLevel(channel)
-
+  Sites <- ODMgetSites(channel = channel)
+  Variables <- ODMgetVariables(channel = channel)
+  Methods <- ODMgetMethods(channel = channel)
+  Sources <- ODMgetSource(channel = channel)
+  QCLevels <- ODMgetQCLevel(channel = channel)
 
   if (!is.data.frame(Data))
     stop("Needs to be a data frame.")
@@ -89,16 +90,16 @@ DataSeries <- Data %>%
   dplyr::select(UTCOffset, SiteID, VariableID, MethodID, SourceID,
     QualityControlLevelID) %>%
   dplyr::distinct()
-N <-  names(ODMgetCatalog(channel))
+N <-  names(ODMgetCatalog(channel = channel))
 DataSeries <- DataSeries %>%
-  dplyr::left_join(ODMgetSites(channel, .$SiteID), by = "SiteID") %>%
-  dplyr::left_join(ODMgetVariables(channel, .$VariableID), by = "VariableID") %>%
-  dplyr::left_join(ODMgetMethods(channel, .$MethodID), by = "MethodID") %>%
-  dplyr::left_join(ODMgetSource(channel, .$SourceID), by = "SourceID") %>%
-  dplyr::left_join(ODMgetQCLevel(channel, .$QualityControlLevelID),
+  dplyr::left_join(ODMgetSites(.$SiteID, channel = channel), by = "SiteID") %>%
+  dplyr::left_join(ODMgetVariables(.$VariableID, channel = channel), by = "VariableID") %>%
+  dplyr::left_join(ODMgetMethods(.$MethodID, channel = channel), by = "MethodID") %>%
+  dplyr::left_join(ODMgetSource(.$SourceID, channel = channel), by = "SourceID") %>%
+  dplyr::left_join(ODMgetQCLevel(.$QualityControlLevelID, channel = channel),
     by = "QualityControlLevelID") %>%
-  dplyr::mutate(VariableUnitsName = ODMgetUnits(channel, .$VariableUnitsID)$UnitsName) %>%
-  dplyr::mutate(TimeUnitsName = ODMgetUnits(channel, .$TimeUnitsID)$UnitsName) %>%
+  dplyr::mutate(VariableUnitsName = ODMgetUnits(.$VariableUnitsID, channel = channel)$UnitsName) %>%
+  dplyr::mutate(TimeUnitsName = ODMgetUnits(.$TimeUnitsID, channel = channel)$UnitsName) %>%
   dplyr::mutate(BeginDateTime = min(Data$LocalDateTime)) %>%
   dplyr::mutate(EndDateTime = max(Data$LocalDateTime)) %>%
   dplyr::mutate(BeginDateTimeUTC = BeginDateTime -

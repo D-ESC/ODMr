@@ -24,25 +24,26 @@ Click "Next" again, and it'll contact the database to make sure that you have th
 ## The Basics
 This will all be easier to use and understand if you have a fundamental understanding of the underlying data model. The model and the underlying motives for it's design can be found at http://www.cuahsi.org 
 
-Here is a quick example. You'll need the package RODBC in order to establish a connection using an ODBC connection. `RODBC::odbcConnect` establishes a connection to the specified DSN and `ODMgetCatalog()` can be used to import the series catalog.
+Here is a quick example. You'll need the package RODBC in order to establish a connection using an ODBC connection. `DBI::dbConnect()` establishes a connection to the specified DSN and `ODMgetCatalog()` can be used to import the series catalog.
 
 ```{r} 
 library(ODMr)
-ODM <- odbcConnect("ODM", "update", "update")
+ODM <- DBI::dbConnect(odbc::odbc(), dsn = "ODM", database = "OD", UID = "update", 
+    PWD = "update", Port = 1433)
 Catalog = ODMgetCatalog()
 ```
 
 Using the established connection and referencing the series catalog we can import data from the database. The series catalog is not stable so only refernce series IDs to quickly look at certain data.
 
 ```R
-Data <- ODMselect(ODM, SeriesID = 10, startDate = "2013-06-01",
+Data <- ODMgetData(SeriesID = 10, startDate = "2013-06-01",
   endDate = "2014-06-01")
 ```
 
 A more stable reference can be had by specifying SiteID, VariableID, MethodID and QualityControlLevelID.
 
 ```{r}
-Data <- ODMselect(ODM, SiteID = 15, VariableID = 8, MethodID = 1, QCLevelID = 1,
+Data <- ODMgetData(SiteID = 15, VariableID = 8, MethodID = 1, QCLevelID = 1,
                   startDate = "2016-03-01", endDate = "2016-06-01")
 ```
 
@@ -50,7 +51,7 @@ Multiple data series can be queried at once. The function makes use of the IN
 operator in the underlying SQL statement to specify multiple values. 
 
 ```R
-Data <- ODMselect(ODM, SiteID = c(1,5) , VariableID = 1, MethodID = 9,
+Data <- ODMgetData(SiteID = c(1,5) , VariableID = 1, MethodID = 9,
   QCLevelID = 0, startDate = "2013-06-01", endDate = "2013-07-01")
 ```
 
@@ -58,9 +59,7 @@ Data <- ODMselect(ODM, SiteID = c(1,5) , VariableID = 1, MethodID = 9,
 
 There are a number of addins included in the package. Once the package is installed they should be available under Addins on the main application toolbar of Rstudio.
 
-`ODMconnect()` provides a simple GUI to establish a connection to the database. Hopefully in the future we'll store connection info to make it easier to reconnect to the database.
-
-`ODMgetDataValues()` provides a simple GUI to access and download data from ODM. The addin will create and execute the code so that it can easily be saved and reused.
+`ODMDashboard()` provides a simple GUI to access and download data from ODM.
 
 `ODMtools()` provides an interactive way of viewing, validating, and/or correcting values.
 

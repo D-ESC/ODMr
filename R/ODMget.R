@@ -7,7 +7,6 @@
 #'Pass a SeriesID - get a single entry
 #'
 #'@param channel connection handle as returned by odbcConnect (default value = ODM)
-#'@param ID index value for the specified object type
 #'
 #'@return A data frame
 #'
@@ -15,7 +14,9 @@
 #'
 #'\dontrun{
 #'# Establish connection with database
-#'ODM <- odbcConnect("ODM", "update", "update")
+#'ODM <- odbc::dbConnect(odbc::odbc(), dsn = "ODM", database = "OD",
+#'  UID = "update", PWD = rstudioapi::askForPassword("Database password"),
+#'  Port = 1433)
 #'
 #'# Get a list of sites in the database
 #'ODMgetSites()
@@ -24,12 +25,10 @@
 #'ODMgetCatalog()
 #'}
 #'
-#'@import RODBC
 #'@export
 
-ODMgetCatalog <- function(channel = ODM, ID = NA) {
-  tmp <- RODBC::sqlFetch(channel, "SeriesCatalog", stringsAsFactors = FALSE)
-  if (!is.na(ID)) tmp <- subset(tmp, VariableID == ID)
+ODMgetCatalog <- function(channel = ODM) {
+  tmp <- channel %>% dplyr::tbl("SeriesCatalog") %>% dplyr::collect()
   return(tmp)
 }
 
@@ -37,14 +36,13 @@ ODMgetCatalog <- function(channel = ODM, ID = NA) {
 #'
 #'Set of utility functions to retrieve meta data from an ODM database
 #'
-#'ODMgetSites
-#'Pass nothing - returns a full list of stations
-#'Pass a MethodID - returns a single station
-#'Pass a MethodCode - returns a single station
+#'ODMgetCatalog()
+#'Pass nothing - get a list of all datasets
+#'Pass a SeriesID - get a single entry
 #'
-#'@param channel connection handle as returned by odbcConnect (default value = ODM)
 #'@param ID index value for the specified object type
 #'@param Code code value for the specified object type
+#'@param channel connection handle as returned by odbcConnect (default value = ODM)
 #'
 #'@return A data frame
 #'
@@ -52,7 +50,9 @@ ODMgetCatalog <- function(channel = ODM, ID = NA) {
 #'
 #'\dontrun{
 #'# Establish connection with database
-#'ODM <- odbcConnect("ODM", "update", "update")
+#'ODM <- odbc::dbConnect(odbc::odbc(), dsn = "ODM", database = "OD",
+#'  UID = "update", PWD = rstudioapi::askForPassword("Database password"),
+#'  Port = 1433)
 #'
 #'# Get a list of sites in the database
 #'ODMgetSites()
@@ -61,11 +61,10 @@ ODMgetCatalog <- function(channel = ODM, ID = NA) {
 #'ODMgetCatalog()
 #'}
 #'
-#'@import RODBC
 #'@export
 
-ODMgetSites <-  function(channel = ODM, ID = NA, Code = NA) {
-  tmp <- RODBC::sqlFetch(channel, "Sites", stringsAsFactors = FALSE)
+ODMgetSites <-  function(ID = NA, Code = NA, channel = ODM) {
+  tmp <- channel %>% dplyr::tbl("Sites") %>% dplyr::collect()
   if (!is.na(ID)) tmp <- subset(tmp, SiteID == ID)
   if (!is.na(Code)) tmp <- subset(tmp, SiteCode == Code)
   return(tmp)
@@ -75,14 +74,13 @@ ODMgetSites <-  function(channel = ODM, ID = NA, Code = NA) {
 #'
 #'Set of utility functions to retrieve meta data from an ODM database
 #'
-#'ODMgetMethods
-#'Pass nothing - returns a full list of methods
-#'Pass a MethodID - returns a single method
-#'Pass a MethodCode - returns a single method
+#'ODMgetCatalog()
+#'Pass nothing - get a list of all datasets
+#'Pass a SeriesID - get a single entry
 #'
-#'@param channel connection handle as returned by odbcConnect (default value = ODM)
 #'@param ID index value for the specified object type
 #'@param Code code value for the specified object type
+#'@param channel connection handle as returned by odbcConnect (default value = ODM)
 #'
 #'@return A data frame
 #'
@@ -90,7 +88,9 @@ ODMgetSites <-  function(channel = ODM, ID = NA, Code = NA) {
 #'
 #'\dontrun{
 #'# Establish connection with database
-#'ODM <- odbcConnect("ODM", "update", "update")
+#'ODM <- odbc::dbConnect(odbc::odbc(), dsn = "ODM", database = "OD",
+#'  UID = "update", PWD = rstudioapi::askForPassword("Database password"),
+#'  Port = 1433)
 #'
 #'# Get a list of sites in the database
 #'ODMgetSites()
@@ -99,11 +99,10 @@ ODMgetSites <-  function(channel = ODM, ID = NA, Code = NA) {
 #'ODMgetCatalog()
 #'}
 #'
-#'@import RODBC
 #'@export
 
-ODMgetMethods <-  function(channel = ODM, ID = NA, Code = NA) {
-  tmp <- RODBC::sqlFetch(channel, "Methods", stringsAsFactors = FALSE)
+ODMgetMethods <-  function(ID = NA, Code = NA, channel = ODM) {
+  tmp <- channel %>% dplyr::tbl("Methods") %>% dplyr::collect()
   if (!is.na(ID)) tmp <- subset(tmp, MethodID == ID)
   if (!is.na(Code)) tmp <- subset(tmp, MethodCode == Code)
   return(tmp)
@@ -113,14 +112,13 @@ ODMgetMethods <-  function(channel = ODM, ID = NA, Code = NA) {
 #'
 #'Set of utility functions to retrieve meta data from an ODM database
 #'
-#'ODMgetVariables
-#'Pass nothing - returns full list of variables
-#'Pass a VariableID - returns a single variable
-#'Pass a VariableCode - returns a single variable
+#'ODMgetCatalog()
+#'Pass nothing - get a list of all datasets
+#'Pass a SeriesID - get a single entry
 #'
-#'@param channel connection handle as returned by odbcConnect (default value = ODM)
 #'@param ID index value for the specified object type
 #'@param Code code value for the specified object type
+#'@param channel connection handle as returned by odbcConnect (default value = ODM)
 #'
 #'@return A data frame
 #'
@@ -128,7 +126,9 @@ ODMgetMethods <-  function(channel = ODM, ID = NA, Code = NA) {
 #'
 #'\dontrun{
 #'# Establish connection with database
-#'ODM <- odbcConnect("ODM", "update", "update")
+#'ODM <- odbc::dbConnect(odbc::odbc(), dsn = "ODM", database = "OD",
+#'  UID = "update", PWD = rstudioapi::askForPassword("Database password"),
+#'  Port = 1433)
 #'
 #'# Get a list of sites in the database
 #'ODMgetSites()
@@ -137,11 +137,10 @@ ODMgetMethods <-  function(channel = ODM, ID = NA, Code = NA) {
 #'ODMgetCatalog()
 #'}
 #'
-#'@import RODBC
 #'@export
 
-ODMgetVariables <-  function(channel = ODM, ID = NA, Code = NA) {
-  tmp <- RODBC::sqlFetch(channel, "Variables", stringsAsFactors = FALSE)
+ODMgetVariables <-  function(ID = NA, Code = NA, channel = ODM) {
+  tmp <- channel %>% dplyr::tbl("Variables") %>% dplyr::collect()
   if (!is.na(ID)) tmp <- subset(tmp, VariableID == ID)
   if (!is.na(Code)) tmp <- subset(tmp, VariableCode == Code)
   return(tmp)
@@ -151,12 +150,12 @@ ODMgetVariables <-  function(channel = ODM, ID = NA, Code = NA) {
 #'
 #'Set of utility functions to retrieve meta data from an ODM database
 #'
-#'ODMgetUnits
-#'Pass nothing - returns full list of units objects
-#'Pass a UnitsID - returns a single units object
+#'ODMgetCatalog()
+#'Pass nothing - get a list of all datasets
+#'Pass a SeriesID - get a single entry
 #'
-#'@param channel connection handle as returned by odbcConnect (default value = ODM)
 #'@param ID index value for the specified object type
+#'@param channel connection handle as returned by odbcConnect (default value = ODM)
 #'
 #'@return A data frame
 #'
@@ -164,7 +163,9 @@ ODMgetVariables <-  function(channel = ODM, ID = NA, Code = NA) {
 #'
 #'\dontrun{
 #'# Establish connection with database
-#'ODM <- odbcConnect("ODM", "update", "update")
+#'ODM <- odbc::dbConnect(odbc::odbc(), dsn = "ODM", database = "OD",
+#'  UID = "update", PWD = rstudioapi::askForPassword("Database password"),
+#'  Port = 1433)
 #'
 #'# Get a list of sites in the database
 #'ODMgetSites()
@@ -173,11 +174,10 @@ ODMgetVariables <-  function(channel = ODM, ID = NA, Code = NA) {
 #'ODMgetCatalog()
 #'}
 #'
-#'@import RODBC
 #'@export
 
-ODMgetUnits <-  function(channel = ODM, ID = NA) {
-  tmp <- RODBC::sqlFetch(channel, "Units", stringsAsFactors = FALSE)
+ODMgetUnits <-  function(ID = NA, channel = ODM) {
+  tmp <- channel %>% dplyr::tbl("Units") %>% dplyr::collect()
   if (!is.na(ID)) tmp <- subset(tmp, UnitsID == ID)
   return(tmp)
 }
@@ -186,12 +186,12 @@ ODMgetUnits <-  function(channel = ODM, ID = NA) {
 #'
 #'Set of utility functions to retrieve meta data from an ODM database
 #'
-#'ODMgetSource
-#'Pass nothing - returns full list of sources
-#'Pass a SourceID - returns a single source
+#'ODMgetCatalog()
+#'Pass nothing - get a list of all datasets
+#'Pass a SeriesID - get a single entry
 #'
-#'@param channel connection handle as returned by odbcConnect (default value = ODM)
 #'@param ID index value for the specified object type
+#'@param channel connection handle as returned by odbcConnect (default value = ODM)
 #'
 #'@return A data frame
 #'
@@ -199,7 +199,9 @@ ODMgetUnits <-  function(channel = ODM, ID = NA) {
 #'
 #'\dontrun{
 #'# Establish connection with database
-#'ODM <- odbcConnect("ODM", "update", "update")
+#'ODM <- odbc::dbConnect(odbc::odbc(), dsn = "ODM", database = "OD",
+#'  UID = "update", PWD = rstudioapi::askForPassword("Database password"),
+#'  Port = 1433)
 #'
 #'# Get a list of sites in the database
 #'ODMgetSites()
@@ -208,11 +210,10 @@ ODMgetUnits <-  function(channel = ODM, ID = NA) {
 #'ODMgetCatalog()
 #'}
 #'
-#'@import RODBC
 #'@export
 
-ODMgetSource <-  function(channel = ODM, ID = NA) {
-  tmp <- RODBC::sqlFetch(channel, "Sources", stringsAsFactors = FALSE)
+ODMgetSource <-  function(ID = NA, channel = ODM) {
+  tmp <- channel %>% dplyr::tbl("Sources") %>% dplyr::collect()
   if (!is.na(ID)) tmp <- subset(tmp, SourceID == ID)
   return(tmp)
 }
@@ -221,12 +222,12 @@ ODMgetSource <-  function(channel = ODM, ID = NA) {
 #'
 #'Set of utility functions to retrieve meta data from an ODM database
 #'
-#'ODMgetQCLevel
-#'Pass nothing - returns full list of Quality Control Levels
-#'Pass a SourceID - returns a single Quality Control Level
+#'ODMgetCatalog()
+#'Pass nothing - get a list of all datasets
+#'Pass a SeriesID - get a single entry
 #'
-#'@param channel connection handle as returned by odbcConnect (default value = ODM)
 #'@param ID index value for the specified object type
+#'@param channel connection handle as returned by odbcConnect (default value = ODM)
 #'
 #'@return A data frame
 #'
@@ -234,7 +235,9 @@ ODMgetSource <-  function(channel = ODM, ID = NA) {
 #'
 #'\dontrun{
 #'# Establish connection with database
-#'ODM <- odbcConnect("ODM", "update", "update")
+#'ODM <- odbc::dbConnect(odbc::odbc(), dsn = "ODM", database = "OD",
+#'  UID = "update", PWD = rstudioapi::askForPassword("Database password"),
+#'  Port = 1433)
 #'
 #'# Get a list of sites in the database
 #'ODMgetSites()
@@ -243,12 +246,10 @@ ODMgetSource <-  function(channel = ODM, ID = NA) {
 #'ODMgetCatalog()
 #'}
 #'
-#'@import RODBC
 #'@export
 
-ODMgetQCLevel <-  function(channel = ODM, ID = NA) {
-  tmp <- RODBC::sqlFetch(channel, "QualityControlLevels",
-    stringsAsFactors = FALSE)
+ODMgetQCLevel <-  function(ID = NA, channel = ODM) {
+  tmp <- channel %>% dplyr::tbl("QualityControlLevels") %>% dplyr::collect()
   if (!is.na(ID)) tmp <- subset(tmp, QualityControlLevelID == ID)
   return(tmp)
 }
@@ -257,12 +258,12 @@ ODMgetQCLevel <-  function(channel = ODM, ID = NA) {
 #'
 #'Set of utility functions to retrieve meta data from an ODM database
 #'
-#'ODMgetQualifiers
-#'Pass nothing - returns full list of Quality Control Levels
-#'Pass a SourceID - returns a single Quality Control Level
+#'ODMgetCatalog()
+#'Pass nothing - get a list of all datasets
+#'Pass a SeriesID - get a single entry
 #'
-#'@param channel connection handle as returned by odbcConnect (default value = ODM)
 #'@param ID index value for the specified object type
+#'@param channel connection handle as returned by odbcConnect (default value = ODM)
 #'
 #'@return A data frame
 #'
@@ -270,7 +271,9 @@ ODMgetQCLevel <-  function(channel = ODM, ID = NA) {
 #'
 #'\dontrun{
 #'# Establish connection with database
-#'ODM <- odbcConnect("ODM", "update", "update")
+#'ODM <- odbc::dbConnect(odbc::odbc(), dsn = "ODM", database = "OD",
+#'  UID = "update", PWD = rstudioapi::askForPassword("Database password"),
+#'  Port = 1433)
 #'
 #'# Get a list of sites in the database
 #'ODMgetSites()
@@ -279,12 +282,10 @@ ODMgetQCLevel <-  function(channel = ODM, ID = NA) {
 #'ODMgetCatalog()
 #'}
 #'
-#'@import RODBC
 #'@export
 
-ODMgetQualifiers <-  function(channel = ODM, ID = NA) {
-  tmp <- RODBC::sqlFetch(channel, "Qualifiers",
-                         stringsAsFactors = FALSE)
+ODMgetQualifiers <-  function(ID = NA, channel = ODM) {
+  tmp <- channel %>% dplyr::tbl("Qualifiers") %>% dplyr::collect()
   if (!is.na(ID)) tmp <- subset(tmp, QualifierID == ID)
   return(tmp)
 }
