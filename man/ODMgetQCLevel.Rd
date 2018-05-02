@@ -4,12 +4,12 @@
 \alias{ODMgetQCLevel}
 \title{ODM utility functions}
 \usage{
-ODMgetQCLevel(channel = ODM, ID = NA)
+ODMgetQCLevel(ID = NA, channel = ODM)
 }
 \arguments{
-\item{channel}{connection handle as returned by odbcConnect (default value = ODM)}
-
 \item{ID}{index value for the specified object type}
+
+\item{channel}{connection handle as returned by odbcConnect (default value = ODM)}
 }
 \value{
 A data frame
@@ -18,15 +18,17 @@ A data frame
 Set of utility functions to retrieve meta data from an ODM database
 }
 \details{
-ODMgetQCLevel
-Pass nothing - returns full list of Quality Control Levels
-Pass a SourceID - returns a single Quality Control Level
+ODMgetCatalog()
+Pass nothing - get a list of all datasets
+Pass a SeriesID - get a single entry
 }
 \examples{
 
 \dontrun{
 # Establish connection with database
-ODM <- odbcConnect("ODM", "update", "update")
+ODM <- odbc::dbConnect(odbc::odbc(), dsn = "ODM", database = "OD",
+ UID = "update", PWD = rstudioapi::askForPassword("Database password"),
+ Port = 1433)
 
 # Get a list of sites in the database
 ODMgetSites()

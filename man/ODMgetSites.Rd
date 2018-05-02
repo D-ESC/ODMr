@@ -4,14 +4,14 @@
 \alias{ODMgetSites}
 \title{ODM utility functions}
 \usage{
-ODMgetSites(channel = ODM, ID = NA, Code = NA)
+ODMgetSites(ID = NA, Code = NA, channel = ODM)
 }
 \arguments{
-\item{channel}{connection handle as returned by odbcConnect (default value = ODM)}
-
 \item{ID}{index value for the specified object type}
 
 \item{Code}{code value for the specified object type}
+
+\item{channel}{connection handle as returned by odbcConnect (default value = ODM)}
 }
 \value{
 A data frame
@@ -20,16 +20,17 @@ A data frame
 Set of utility functions to retrieve meta data from an ODM database
 }
 \details{
-ODMgetSites
-Pass nothing - returns a full list of stations
-Pass a MethodID - returns a single station
-Pass a MethodCode - returns a single station
+ODMgetCatalog()
+Pass nothing - get a list of all datasets
+Pass a SeriesID - get a single entry
 }
 \examples{
 
 \dontrun{
 # Establish connection with database
-ODM <- odbcConnect("ODM", "update", "update")
+ODM <- odbc::dbConnect(odbc::odbc(), dsn = "ODM", database = "OD",
+ UID = "update", PWD = rstudioapi::askForPassword("Database password"),
+ Port = 1433)
 
 # Get a list of sites in the database
 ODMgetSites()

@@ -4,12 +4,12 @@
 \alias{ODMsummary}
 \title{Summarise data formated for use with the ODM}
 \usage{
-ODMsummary(channel, Data)
+ODMsummary(Data, channel = ODM)
 }
 \arguments{
-\item{channel}{connection handle as returned by odbcConnect}
-
 \item{Data}{containing the data in a format consistent with the ODM data model}
+
+\item{channel}{connection handle as returned by odbcConnect}
 }
 \description{
 The function ODMsummary can be used to verify the proper structure and use of
@@ -20,10 +20,12 @@ SeriesCatalog in the database.
 
 \dontrun{
 # Establish connection with database
-ODM <- odbcConnect("ODM", "update", "update")
+ODM <- odbc::dbConnect(odbc::odbc(), dsn = "ODM", database = "OD",
+ UID = "update", PWD = rstudioapi::askForPassword("Database password"),
+ Port = 1433)
 
 # Return meta data for the data file
-ODMsummary(ODM, HP4)
+ODMsummary(HP4, ODM)
 }
 
 }

@@ -4,12 +4,10 @@
 \alias{ODMgetCatalog}
 \title{ODM utility functions}
 \usage{
-ODMgetCatalog(channel = ODM, ID = NA)
+ODMgetCatalog(channel = ODM)
 }
 \arguments{
 \item{channel}{connection handle as returned by odbcConnect (default value = ODM)}
-
-\item{ID}{index value for the specified object type}
 }
 \value{
 A data frame
@@ -26,7 +24,9 @@ Pass a SeriesID - get a single entry
 
 \dontrun{
 # Establish connection with database
-ODM <- odbcConnect("ODM", "update", "update")
+ODM <- odbc::dbConnect(odbc::odbc(), dsn = "ODM", database = "OD",
+ UID = "update", PWD = rstudioapi::askForPassword("Database password"),
+ Port = 1433)
 
 # Get a list of sites in the database
 ODMgetSites()

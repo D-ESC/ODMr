@@ -1,0 +1,25 @@
+---
+title: "ODM notes"
+author: "Chris McConnell"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{ODM_notes}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+## Sampling Meteorological/Hydrological Variables
+
+What are practical measurement procedures to obtain representative observations with acceptable uncertainties in the estimations of mean and variability?
+
+A variable is actually never sampled. It is only possible to sample the output of a sensor of that variable. In general, sensors respond slowly, and they add noise. Sensors also do other, usually undesirable, things such as drift in calibration, respond nonlinearly, interfere with the quantity that they are measuring, fail more often than intended, and so on. Also, sensors and the electronic circuits that may be used with them comprising an instrument system, have response times and filtering characteristics that affect the observations.
+
+In practice, observations should be designed to be sufficiently frequent to be representative of the unsampled parts of the (continuous) variable, and are often taken as being representative of a longer time interval and larger area. Additionally, the natural small-scale variability of a variable, the introduction of noise into the measurement process by electronic devices and, in particular, the use of sensors with short timeconstants make averaging a desirable process for reducing the uncertainty of reported data.
+
+These averaged values are to be considered as “instantaneous” values for use in most operational applications and should not be confused with the raw instantaneous sensor samples or the mean values over longer periods of time. One-minute averages, as far as applicable, are suggested for most variables as suitable instantaneous values. DESC presently samples all variables at a 10s frequency and averages values over a 10min period for storage and are labelled as “instantaneous”.
+
+### References
+Sampling Meteorological Variables (WMO)
+Measurments at Automatic Weather Stations (WMO)
+

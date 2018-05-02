@@ -11,23 +11,24 @@
 #'
 #'\dontrun{
 #'# Establish connection with database
-#'ODM <- odbcConnect("ODM", "update", "update")
+#'ODM <- odbc::dbConnect(odbc::odbc(), dsn = "ODM", database = "OD",
+#'  UID = "update", PWD = rstudioapi::askForPassword("Database password"),
+#'  Port = 1433)
 #'
 #'# Return meta data for the data file
-#'ODMsummary(ODM, HP4)
+#'ODMsummary(HP4, ODM)
 #'}
 #'
 #'@export
 #'@name ODMsummary
 
-ODMsummary <- function(channel, Data) {
+ODMsummary <- function(Data, channel = ODM) {
 
-  Sites <- ODMgetSites(channel)
-  Variables <- ODMgetVariables(channel)
-  Methods <- ODMgetMethods(channel)
-  Sources <- ODMgetSource(channel)
-  QCLevels <- ODMgetQCLevel(channel)
-
+  Sites <- ODMgetSites(channel = channel)
+  Variables <- ODMgetVariables(channel = channel)
+  Methods <- ODMgetMethods(channel = channel)
+  Sources <- ODMgetSource(channel = channel)
+  QCLevels <- ODMgetQCLevel(channel = channel)
 
   if (!is.data.frame(Data))
     stop("Needs to be a data frame.")
@@ -46,29 +47,41 @@ ODMsummary <- function(channel, Data) {
   if (!("SiteID" %in% colnames(Data)))
     stop("A site ID referenced from the 'Sites' table should
       be in a column named 'SiteID'.")
-  if (!is.integer(Data$SiteID))
+  if (any(as.numeric(Data$SiteID) %% 1 > 0)) {
     stop("SiteID should be an integer value.")
+    } else {
+      Data$SiteID = as.integer(Data$SiteID)
+    }
   if (length(setdiff(Data$SiteID, Sites$SiteID) > 0 ))
     stop("SiteID does not exist in Sites table.")
   if (!("VariableID" %in% colnames(Data)))
     stop("A variable ID referenced from the 'Variables' table should
       be in a column named 'VariableID'.")
-  if (!is.integer(Data$VariableID))
+  if (any(as.numeric(Data$VariableID) %% 1 > 0)) {
     stop("VariableID should be an integer value.")
+    } else {
+      Data$VariableID = as.integer(Data$VariableID)
+    }
   if (length(setdiff(Data$VariableID, Variables$VariableID) > 0 ))
     stop("VariableID does not exist in 'Variables' table.")
   if (!("MethodID" %in% colnames(Data)))
     stop("A method ID referenced from the 'Methods' table should
       be in a column named 'MethodID'.")
-  if (!is.integer(Data$MethodID))
+  if (any(as.numeric(Data$MethodID) %% 1 > 0)) {
     stop("MethodID should be an integer value.")
+    } else {
+    Data$MethodID = as.integer(Data$MethodID)
+    }
   if (length(setdiff(Data$MethodID, Methods$MethodID) > 0 ))
     stop("MethodID does not exist in 'Methods' table.")
   if (!("QualityControlLevelID" %in% colnames(Data)))
     stop("A quality control level ID referenced from the 'QualityControlLevels'
       table should be in a column named 'QualityControlLevelID'.")
-  if (!is.integer(Data$QualityControlLevelID))
+  if (any(as.numeric(Data$QualityControlLevelID) %% 1 > 0)) {
     stop("QualityControlLevelID should be an integer value.")
+    } else {
+      Data$QualityControlLevelID = as.integer(Data$QualityControlLevelID)
+    }
   if (length(setdiff(Data$QualityControlLevelID,
     QCLevels$QualityControlLevelID) > 0 ))
     stop("QualityControlLevelID does not exist in the
@@ -76,8 +89,11 @@ ODMsummary <- function(channel, Data) {
   if (!("SourceID" %in% colnames(Data)))
     stop("A source ID referenced from the 'Sources' table should be in a
       column named 'SourceID'.")
-  if (!is.integer(Data$SourceID))
+  if (any(as.numeric(Data$SourceID) %% 1 > 0)) {
     stop("SourceID should be an integer value.")
+    } else {
+      Data$SourceID = as.integer(Data$SourceID)
+    }
   if (length(setdiff(Data$SourceID, Sources$SourceID) > 0 ))
     stop("SourceID does not exist in 'Sources' table.")
   if (!("UTCOffset" %in% colnames(Data)))
@@ -89,16 +105,16 @@ DataSeries <- Data %>%
   dplyr::select(UTCOffset, SiteID, VariableID, MethodID, SourceID,
     QualityControlLevelID) %>%
   dplyr::distinct()
-N <-  names(ODMgetCatalog(channel))
+N <-  names(ODMgetCatalog(channel = channel))
 DataSeries <- DataSeries %>%
-  dplyr::left_join(ODMgetSites(channel, .$SiteID), by = "SiteID") %>%
-  dplyr::left_join(ODMgetVariables(channel, .$VariableID), by = "VariableID") %>%
-  dplyr::left_join(ODMgetMethods(channel, .$MethodID), by = "MethodID") %>%
-  dplyr::left_join(ODMgetSource(channel, .$SourceID), by = "SourceID") %>%
-  dplyr::left_join(ODMgetQCLevel(channel, .$QualityControlLevelID),
+  dplyr::left_join(ODMgetSites(.$SiteID, channel = channel), by = "SiteID") %>%
+  dplyr::left_join(ODMgetVariables(.$VariableID, channel = channel), by = "VariableID") %>%
+  dplyr::left_join(ODMgetMethods(.$MethodID, channel = channel), by = "MethodID") %>%
+  dplyr::left_join(ODMgetSource(.$SourceID, channel = channel), by = "SourceID") %>%
+  dplyr::left_join(ODMgetQCLevel(.$QualityControlLevelID, channel = channel),
     by = "QualityControlLevelID") %>%
-  dplyr::mutate(VariableUnitsName = ODMgetUnits(channel, .$VariableUnitsID)$UnitsName) %>%
-  dplyr::mutate(TimeUnitsName = ODMgetUnits(channel, .$TimeUnitsID)$UnitsName) %>%
+  dplyr::mutate(VariableUnitsName = ODMgetUnits(.$VariableUnitsID, channel = channel)$UnitsName) %>%
+  dplyr::mutate(TimeUnitsName = ODMgetUnits(.$TimeUnitsID, channel = channel)$UnitsName) %>%
   dplyr::mutate(BeginDateTime = min(Data$LocalDateTime)) %>%
   dplyr::mutate(EndDateTime = max(Data$LocalDateTime)) %>%
   dplyr::mutate(BeginDateTimeUTC = BeginDateTime -
