@@ -17,21 +17,23 @@
 #'
 #'\dontrun{
 #'# Establish connection with database
-#'ODM <- odbcConnect("ODM", "update", "update")
+#'ODM <- odbc::dbConnect(odbc::odbc(), dsn = "ODM", database = "OD",
+#'  UID = "update", PWD = rstudioapi::askForPassword("Database password"),
+#'  Port = 1433)
 #'
 #'# Query the database
-#'tmp <- ODMselect(ODM, SiteID = 1, VariableID = 1, MethodID = 9,
+#'tmp <- ODMselect(SiteID = 1, VariableID = 1, MethodID = 9,
 #'  QCLevelID = 0, startDate = "2013-06-01", endDate = "2013-07-01")
 #'
 #'# Load values back to ODM
-#'ODMload(ODM, Data = tmp, QCcheck = 0)
+#'ODMload(Data = tmp, QCcheck = 0)
 #'}
 #'
 #'@export
 #'@name ODMload
 
 ODMload <- function(Data, QCcheck = 1, channel = ODM) {
-  stopifnot(QCcheck == Data$QualityControlLevelID)
+  stopifnot(QCcheck %in% Data$QualityControlLevelID)
 
   DS <- ODMsummary(Data, channel)
   Catalog <- ODMgetCatalog(channel) %>%
@@ -52,11 +54,32 @@ ODMload <- function(Data, QCcheck = 1, channel = ODM) {
   Data <- suppressWarnings(split(Data, 1:round(nrow(Data) / chunk)))
   pb <- progress::progress_bar$new(total = length(Data))
 
+  # mergeSQL <- function(x){
+  #   SQL <- sqlmerge(x, TableName = "DataValues",
+  #     By = c("LocalDateTime", "SiteID", "VariableID", "MethodID",
+  #       "QualityControlLevelID", "SourceID"),
+  #     Key = "ValueID")
+  #   success <- DBI::dbExecute(channel, {
+  #     SQL
+  #   })
+  #   if (is.character(success)) {
+  #     stop(paste(success, collapse = "\n"))
+  #   }
+  #   pb$tick()
+  #   return(success)
+  # }
+
   mergeSQL <- function(x){
-    SQL <- sqlmerge(x, TableName = "DataValues",
-      By = c("LocalDateTime", "SiteID", "VariableID", "MethodID",
-        "QualityControlLevelID", "SourceID"),
-      Key = "ValueID")
+    if ("ValueID" %in% names(x)) {
+        SQL <- sqlmerge(x, TableName = "DataValues",
+                        By = "ValueID",
+                        Key = "ValueID")
+        } else {
+          SQL <- sqlmerge(x, TableName = "DataValues",
+                    By = c("LocalDateTime", "SiteID", "VariableID", "MethodID",
+                           "QualityControlLevelID", "SourceID"),
+                    Key = "ValueID")
+        }
     success <- DBI::dbExecute(channel, {
       SQL
     })
@@ -67,8 +90,7 @@ ODMload <- function(Data, QCcheck = 1, channel = ODM) {
     return(success)
   }
 
-  success_summary <- dplyr::bind_rows(lapply(Data, mergeSQL))
-  success_summary <- sum(t(success_summary))
+  dplyr::bind_rows(lapply(Data, mergeSQL))
 
   Catalog <- data.frame(lapply(Catalog, gsub, pattern = "'", replacement = " "))
   SQL <- sqlmerge(Catalog, TableName = "SeriesCatalog",
@@ -76,5 +98,5 @@ ODMload <- function(Data, QCcheck = 1, channel = ODM) {
       "QualityControlLevelID", "SourceID"),
     Key = "SeriesID")
   DBI::dbExecute(channel, SQL)
-  return(success_summary)
+  return()
 }

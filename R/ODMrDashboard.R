@@ -33,25 +33,21 @@ ODMDashboard <- function() {
           inputId = "fun",
           label = "Aggregate Function:",
           choices = c(
-            'min' = 'min(DataValue, na.rm = TRUE)',
-            'max' = 'max(DataValue, na.rm = TRUE)',
-            'mean' = 'mean(DataValue, na.rm = TRUE)',
-            'sum' = 'sum(DataValue, na.rm = TRUE)'
+            'min' = 'min',
+            'max' = 'max',
+            'mean' = 'mean',
+            'sum' = 'sum'
           ),
-          selected = 'mean(DataValue, na.rm = TRUE)',
+          selected = 'mean',
           selectize = TRUE
         )
       ),
       ##select a date range to return, smaller is quicker.######################
-      shiny::checkboxInput("date_filter", "Date range:"),
-      shiny::conditionalPanel(
-        condition = "input.date_filter == true",
-        shiny::dateRangeInput(
+      shiny::dateRangeInput(
           "daterange",
           "Date range:",
-          start = Sys.Date() - 365,
+          start = "1970-01-01",
           end   = Sys.Date()
-        )
       ),
       shiny::br(),
       ##button to download data as csv or send directly to R session.###########
@@ -155,92 +151,30 @@ ODMDashboard <- function() {
 
     data <- shiny::reactive({
       shiny::req(input$Dtbl_rows_selected)
+
       selection <- ODM %>% dplyr::tbl("SeriesCatalog") %>%
         dplyr::collect() %>%
         dplyr::filter(SiteCode %in% data_map()$SiteCode) %>%
-        .[input$Dtbl_rows_selected, ]
-      result <- ODM %>% dplyr::tbl("DataValues") %>%
-        dplyr::filter(
-          SiteID %in% selection$SiteID,
-          VariableID %in% selection$VariableID,
-          MethodID %in% selection$MethodID,
-          QualityControlLevelID %in% selection$QualityControlLevelID
-        )
+        .[input$Dtbl_rows_selected,]
 
-      if (input$date_filter == TRUE) {
-        result <- result %>%
-          dplyr::filter(LocalDateTime > input$daterange[1] &
-                          LocalDateTime < input$daterange[2])
+      for(i in seq_along(selection$SiteID)) {
+        df <- ODMgetData(SiteID = selection$SiteID[i],
+                               VariableID = selection$VariableID[i],
+                               MethodID = selection$MethodID[i],
+                               QualityControlLevelID = selection$QualityControlLevelID[i],
+                               startDate = input$daterange[1],
+                               endDate = input$daterange[2],
+                               AggregateBy = input$aggregate,
+                               FUN = input$fun,
+                               channel = ODM)
+        if (i == 1) {
+          result = df
+        } else {
+          result = dplyr::bind_rows(result, df)
+        }
       }
-      if (input$aggregate == 'hour') {
-        result <- result %>%
-          dplyr::group_by(
-            UTCOffset,
-            SiteID,
-            VariableID,
-            MethodID,
-            SourceID,
-            QualityControlLevelID,
-            LocalDateTime = DATEADD(hour, DATEDIFF(hour, 0, LocalDateTime), 0)
-          )
-      }
-      if (input$aggregate == 'day') {
-        result <- result %>%
-          dplyr::group_by(
-            UTCOffset,
-            SiteID,
-            VariableID,
-            MethodID,
-            SourceID,
-            QualityControlLevelID,
-            LocalDateTime = DATEADD(day, DATEDIFF(day, 0, LocalDateTime), 0)
-          )
-      }
-      if (input$aggregate == 'month') {
-        result <- result %>%
-          dplyr::group_by(
-            UTCOffset,
-            SiteID,
-            VariableID,
-            MethodID,
-            SourceID,
-            QualityControlLevelID,
-            LocalDateTime = DATEADD(month, DATEDIFF(month, 0, LocalDateTime), 0)
-          )
-      }
-      if (input$aggregate == 'none') {
-        result <- result %>%
-          dplyr::select(LocalDateTime,
-                          DataValue,
-                          UTCOffset,
-                          SiteID,
-                          VariableID,
-                          QualifierID,
-                          MethodID,
-                          SourceID,
-                          QualityControlLevelID) %>%
-          dplyr::collect()
-      }
-      if (input$aggregate != 'none') {
-        result <-
-          result %>%
-          dplyr::summarise(DataValue = rlang::parse_expr(input$fun),
-                           QualifierID = min(QualifierID, na.rm = TRUE)) %>%
-          dplyr::mutate(QualityControlLevelID = NA) %>%
-          dplyr::select(LocalDateTime,
-                        DataValue,
-                        UTCOffset,
-                        SiteID,
-                        VariableID,
-                        QualifierID,
-                        MethodID,
-                        SourceID,
-                        QualityControlLevelID) %>%
-          dplyr::collect()
-      }
-      result
+      return(result)
     })
-
     output$plot <- dygraphs::renderDygraph({
       result <- data()
       req(nrow(result) > 1)
@@ -251,12 +185,14 @@ ODMDashboard <- function() {
         ODM %>% dplyr::tbl("Variables") %>% dplyr::collect() %>%
         dplyr::select(VariableID, VariableCode) %>% dplyr::right_join(result)
       result %>%
-        dplyr::select(LocalDateTime,
-                      DataValue,
-                      SiteCode,
-                      VariableCode,
-                      MethodID,
-                      QualityControlLevelID) %>%
+        dplyr::select(
+          LocalDateTime,
+          DataValue,
+          SiteCode,
+          VariableCode,
+          MethodID,
+          QualityControlLevelID
+        ) %>%
         tidyr::unite(Label,
                      SiteCode,
                      VariableCode,
@@ -264,7 +200,7 @@ ODMDashboard <- function() {
                      QualityControlLevelID,
                      sep = "_") %>%
         tidyr::spread(Label, DataValue) %>%
-        xts::xts(x = .[,-1],
+        xts::xts(x = .[, -1],
                  order.by = .$LocalDateTime) %>%
         dygraphs::dygraph() %>% dygraphs::dyRoller(rollPeriod = 1)
     })

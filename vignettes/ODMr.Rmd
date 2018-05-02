@@ -43,7 +43,7 @@ Data <- ODMgetData(SeriesID = 10, startDate = "2013-06-01",
 A more stable reference can be had by specifying SiteID, VariableID, MethodID and QualityControlLevelID.
 
 ```{r}
-Data <- ODMgetData(SiteID = 15, VariableID = 8, MethodID = 1, QCLevelID = 1,
+Data <- ODMgetData(SiteID = 15, VariableID = 3, MethodID = 1, QualityControlLevelID = 1,
                   startDate = "2016-03-01", endDate = "2016-06-01")
 ```
 
@@ -52,7 +52,7 @@ operator in the underlying SQL statement to specify multiple values.
 
 ```R
 Data <- ODMgetData(SiteID = c(1,5) , VariableID = 1, MethodID = 9,
-  QCLevelID = 0, startDate = "2013-06-01", endDate = "2013-07-01")
+  QualityControlLevelID = 0, startDate = "2013-06-01", endDate = "2013-07-01")
 ```
 
 ## Addins
@@ -81,15 +81,14 @@ Data %>%
 
 You can also use the `ODMtools()` addin. It will recognize any dataframe that you have that fits the general structure of the ODM data values table. Specifically containing a LocalDateTime column and a Datavalue column.
 
-![](ODMtools.png)
-
 ## Editing data
 
 The `ODMtools()` addin includes a console to evaluate R expressions. You can use the function `Data()` to access the underlying data for the plot and interact with it. You can also write back to this data using the same function enabling you to make changes to selected points. Useful code bits that can be run in ODMtools are below.
 
 ```R
-values$Refdata %>% 
-  mutate(LocalDateTime = floor_date(LocalDateTime, "hour"))%>% 
+values$ODMdata %>% 
+  mutate(LocalDateTime = floor_date(LocalDateTime, "hour")) %>% 
+  filter(label == "15_236_46_0") %>%
   inner_join(Data(), by = "LocalDateTime") %>% 
   mutate(Diff = DataValue.x - DataValue.y) %>% 
   select(Diff) %>% summary()

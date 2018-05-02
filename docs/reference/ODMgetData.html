@@ -84,6 +84,9 @@ returns a data frame containing the required columns for working with ODM data."
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
+      <a href="../articles/ODM_notes.html">ODM notes</a>
+    </li>
+    <li>
       <a href="../articles/Woking_ODMr.html">Working with ODMr</a>
     </li>
   </ul>
@@ -114,13 +117,35 @@ returns a data frame containing the required columns for working with ODM data."
 returns a data frame containing the required columns for working with ODM data.</p>
     
 
-    <pre class="usage"><span class='fu'>ODMgetData</span>(<span class='kw'>SeriesID</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>SiteID</span> <span class='kw'>=</span> <span class='st'>"SiteID"</span>, <span class='kw'>VariableID</span> <span class='kw'>=</span> <span class='st'>"VariableID"</span>,
-  <span class='kw'>MethodID</span> <span class='kw'>=</span> <span class='st'>"MethodID"</span>, <span class='kw'>QCLevelID</span> <span class='kw'>=</span> <span class='st'>"QualityControlLevelID"</span>,
-  <span class='kw'>startDate</span> <span class='kw'>=</span> <span class='st'>"1970-01-1 00:00:00"</span>, <span class='kw'>endDate</span> <span class='kw'>=</span> <span class='fu'>Sys.Date</span>(), <span class='kw'>channel</span> <span class='kw'>=</span> <span class='no'>ODM</span>)</pre>
+    <pre class="usage"><span class='fu'>ODMgetData</span>(<span class='kw'>SiteID_</span> <span class='kw'>=</span> <span class='st'>"SiteID"</span>, <span class='kw'>VariableID_</span> <span class='kw'>=</span> <span class='st'>"VariableID"</span>,
+  <span class='kw'>MethodID_</span> <span class='kw'>=</span> <span class='st'>"MethodID"</span>, <span class='kw'>QualityControlLevelID_</span> <span class='kw'>=</span> <span class='st'>"QualityControlLevelID"</span>,
+  <span class='kw'>AggregateBy</span> <span class='kw'>=</span> <span class='st'>"day"</span>, <span class='kw'>FUN</span> <span class='kw'>=</span> <span class='st'>"mean"</span>, <span class='kw'>startDate</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>endDate</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>channel</span> <span class='kw'>=</span> <span class='no'>ODM</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>AggregateBy</th>
+      <td><p>aggregation level to include in SQL query. Either hour,
+day, month, year or none</p></td>
+    </tr>
+    <tr>
+      <th>FUN</th>
+      <td><p>function to aggregate by. Either min, max, mean, or sum</p></td>
+    </tr>
+    <tr>
+      <th>startDate</th>
+      <td><p>access data from this date forward</p></td>
+    </tr>
+    <tr>
+      <th>endDate</th>
+      <td><p>access data up to this date</p></td>
+    </tr>
+    <tr>
+      <th>channel</th>
+      <td><p>connection handle as returned by odbcConnect</p></td>
+    </tr>
     <tr>
       <th>SeriesID</th>
       <td><p>index value for a specific record within the series catalog</p></td>
@@ -138,20 +163,8 @@ returns a data frame containing the required columns for working with ODM data.<
       <td><p>index value for the method used to collect the observation</p></td>
     </tr>
     <tr>
-      <th>QCLevelID</th>
+      <th>QualityCControlLevelID</th>
       <td><p>the level of quality control processing</p></td>
-    </tr>
-    <tr>
-      <th>startDate</th>
-      <td><p>access data from this date forward</p></td>
-    </tr>
-    <tr>
-      <th>endDate</th>
-      <td><p>access data up to this date</p></td>
-    </tr>
-    <tr>
-      <th>channel</th>
-      <td><p>connection handle as returned by odbcConnect</p></td>
     </tr>
     </table>
     
@@ -178,19 +191,10 @@ database by specifying SiteID, VariableID and MethodID.</p>
  <span class='kw'>UID</span> <span class='kw'>=</span> <span class='st'>"update"</span>, <span class='kw'>PWD</span> <span class='kw'>=</span> <span class='kw pkg'>rstudioapi</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/rstudioapi/topics/askForPassword'>askForPassword</a></span>(<span class='st'>"Database password"</span>),
  <span class='kw'>Port</span> <span class='kw'>=</span> <span class='fl'>1433</span>)
 
-<span class='co'># Extract data by SeriesID</span>
-<span class='no'>tmp</span> <span class='kw'>&lt;-</span> <span class='fu'>ODMgetData</span>(<span class='kw'>SeriesID</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>startDate</span> <span class='kw'>=</span> <span class='st'>"2013-06-01"</span>,
- <span class='kw'>endDate</span> <span class='kw'>=</span> <span class='st'>"2013-07-01"</span>, <span class='kw'>channel</span> <span class='kw'>=</span> <span class='no'>ODM</span>)
-
 <span class='co'># Extract data by site, variable, method and QC level. Clear and consistent</span>
 <span class='co'># method to extract data.</span>
 <span class='no'>tmp</span> <span class='kw'>&lt;-</span> <span class='fu'>ODMgetData</span>(<span class='kw'>SiteID</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>VariableID</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>MethodID</span> <span class='kw'>=</span> <span class='fl'>9</span>,
- <span class='kw'>QCLevelID</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>startDate</span> <span class='kw'>=</span> <span class='st'>"2013-06-01"</span>, <span class='kw'>endDate</span> <span class='kw'>=</span> <span class='st'>"2013-07-01"</span>,
- <span class='kw'>channel</span> <span class='kw'>=</span> <span class='no'>ODM</span>)
-
-<span class='co'># Extract multiple data series.</span>
-<span class='no'>tmp</span> <span class='kw'>=</span> <span class='fu'>ODMgetData</span>(<span class='kw'>SiteID</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>1</span>,<span class='fl'>5</span>) , <span class='kw'>VariableID</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>MethodID</span> <span class='kw'>=</span> <span class='fl'>9</span>,
- <span class='kw'>QCLevelID</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>startDate</span> <span class='kw'>=</span> <span class='st'>"2013-06-01"</span>, <span class='kw'>endDate</span> <span class='kw'>=</span> <span class='st'>"2013-07-01"</span>,
+ <span class='kw'>QualityCcontrolLevelID</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>startDate</span> <span class='kw'>=</span> <span class='st'>"2013-06-01"</span>, <span class='kw'>endDate</span> <span class='kw'>=</span> <span class='st'>"2013-07-01"</span>,
  <span class='kw'>channel</span> <span class='kw'>=</span> <span class='no'>ODM</span>)
 <span class='co'># }</span><div class='input'>
 </div></pre>

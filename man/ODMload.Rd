@@ -28,14 +28,16 @@ any QClevel data can be used by setting the argument to the appropriate value.
 
 \dontrun{
 # Establish connection with database
-ODM <- odbcConnect("ODM", "update", "update")
+ODM <- odbc::dbConnect(odbc::odbc(), dsn = "ODM", database = "OD",
+ UID = "update", PWD = rstudioapi::askForPassword("Database password"),
+ Port = 1433)
 
 # Query the database
-tmp <- ODMselect(ODM, SiteID = 1, VariableID = 1, MethodID = 9,
+tmp <- ODMselect(SiteID = 1, VariableID = 1, MethodID = 9,
  QCLevelID = 0, startDate = "2013-06-01", endDate = "2013-07-01")
 
 # Load values back to ODM
-ODMload(ODM, Data = tmp, QCcheck = 0)
+ODMload(Data = tmp, QCcheck = 0)
 }
 
 }

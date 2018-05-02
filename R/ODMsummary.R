@@ -47,29 +47,41 @@ ODMsummary <- function(Data, channel = ODM) {
   if (!("SiteID" %in% colnames(Data)))
     stop("A site ID referenced from the 'Sites' table should
       be in a column named 'SiteID'.")
-  if (!is.integer(Data$SiteID))
+  if (any(as.numeric(Data$SiteID) %% 1 > 0)) {
     stop("SiteID should be an integer value.")
+    } else {
+      Data$SiteID = as.integer(Data$SiteID)
+    }
   if (length(setdiff(Data$SiteID, Sites$SiteID) > 0 ))
     stop("SiteID does not exist in Sites table.")
   if (!("VariableID" %in% colnames(Data)))
     stop("A variable ID referenced from the 'Variables' table should
       be in a column named 'VariableID'.")
-  if (!is.integer(Data$VariableID))
+  if (any(as.numeric(Data$VariableID) %% 1 > 0)) {
     stop("VariableID should be an integer value.")
+    } else {
+      Data$VariableID = as.integer(Data$VariableID)
+    }
   if (length(setdiff(Data$VariableID, Variables$VariableID) > 0 ))
     stop("VariableID does not exist in 'Variables' table.")
   if (!("MethodID" %in% colnames(Data)))
     stop("A method ID referenced from the 'Methods' table should
       be in a column named 'MethodID'.")
-  if (!is.integer(Data$MethodID))
+  if (any(as.numeric(Data$MethodID) %% 1 > 0)) {
     stop("MethodID should be an integer value.")
+    } else {
+    Data$MethodID = as.integer(Data$MethodID)
+    }
   if (length(setdiff(Data$MethodID, Methods$MethodID) > 0 ))
     stop("MethodID does not exist in 'Methods' table.")
   if (!("QualityControlLevelID" %in% colnames(Data)))
     stop("A quality control level ID referenced from the 'QualityControlLevels'
       table should be in a column named 'QualityControlLevelID'.")
-  if (!is.integer(Data$QualityControlLevelID))
+  if (any(as.numeric(Data$QualityControlLevelID) %% 1 > 0)) {
     stop("QualityControlLevelID should be an integer value.")
+    } else {
+      Data$QualityControlLevelID = as.integer(Data$QualityControlLevelID)
+    }
   if (length(setdiff(Data$QualityControlLevelID,
     QCLevels$QualityControlLevelID) > 0 ))
     stop("QualityControlLevelID does not exist in the
@@ -77,8 +89,11 @@ ODMsummary <- function(Data, channel = ODM) {
   if (!("SourceID" %in% colnames(Data)))
     stop("A source ID referenced from the 'Sources' table should be in a
       column named 'SourceID'.")
-  if (!is.integer(Data$SourceID))
+  if (any(as.numeric(Data$SourceID) %% 1 > 0)) {
     stop("SourceID should be an integer value.")
+    } else {
+      Data$SourceID = as.integer(Data$SourceID)
+    }
   if (length(setdiff(Data$SourceID, Sources$SourceID) > 0 ))
     stop("SourceID does not exist in 'Sources' table.")
   if (!("UTCOffset" %in% colnames(Data)))

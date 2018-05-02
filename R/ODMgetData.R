@@ -16,7 +16,10 @@
 #'@param SiteID index value for the location at which the observation was made
 #'@param VariableID index value for the variable that the data represents
 #'@param MethodID index value for the method used to collect the observation
-#'@param QCLevelID the level of quality control processing
+#'@param QualityCControlLevelID the level of quality control processing
+#'@param AggregateBy aggregation level to include in SQL query. Either hour,
+#'day, month, year or none
+#'@param FUN function to aggregate by. Either min, max, mean, or sum
 #'@param startDate access data from this date forward
 #'@param endDate access data up to this date
 #'@param channel connection handle as returned by odbcConnect
@@ -31,65 +34,125 @@
 #'  UID = "update", PWD = rstudioapi::askForPassword("Database password"),
 #'  Port = 1433)
 #'
-#'# Extract data by SeriesID
-#'tmp <- ODMgetData(SeriesID = 10, startDate = "2013-06-01",
-#'  endDate = "2013-07-01", channel = ODM)
-#'
 #'# Extract data by site, variable, method and QC level. Clear and consistent
 #'# method to extract data.
 #'tmp <- ODMgetData(SiteID = 1, VariableID = 1, MethodID = 9,
-#'  QCLevelID = 0, startDate = "2013-06-01", endDate = "2013-07-01",
-#'  channel = ODM)
-#'
-#'# Extract multiple data series.
-#'tmp = ODMgetData(SiteID = c(1,5) , VariableID = 1, MethodID = 9,
-#'  QCLevelID = 0, startDate = "2013-06-01", endDate = "2013-07-01",
+#'  QualityCcontrolLevelID = 0, startDate = "2013-06-01", endDate = "2013-07-01",
 #'  channel = ODM)
 #'}
 #'
 #'@export
 
-ODMgetData <- function(SeriesID = NULL, SiteID = "SiteID",
-  VariableID = "VariableID", MethodID = "MethodID",
-  QCLevelID = "QualityControlLevelID", startDate = "1970-01-1 00:00:00",
-  endDate = Sys.Date(), channel = ODM) {
+ODMgetData <- function(SiteID_ = "SiteID",
+                       VariableID_ = "VariableID",
+                       MethodID_ = "MethodID",
+                       QualityControlLevelID_ = "QualityControlLevelID",
+                       AggregateBy = 'day',
+                       FUN = 'mean',
+                       startDate = NULL,
+                       endDate = NULL,
+                       channel = ODM) {
+
+  choices = c(
+    'min' = 'min(DataValue, na.rm = TRUE)',
+    'max' = 'max(DataValue, na.rm = TRUE)',
+    'mean' = 'mean(DataValue, na.rm = TRUE)',
+    'sum' = 'sum(DataValue, na.rm = TRUE)'
+  )
   Old.TZ <- Sys.getenv("TZ")
   Sys.setenv(TZ = "Etc/GMT")
-  Catalog <- ODMgetCatalog(channel = channel)
-  Data <- odbc::dbGetQuery(channel, {
-    paste ("SELECT DataValues.ValueID,DataValues.DataValue,
-            DataValues.LocalDateTime,DataValues.UTCOffset,
-            DataValues.SiteID,DataValues.VariableID,
-            DataValues.QualifierID,DataValues.MethodID,
-            DataValues.SourceID,DataValues.QualityControlLevelID
-          FROM OD.dbo.DataValues DataValues
-          WHERE     (DataValues.SiteID IN (",
-      if (!is.null(SeriesID ))
-        paste(Catalog[SeriesID, "SiteID"], collapse = ",") else
-          paste(SiteID, collapse = ","), "))
-            AND (DataValues.VariableID IN (",
-      if (!is.null(SeriesID ))
-        paste(Catalog[SeriesID, "VariableID"], collapse = ",") else
-          paste(VariableID, collapse = ","), "))
-            AND (DataValues.MethodID IN (",
-      if (!is.null(SeriesID ))
-        paste(Catalog[SeriesID, "MethodID"], collapse = ",") else
-          paste(MethodID, collapse = ","), "))
-            AND (DataValues.QualityControlLevelID IN (",
-      if (!is.null(SeriesID ))
-        paste(Catalog[SeriesID, "QualityControlLevelID"], collapse = ",") else
-          paste(QCLevelID, collapse = ","), "))
-            AND ((DataValues.LocalDateTime > '", startDate, "')
-            AND (DataValues.LocalDateTime < '", endDate, "'))
-          ORDER BY DataValues.SiteID ASC, DataValues.VariableID ASC,
-            DataValues.MethodID ASC, DataValues.QualityControlLevelID ASC,
-            DataValues.LocalDateTime ASC", sep = "")
-  })
 
- Data$LocalDateTime <- lubridate::force_tz(Data$LocalDateTime,
-    if (Data$UTCOffset[1] > 0)
-      gsub("!", -Data$UTCOffset[1], "Etc/GMT!+") else
-        gsub("!", Data$UTCOffset[1], "Etc/GMT!"))
+  result <- channel %>% dplyr::tbl("DataValues") %>%
+    dplyr::filter(
+      SiteID == SiteID_,
+      VariableID == VariableID_,
+      MethodID == MethodID_,
+      QualityControlLevelID == QualityControlLevelID_
+    ) %>%
+    dplyr::group_by(UTCOffset,
+                    SiteID,
+                    VariableID,
+                    MethodID,
+                    SourceID,
+                    QualityControlLevelID)
+
+  if (!is.null(startDate)) {
+    result <- result %>%
+      dplyr::filter(LocalDateTime > startDate)
+  }
+
+  if (!is.null(endDate)) {
+    result <- result %>%
+      dplyr::filter(LocalDateTime < endDate)
+  }
+
+  if (AggregateBy == 'hour') {
+    result <- result %>%
+      dplyr::group_by(LocalDateTime = DATEADD(hour, DATEDIFF(hour, 0, LocalDateTime), 0),
+                      add = TRUE)
+  }
+  if (AggregateBy == 'day') {
+    result <- result %>%
+      dplyr::group_by(LocalDateTime = DATEADD(day, DATEDIFF(day, 0, LocalDateTime), 0),
+                      add = TRUE)
+  }
+  if (AggregateBy == 'month') {
+    result <- result %>%
+      dplyr::group_by(LocalDateTime = DATEADD(month, DATEDIFF(month, 0, LocalDateTime), 0),
+                      add = TRUE)
+  }
+  if (AggregateBy == 'none') {
+    result <- result %>%
+      dplyr::select(
+        ValueID,
+        LocalDateTime,
+        DataValue,
+        UTCOffset,
+        SiteID,
+        VariableID,
+        QualifierID,
+        MethodID,
+        SourceID,
+        QualityControlLevelID
+      ) %>%
+      dplyr::collect()
+  }
+  if (AggregateBy != 'none') {
+    result <-
+      result %>%
+      dplyr::summarise(
+        DataValue = rlang::parse_expr(choices[FUN]),
+        QualifierID = min(QualifierID, na.rm = TRUE)
+      ) %>%
+      dplyr::select(
+        LocalDateTime,
+        DataValue,
+        UTCOffset,
+        SiteID,
+        VariableID,
+        QualifierID,
+        MethodID,
+        SourceID,
+        QualityControlLevelID
+      ) %>%
+      dplyr::collect() %>%
+      dplyr::mutate(Aggregated = paste(AggregateBy, FUN)) %>%
+      dplyr::arrange(LocalDateTime,
+                     DataValue,
+                     SiteID,
+                     VariableID,
+                     QualifierID,
+                     MethodID,
+                     SourceID,
+                     QualityControlLevelID)
+  }
+  result$LocalDateTime <- lubridate::force_tz(result$LocalDateTime,
+                                              if (result$UTCOffset[1] > 0){
+                                                gsub("!", -result$UTCOffset[1], "Etc/GMT!+")
+                                                } else {
+                                                  gsub("!", result$UTCOffset[1], "Etc/GMT!")
+                                                  }
+                                              )
   Sys.setenv(TZ = Old.TZ)
-  return(Data)
+  result
 }

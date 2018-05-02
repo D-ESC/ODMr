@@ -86,6 +86,9 @@ acquired using ODMselect or created using ODMcreate." />
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
+      <a href="../articles/ODM_notes.html">ODM notes</a>
+    </li>
+    <li>
       <a href="../articles/Woking_ODMr.html">Working with ODMr</a>
     </li>
   </ul>
@@ -148,14 +151,16 @@ any QClevel data can be used by setting the argument to the appropriate value.</
     <pre class="examples"><div class='input'>
 </div><span class='co'># NOT RUN {</span>
 <span class='co'># Establish connection with database</span>
-<span class='no'>ODM</span> <span class='kw'>&lt;-</span> <span class='fu'>odbcConnect</span>(<span class='st'>"ODM"</span>, <span class='st'>"update"</span>, <span class='st'>"update"</span>)
+<span class='no'>ODM</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>odbc</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/odbc/topics/dbConnect-OdbcDriver-method'>dbConnect</a></span>(<span class='kw pkg'>odbc</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/odbc/topics/odbc'>odbc</a></span>(), <span class='kw'>dsn</span> <span class='kw'>=</span> <span class='st'>"ODM"</span>, <span class='kw'>database</span> <span class='kw'>=</span> <span class='st'>"OD"</span>,
+ <span class='kw'>UID</span> <span class='kw'>=</span> <span class='st'>"update"</span>, <span class='kw'>PWD</span> <span class='kw'>=</span> <span class='kw pkg'>rstudioapi</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/rstudioapi/topics/askForPassword'>askForPassword</a></span>(<span class='st'>"Database password"</span>),
+ <span class='kw'>Port</span> <span class='kw'>=</span> <span class='fl'>1433</span>)
 
 <span class='co'># Query the database</span>
-<span class='no'>tmp</span> <span class='kw'>&lt;-</span> <span class='fu'>ODMselect</span>(<span class='no'>ODM</span>, <span class='kw'>SiteID</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>VariableID</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>MethodID</span> <span class='kw'>=</span> <span class='fl'>9</span>,
+<span class='no'>tmp</span> <span class='kw'>&lt;-</span> <span class='fu'>ODMselect</span>(<span class='kw'>SiteID</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>VariableID</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>MethodID</span> <span class='kw'>=</span> <span class='fl'>9</span>,
  <span class='kw'>QCLevelID</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>startDate</span> <span class='kw'>=</span> <span class='st'>"2013-06-01"</span>, <span class='kw'>endDate</span> <span class='kw'>=</span> <span class='st'>"2013-07-01"</span>)
 
 <span class='co'># Load values back to ODM</span>
-<span class='fu'>ODMload</span>(<span class='no'>ODM</span>, <span class='kw'>Data</span> <span class='kw'>=</span> <span class='no'>tmp</span>, <span class='kw'>QCcheck</span> <span class='kw'>=</span> <span class='fl'>0</span>)
+<span class='fu'>ODMload</span>(<span class='kw'>Data</span> <span class='kw'>=</span> <span class='no'>tmp</span>, <span class='kw'>QCcheck</span> <span class='kw'>=</span> <span class='fl'>0</span>)
 <span class='co'># }</span><div class='input'>
 </div></pre>
   </div>

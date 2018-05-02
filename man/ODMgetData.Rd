@@ -4,11 +4,23 @@
 \alias{ODMgetData}
 \title{Query an ODM database}
 \usage{
-ODMgetData(SeriesID = NULL, SiteID = "SiteID", VariableID = "VariableID",
-  MethodID = "MethodID", QCLevelID = "QualityControlLevelID",
-  startDate = "1970-01-1 00:00:00", endDate = Sys.Date(), channel = ODM)
+ODMgetData(SiteID_ = "SiteID", VariableID_ = "VariableID",
+  MethodID_ = "MethodID", QualityControlLevelID_ = "QualityControlLevelID",
+  AggregateBy = "day", FUN = "mean", startDate = NULL, endDate = NULL,
+  channel = ODM)
 }
 \arguments{
+\item{AggregateBy}{aggregation level to include in SQL query. Either hour,
+day, month, year or none}
+
+\item{FUN}{function to aggregate by. Either min, max, mean, or sum}
+
+\item{startDate}{access data from this date forward}
+
+\item{endDate}{access data up to this date}
+
+\item{channel}{connection handle as returned by odbcConnect}
+
 \item{SeriesID}{index value for a specific record within the series catalog}
 
 \item{SiteID}{index value for the location at which the observation was made}
@@ -17,13 +29,7 @@ ODMgetData(SeriesID = NULL, SiteID = "SiteID", VariableID = "VariableID",
 
 \item{MethodID}{index value for the method used to collect the observation}
 
-\item{QCLevelID}{the level of quality control processing}
-
-\item{startDate}{access data from this date forward}
-
-\item{endDate}{access data up to this date}
-
-\item{channel}{connection handle as returned by odbcConnect}
+\item{QualityCControlLevelID}{the level of quality control processing}
 }
 \value{
 A data frame
@@ -50,19 +56,10 @@ ODM <- odbc::dbConnect(odbc::odbc(), dsn = "ODM", database = "OD",
  UID = "update", PWD = rstudioapi::askForPassword("Database password"),
  Port = 1433)
 
-# Extract data by SeriesID
-tmp <- ODMgetData(SeriesID = 10, startDate = "2013-06-01",
- endDate = "2013-07-01", channel = ODM)
-
 # Extract data by site, variable, method and QC level. Clear and consistent
 # method to extract data.
 tmp <- ODMgetData(SiteID = 1, VariableID = 1, MethodID = 9,
- QCLevelID = 0, startDate = "2013-06-01", endDate = "2013-07-01",
- channel = ODM)
-
-# Extract multiple data series.
-tmp = ODMgetData(SiteID = c(1,5) , VariableID = 1, MethodID = 9,
- QCLevelID = 0, startDate = "2013-06-01", endDate = "2013-07-01",
+ QualityCcontrolLevelID = 0, startDate = "2013-06-01", endDate = "2013-07-01",
  channel = ODM)
 }
 
