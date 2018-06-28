@@ -6,7 +6,7 @@
 #' @export
 
 ODMDashboard <- function() {
-  ODM <- odbc::dbConnect(
+  ODM <-  pool::dbPool(
     odbc::odbc(),
     dsn = "ODM",
     database = "OD",
@@ -177,7 +177,7 @@ ODMDashboard <- function() {
     })
     output$plot <- dygraphs::renderDygraph({
       result <- data()
-      req(nrow(result) > 1)
+      shiny::req(nrow(result) > 1)
       result <-
         ODM %>% dplyr::tbl("Sites") %>% dplyr::collect() %>%
         dplyr::select(SiteID, SiteCode) %>% dplyr::right_join(result)
@@ -210,13 +210,13 @@ ODMDashboard <- function() {
         dplyr::summarise(
           n = length(DataValue),
           mean = mean(DataValue, na.rm = TRUE),
-          std.dev. = sd(DataValue, na.rm = TRUE),
+          std.dev. = stats::sd(DataValue, na.rm = TRUE),
           min = min(DataValue, na.rm = TRUE),
-          p.05 = quantile(DataValue, 0.05, na.rm = TRUE),
-          p.25 = quantile(DataValue, 0.25, na.rm = TRUE),
-          p.50 = quantile(DataValue, 0.50, na.rm = TRUE),
-          p.75 = quantile(DataValue, 0.75, na.rm = TRUE),
-          p.95 = quantile(DataValue, 0.95, na.rm = TRUE),
+          p.05 = stats::quantile(DataValue, 0.05, na.rm = TRUE),
+          p.25 = stats::quantile(DataValue, 0.25, na.rm = TRUE),
+          p.50 = stats::quantile(DataValue, 0.50, na.rm = TRUE),
+          p.75 = stats::quantile(DataValue, 0.75, na.rm = TRUE),
+          p.95 = stats::quantile(DataValue, 0.95, na.rm = TRUE),
           max = max(DataValue, na.rm = TRUE)
         )
     })

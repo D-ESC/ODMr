@@ -6,6 +6,9 @@
 \usage{
 ODMupdateCatalog(channel = ODM)
 }
+\arguments{
+\item{channel}{connection handle as returned by odbcConnect (default value = ODM)}
+}
 \description{
 The function can be used to trigger the stored procedure in a MS-SQL
 database for updating the series catalog.

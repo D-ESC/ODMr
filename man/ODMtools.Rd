@@ -4,7 +4,7 @@
 \alias{ODMtools}
 \title{ODMtools}
 \usage{
-ODMtools(...)
+ODMtools()
 }
 \description{
 Interactively visualise data from an ODM database. R code can be executed and
