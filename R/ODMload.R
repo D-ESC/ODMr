@@ -46,6 +46,7 @@ ODMload <- function(Data, QCcheck = 1, channel = ODM) {
     (60 * 60 * (as.numeric(Data$UTCOffset)))
   Data$CensorCode <- "nc"
 
+
   chunk <- 100
   if (nrow(Data) < 100) {
     chunk <- 1
@@ -70,7 +71,7 @@ ODMload <- function(Data, QCcheck = 1, channel = ODM) {
   # }
 
   mergeSQL <- function(x){
-    if ("ValueID" %in% names(x)) {
+    if ("ValueID" %in% names(x) & !anyNA(x$ValueID)) {
         SQL <- sqlmerge(x, TableName = "DataValues",
                         By = "ValueID",
                         Key = "ValueID")
@@ -90,13 +91,22 @@ ODMload <- function(Data, QCcheck = 1, channel = ODM) {
     return(success)
   }
 
-  dplyr::bind_rows(lapply(Data, mergeSQL))
+  out <- dplyr::bind_rows(lapply(Data, mergeSQL))
+
+  if(nrow(Catalog) == 0) {
+    Catalog <- DS} else {
+      Catalog$BeginDateTime = min(c(Catalog$BeginDateTime, DS$BeginDateTime))
+      Catalog$EndDateTime = max(c(Catalog$EndDateTime, DS$EndDateTime))
+      Catalog$BeginDateTimeUTC = min(c(Catalog$BeginDateTimeUTC, DS$BeginDateTimeUTC))
+      Catalog$EndDateTimeUTC = max(c(Catalog$EndDateTimeUTC, DS$EndDateTimeUTC))
+    }
 
   Catalog <- data.frame(lapply(Catalog, gsub, pattern = "'", replacement = " "))
   SQL <- sqlmerge(Catalog, TableName = "SeriesCatalog",
-    By = c("SiteID", "VariableID", "MethodID",
-      "QualityControlLevelID", "SourceID"),
-    Key = "SeriesID")
-  DBI::dbExecute(channel, SQL)
-  return()
+     By = c("SiteID", "VariableID", "MethodID",
+       "QualityControlLevelID", "SourceID"),
+     Key = "SeriesID")
+   DBI::dbExecute(channel, SQL)
+
+  return(out)
 }

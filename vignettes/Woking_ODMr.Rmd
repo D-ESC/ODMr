@@ -34,15 +34,19 @@ Q <-
 
 ```R
 ODM_combine <- function (x, y) {
- left_join(x, y[,c("LocalDateTime", "DataValue", "QualifierID")], 
-   by = "LocalDateTime") %>%
- mutate(
-   QualifierID = 
-     ifelse(is.na(.data$DataValue.x), .data$QualifierID.y, .data$QualifierID.x),
-   DataValue = 
-     ifelse(is.na(.data$DataValue.x), .data$DataValue.y, .data$DataValue.x)) %>%
- select(-DataValue.x, -DataValue.y, -QualifierID.x, -QualifierID.y)
-}   
+    full_join(x, y[,c("LocalDateTime", "DataValue", "QualifierID")], 
+              by = "LocalDateTime") %>%
+        mutate(
+            QualifierID = 
+                ifelse(is.na(.data$DataValue.x), .data$QualifierID.y, .data$QualifierID.x),
+            DataValue = 
+                ifelse(is.na(.data$DataValue.x), .data$DataValue.y, .data$DataValue.x)) %>%
+        select(-DataValue.x, -DataValue.y, -QualifierID.x, -QualifierID.y)
+}
+
+tmp <- ODM_combine(filter(ODMdata, QualityControlLevelID == 2), filter(ODMdata, QualityControlLevelID == 1))
+
+tmp <- tmp %>% ungroup() %>% fill(UTCOffset:QualityControlLevelID)
 ```
 
 ## Data profiling

@@ -147,8 +147,8 @@ ODMgetData <- function(SiteID_ = "SiteID",
                      QualityControlLevelID)
   }
   result$LocalDateTime <- lubridate::force_tz(result$LocalDateTime,
-                                              if (result$UTCOffset[1] > 0){
-                                                gsub("!", -result$UTCOffset[1], "Etc/GMT!+")
+                                              if (result$UTCOffset[1] < 0){
+                                                gsub("!", -result$UTCOffset[1], "Etc/GMT+!")
                                                 } else {
                                                   gsub("!", result$UTCOffset[1], "Etc/GMT!")
                                                   }
