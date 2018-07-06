@@ -178,6 +178,7 @@ ODMDashboard <- function() {
     output$plot <- dygraphs::renderDygraph({
       result <- data()
       shiny::req(nrow(result) > 1)
+      #qual <- as.integer(as.factor(result$QualifierID))
       result <-
         ODM %>% dplyr::tbl("Sites") %>% dplyr::collect() %>%
         dplyr::select(SiteID, SiteCode) %>% dplyr::right_join(result)
@@ -202,7 +203,9 @@ ODMDashboard <- function() {
         tidyr::spread(Label, DataValue) %>%
         xts::xts(x = .[, -1],
                  order.by = .$LocalDateTime) %>%
-        dygraphs::dygraph() %>% dygraphs::dyRoller(rollPeriod = 1)
+        dygraphs::dygraph() %>%
+        #dygraphs::dyRibbon(data = qual, top = 0.1, bottom = 0.01) %>%
+        dygraphs::dyRoller(rollPeriod = 1)
     })
 
     output$stats <- shiny::renderTable({

@@ -1,6 +1,6 @@
 #'Delete records from ODM database
 #'
-#'The function ODMselect can be used to delete data from ODM database.
+#'The function ODMdeleteData can be used to delete data from ODM database.
 #'
 #'A standard SQL query is issued to the ODM database and the values are
 #'removed. The data deleted can be limited by a start

@@ -8,7 +8,7 @@
 #' @usage lhs \%>\% rhs
 NULL
 
-sqlmerge <- function(Data, TableName, By, Key) {
+sqlmerge <- function(Data, TableName, By, Key, channel = ODM) {
   Data[is.na(Data)] <- "NULL"
   if (Key %in% names(Data)) {
     ind <- which(names(Data) %in% Key)
