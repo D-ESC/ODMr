@@ -12,11 +12,10 @@
 #'ID. Since the series catalog is not stable through time you may also query the
 #'database by specifying SiteID, VariableID and MethodID.
 #'
-#'@param SeriesID index value for a specific record within the series catalog
-#'@param SiteID index value for the location at which the observation was made
-#'@param VariableID index value for the variable that the data represents
-#'@param MethodID index value for the method used to collect the observation
-#'@param QualityCControlLevelID the level of quality control processing
+#'@param SiteID_ index value for the location at which the observation was made
+#'@param VariableID_ index value for the variable that the data represents
+#'@param MethodID_ index value for the method used to collect the observation
+#'@param QualityCControlLevelID_ the level of quality control processing
 #'@param AggregateBy aggregation level to include in SQL query. Either hour,
 #'day, month, year or none
 #'@param FUN function to aggregate by. Either min, max, mean, or sum
@@ -43,10 +42,10 @@
 #'
 #'@export
 
-ODMgetData <- function(SiteID_ = "SiteID",
-                       VariableID_ = "VariableID",
-                       MethodID_ = "MethodID",
-                       QualityControlLevelID_ = "QualityControlLevelID",
+ODMgetData <- function(SiteID_,
+                       VariableID_,
+                       MethodID_,
+                       QualityControlLevelID_,
                        AggregateBy = 'day',
                        FUN = 'mean',
                        startDate = NULL,
@@ -64,10 +63,10 @@ ODMgetData <- function(SiteID_ = "SiteID",
 
   result <- channel %>% dplyr::tbl("DataValues") %>%
     dplyr::filter(
-      SiteID == SiteID_,
-      VariableID == VariableID_,
-      MethodID == MethodID_,
-      QualityControlLevelID == QualityControlLevelID_
+      SiteID %in% SiteID_,
+      VariableID %in% VariableID_,
+      MethodID %in% MethodID_,
+      QualityControlLevelID %in% QualityControlLevelID_
     ) %>%
     dplyr::group_by(UTCOffset,
                     SiteID,
@@ -153,6 +152,7 @@ ODMgetData <- function(SiteID_ = "SiteID",
                                                   gsub("!", result$UTCOffset[1], "Etc/GMT!")
                                                   }
                                               )
+  result %>% dplyr::ungroup()
   Sys.setenv(TZ = Old.TZ)
   result
 }

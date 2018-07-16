@@ -4,7 +4,8 @@
 \alias{ODMload}
 \title{Load data to an ODM database}
 \usage{
-ODMload(Data, QCcheck = 1, channel = ODM)
+ODMload(Data, QCcheck = 1, channel = ODM, batch_size = 500,
+  check_before_load = TRUE)
 }
 \arguments{
 \item{Data}{containing the required columns}
@@ -12,6 +13,10 @@ ODMload(Data, QCcheck = 1, channel = ODM)
 \item{QCcheck}{must match the quality control level of the data to be loaded}
 
 \item{channel}{connection handle as returned by odbcConnect}
+
+\item{batch_size}{data is sent in small chunks to the database. This setting decides the size of those chunks.}
+
+\item{check_before_load}{the function will let you know what data you are about to load to the database. You can turn this behavior off by setting this to FALSE.}
 }
 \description{
 The function ODMload can be used to get data into the DataValues table in an

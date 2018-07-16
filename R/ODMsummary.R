@@ -40,6 +40,7 @@ ODMsummary <- function(Data, channel = ODM) {
     stop("DataValue should be numeric")
   if (!("LocalDateTime" %in% colnames(Data)))
     stop("Date and time should be in a column named 'LocalDateTime'.")
+  Data$LocalDateTime <- try(as.POSIXct(Data$LocalDateTime))
   if (!lubridate::is.POSIXt(Data$LocalDateTime))
     stop("LocalDateTime should be class POSIXlt or POSIXct.")
   if (anyNA(Data$LocalDateTime))

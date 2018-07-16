@@ -34,6 +34,7 @@ Imports:
     shiny (>= 1.0),
     shinyAce (>= 0.1),
     shinydashboard (>= 0.7),
+    RColorBrewer (>= 1.1),
     DT (>= 0.2)
 RoxygenNote: 6.0.1
 Suggests: knitr,

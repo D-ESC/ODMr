@@ -27,7 +27,7 @@ ODMdeleteData(SeriesID = NULL, SiteID = "SiteID",
 \item{channel}{connection handle as returned by odbcConnect}
 }
 \description{
-The function ODMselect can be used to delete data from ODM database.
+The function ODMdeleteData can be used to delete data from ODM database.
 }
 \details{
 A standard SQL query is issued to the ODM database and the values are

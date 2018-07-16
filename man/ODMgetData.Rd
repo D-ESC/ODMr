@@ -4,12 +4,17 @@
 \alias{ODMgetData}
 \title{Query an ODM database}
 \usage{
-ODMgetData(SiteID_ = "SiteID", VariableID_ = "VariableID",
-  MethodID_ = "MethodID", QualityControlLevelID_ = "QualityControlLevelID",
+ODMgetData(SiteID_, VariableID_, MethodID_, QualityControlLevelID_,
   AggregateBy = "day", FUN = "mean", startDate = NULL, endDate = NULL,
   channel = ODM)
 }
 \arguments{
+\item{SiteID_}{index value for the location at which the observation was made}
+
+\item{VariableID_}{index value for the variable that the data represents}
+
+\item{MethodID_}{index value for the method used to collect the observation}
+
 \item{AggregateBy}{aggregation level to include in SQL query. Either hour,
 day, month, year or none}
 
@@ -21,15 +26,7 @@ day, month, year or none}
 
 \item{channel}{connection handle as returned by odbcConnect}
 
-\item{SeriesID}{index value for a specific record within the series catalog}
-
-\item{SiteID}{index value for the location at which the observation was made}
-
-\item{VariableID}{index value for the variable that the data represents}
-
-\item{MethodID}{index value for the method used to collect the observation}
-
-\item{QualityCControlLevelID}{the level of quality control processing}
+\item{QualityCControlLevelID_}{the level of quality control processing}
 }
 \value{
 A data frame

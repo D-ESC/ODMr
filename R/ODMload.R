@@ -39,16 +39,19 @@ ODMload <- function(Data, QCcheck = 1, channel = ODM, batch_size = 500, check_be
 
   DS <- ODMsummary(Data, channel)
 
-  if (check_before_load) {
-  print(paste("loading: ", DS$SiteCode, DS$VariableCode, DS$MethodDescription, sep = " "))
-  question1 <- readline("Would you like to proceed? (Y/N) ")
-  stopifnot(regexpr(question1, 'y', ignore.case = TRUE) == 1)}
-
   Catalog <- ODMgetCatalog(channel) %>%
     dplyr::filter(SiteID == DS$SiteID,
       VariableID == DS$VariableID,
       MethodID == DS$MethodID,
       QualityControlLevelID == DS$QualityControlLevelID)
+
+  if (check_before_load) {
+    cat("loading: ", DS$SiteCode, DS$VariableCode, DS$MethodDescription, "\n")
+    if(DS$BeginDateTime %within% interval(Catalog$BeginDateTime, Catalog$EndDateTime) |
+       DS$EndDateTime %within% interval(Catalog$BeginDateTime, Catalog$EndDateTime)) {
+      cat("warning:  data values already exist for this time interval")}
+    question1 <- readline("Would you like to proceed? (Y/N) ")
+    stopifnot(regexpr(question1, 'y', ignore.case = TRUE) == 1)}
 
   Data$DateTimeUTC <- Data$LocalDateTime -
     (60 * 60 * (as.numeric(Data$UTCOffset)))

@@ -21,10 +21,15 @@
 <!-- clipboard.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script>
 
+<!-- sticky kit -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script>
+
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
-<script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
+
+
+
 <meta property="og:title" content="Create ODM formated dataframe — ODMcreate" />
 
 <meta property="og:description" content="The function ODMcreate can be used to help in formating new data. ODMcreate
@@ -34,6 +39,7 @@ already exist in their respective tables in the ODM." />
 <meta name="twitter:card" content="summary" />
 
 
+
 <!-- mathjax -->
 <script src='https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
 
@@ -41,8 +47,6 @@ already exist in their respective tables in the ODM." />
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
-
-
 
 
   </head>
@@ -114,12 +118,14 @@ already exist in their respective tables in the ODM." />
     <div class="hidden name"><code>ODMcreate.Rd</code></div>
     </div>
 
+    <div class="ref-description">
     
     <p>The function ODMcreate can be used to help in formating new data. ODMcreate
 takes a vector of dates and data and outputs a dataframe formated for use
 with the functions in this package. Site ID, VariableID, and MethodID need to
 already exist in their respective tables in the ODM.</p>
     
+    </div>
 
     <pre class="usage"><span class='fu'>ODMcreate</span>(<span class='no'>LocalDateTime</span>, <span class='no'>DataValue</span>, <span class='kw'>UTCOffset</span> <span class='kw'>=</span> -<span class='fl'>5</span>, <span class='no'>SiteID</span>, <span class='no'>VariableID</span>,
   <span class='kw'>QualifierID</span> <span class='kw'>=</span> <span class='fl'>NA</span>, <span class='no'>MethodID</span>, <span class='kw'>SourceID</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>QCLevelID</span> <span class='kw'>=</span> <span class='fl'>0</span>)</pre>
