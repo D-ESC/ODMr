@@ -87,17 +87,17 @@ ODMgetData <- function(SiteID_,
 
   if (AggregateBy == 'hour') {
     result <- result %>%
-      dplyr::group_by(LocalDateTime = DATEADD(hour, DATEDIFF(hour, 0, LocalDateTime), 0),
+      dplyr::group_by(LocalDateTime = DATEADD(HOUR, DATEDIFF(HOUR, 0, LocalDateTime), 0),
                       add = TRUE)
   }
   if (AggregateBy == 'day') {
     result <- result %>%
-      dplyr::group_by(LocalDateTime = DATEADD(day, DATEDIFF(day, 0, LocalDateTime), 0),
+      dplyr::group_by(LocalDateTime = DATEADD(DAY, DATEDIFF(DAY, 0, LocalDateTime), 0),
                       add = TRUE)
   }
   if (AggregateBy == 'month') {
     result <- result %>%
-      dplyr::group_by(LocalDateTime = DATEADD(month, DATEDIFF(month, 0, LocalDateTime), 0),
+      dplyr::group_by(LocalDateTime = DATEADD(MONTH, DATEDIFF(MONTH, 0, LocalDateTime), 0),
                       add = TRUE)
   }
   if (AggregateBy == 'none') {

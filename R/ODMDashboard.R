@@ -22,7 +22,10 @@ ODMDashboard <- function() {
       shiny::selectInput(
         inputId = "aggregate",
         label = "Aggregate By:",
-        choices = c('none', 'hour', 'day', 'month'),
+        choices = c('none' = 'none',
+                    'hour' = 'hour',
+                    'day' = 'day',
+                    'month' = 'month'),
         selected = 'day',
         selectize = TRUE
       ),
@@ -237,5 +240,5 @@ ODMDashboard <- function() {
       invisible(shiny::stopApp())
     })
   }
-  shiny::shinyApp(ui, server,  options = list(launch.browser = TRUE))
+  shiny::shinyApp(ui, server, options = list(launch.browser = TRUE))
 }
