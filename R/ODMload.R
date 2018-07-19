@@ -41,22 +41,22 @@ ODMload <- function(Data, QCcheck = 1, channel = ODM, batch_size = 500, check_be
 
   Catalog <- ODMgetCatalog(channel) %>%
     dplyr::filter(SiteID == DS$SiteID,
-      VariableID == DS$VariableID,
-      MethodID == DS$MethodID,
-      QualityControlLevelID == DS$QualityControlLevelID)
+                  VariableID == DS$VariableID,
+                  MethodID == DS$MethodID,
+                  QualityControlLevelID == DS$QualityControlLevelID)
 
   if (check_before_load) {
     cat("loading: ", DS$SiteCode, DS$VariableCode, DS$MethodDescription, "\n")
-    if(DS$BeginDateTime %within% lubridate::interval(Catalog$BeginDateTime, Catalog$EndDateTime) |
-       DS$EndDateTime %within% lubridate::interval(Catalog$BeginDateTime, Catalog$EndDateTime)) {
-      cat("warning:  data values already exist for this time interval")}
+    if(nrow(Catalog) >= 1)
+      if(DS$BeginDateTime %within% lubridate::interval(Catalog$BeginDateTime, Catalog$EndDateTime) |
+         DS$EndDateTime %within% lubridate::interval(Catalog$BeginDateTime, Catalog$EndDateTime)) {
+        cat("warning:  data values already exist for this time interval")}
     question1 <- readline("Would you like to proceed? (Y/N) ")
     stopifnot(regexpr(question1, 'y', ignore.case = TRUE) == 1)}
 
   Data$DateTimeUTC <- Data$LocalDateTime -
     (60 * 60 * (as.numeric(Data$UTCOffset)))
   Data$CensorCode <- "nc"
-
 
   chunk <- batch_size
   if (nrow(Data) < chunk) {
@@ -68,15 +68,15 @@ ODMload <- function(Data, QCcheck = 1, channel = ODM, batch_size = 500, check_be
 
   mergeSQL <- function(x){
     if ("ValueID" %in% names(x) & !anyNA(x$ValueID)) {
-        SQL <- sqlmerge(x, TableName = "DataValues",
-                        By = "ValueID",
-                        Key = "ValueID")
-        } else {
-          SQL <- sqlmerge(x, TableName = "DataValues",
-                    By = c("LocalDateTime", "SiteID", "VariableID", "MethodID",
-                           "QualityControlLevelID", "SourceID"),
-                    Key = "ValueID")
-        }
+      SQL <- sqlmerge(x, TableName = "DataValues",
+                      By = "ValueID",
+                      Key = "ValueID")
+    } else {
+      SQL <- sqlmerge(x, TableName = "DataValues",
+                      By = c("LocalDateTime", "SiteID", "VariableID", "MethodID",
+                             "QualityControlLevelID", "SourceID"),
+                      Key = "ValueID")
+    }
     success <- DBI::dbExecute(channel, {
       SQL
     })
@@ -99,10 +99,10 @@ ODMload <- function(Data, QCcheck = 1, channel = ODM, batch_size = 500, check_be
 
   Catalog <- data.frame(lapply(Catalog, gsub, pattern = "'", replacement = " "))
   SQL <- sqlmerge(Catalog, TableName = "SeriesCatalog",
-     By = c("SiteID", "VariableID", "MethodID",
-       "QualityControlLevelID", "SourceID"),
-     Key = "SeriesID")
-   DBI::dbExecute(channel, SQL)
+                  By = c("SiteID", "VariableID", "MethodID",
+                         "QualityControlLevelID", "SourceID"),
+                  Key = "SeriesID")
+  DBI::dbExecute(channel, SQL)
 
   return(out)
 }
