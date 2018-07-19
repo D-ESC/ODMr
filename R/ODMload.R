@@ -47,8 +47,8 @@ ODMload <- function(Data, QCcheck = 1, channel = ODM, batch_size = 500, check_be
 
   if (check_before_load) {
     cat("loading: ", DS$SiteCode, DS$VariableCode, DS$MethodDescription, "\n")
-    if(DS$BeginDateTime %within% interval(Catalog$BeginDateTime, Catalog$EndDateTime) |
-       DS$EndDateTime %within% interval(Catalog$BeginDateTime, Catalog$EndDateTime)) {
+    if(DS$BeginDateTime %within% lubridate::interval(Catalog$BeginDateTime, Catalog$EndDateTime) |
+       DS$EndDateTime %within% lubridate::interval(Catalog$BeginDateTime, Catalog$EndDateTime)) {
       cat("warning:  data values already exist for this time interval")}
     question1 <- readline("Would you like to proceed? (Y/N) ")
     stopifnot(regexpr(question1, 'y', ignore.case = TRUE) == 1)}

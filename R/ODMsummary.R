@@ -35,11 +35,11 @@ ODMsummary <- function(Data, channel = ODM) {
   if (nrow(Data) < 1)
     stop("No data.")
   if (!("DataValue" %in% colnames(Data)))
-    stop("Data values should be in a column named 'DataValue'.")
+    stop("Data values need to be in a column named 'DataValue'.")
   if (!is.numeric(Data$DataValue))
     stop("DataValue should be numeric")
   if (!("LocalDateTime" %in% colnames(Data)))
-    stop("Date and time should be in a column named 'LocalDateTime'.")
+    stop("Date and time need to be in a column named 'LocalDateTime'.")
   Data$LocalDateTime <- try(as.POSIXct(Data$LocalDateTime))
   if (!lubridate::is.POSIXt(Data$LocalDateTime))
     stop("LocalDateTime should be class POSIXlt or POSIXct.")
@@ -48,6 +48,8 @@ ODMsummary <- function(Data, channel = ODM) {
   if (!("SiteID" %in% colnames(Data)))
     stop("A site ID referenced from the 'Sites' table should
       be in a column named 'SiteID'.")
+  if (length(unique(Data$SiteID)) != 1)
+    stop("Only one site can be evaluated at a time.")
   if (any(as.numeric(Data$SiteID) %% 1 > 0)) {
     stop("SiteID should be an integer value.")
     } else {
@@ -58,6 +60,8 @@ ODMsummary <- function(Data, channel = ODM) {
   if (!("VariableID" %in% colnames(Data)))
     stop("A variable ID referenced from the 'Variables' table should
       be in a column named 'VariableID'.")
+  if (length(unique(Data$VariableID)) != 1)
+    stop("Only one variable can be evaluated at a time.")
   if (any(as.numeric(Data$VariableID) %% 1 > 0)) {
     stop("VariableID should be an integer value.")
     } else {
@@ -68,6 +72,8 @@ ODMsummary <- function(Data, channel = ODM) {
   if (!("MethodID" %in% colnames(Data)))
     stop("A method ID referenced from the 'Methods' table should
       be in a column named 'MethodID'.")
+  if (length(unique(Data$MethodID)) != 1)
+    stop("Only one method can be evaluated at a time.")
   if (any(as.numeric(Data$MethodID) %% 1 > 0)) {
     stop("MethodID should be an integer value.")
     } else {
@@ -78,6 +84,8 @@ ODMsummary <- function(Data, channel = ODM) {
   if (!("QualityControlLevelID" %in% colnames(Data)))
     stop("A quality control level ID referenced from the 'QualityControlLevels'
       table should be in a column named 'QualityControlLevelID'.")
+  if (length(unique(Data$QualityControlLevelID)) != 1)
+    stop("Only one quality control level can be evaluated at a time.")
   if (any(as.numeric(Data$QualityControlLevelID) %% 1 > 0)) {
     stop("QualityControlLevelID should be an integer value.")
     } else {
@@ -90,6 +98,8 @@ ODMsummary <- function(Data, channel = ODM) {
   if (!("SourceID" %in% colnames(Data)))
     stop("A source ID referenced from the 'Sources' table should be in a
       column named 'SourceID'.")
+  if (length(unique(Data$SourceID)) != 1)
+    stop("Only data from one source can be evaluated at a time.")
   if (any(as.numeric(Data$SourceID) %% 1 > 0)) {
     stop("SourceID should be an integer value.")
     } else {

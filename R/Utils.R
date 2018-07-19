@@ -8,6 +8,16 @@
 #' @usage lhs \%>\% rhs
 NULL
 
+#' within operator
+#'
+#' @name %within%
+#' @rdname within
+#' @keywords internal
+#' @export
+#' @importFrom lubridate %within%
+#' @usage lhs \%within\% rhs
+NULL
+
 sqlmerge <- function(Data, TableName, By, Key, channel = ODM) {
   Data[is.na(Data)] <- "NULL"
   if (Key %in% names(Data)) {
