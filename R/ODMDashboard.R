@@ -14,11 +14,11 @@ ODMDashboard <- function() {
     PWD = "update",
     Port = 1433
   )
-
+#UI########################################################
   ui <- shinydashboard::dashboardPage(
     shinydashboard::dashboardHeader(title = "Observation Data"),
     shinydashboard::dashboardSidebar(
-      ##choose how values are to be aggregated, default is day level for speed.#
+      ##choose how values are to be aggregated, default is day level for speed.
       shiny::selectInput(
         inputId = "aggregate",
         label = "Aggregate By:",
@@ -29,7 +29,7 @@ ODMDashboard <- function() {
         selected = 'day',
         selectize = TRUE
       ),
-      ##choose aggregate function to be applied, default is average.############
+      ##choose aggregate function to be applied, default is average.
       shiny::conditionalPanel(
         condition = "input.aggregate != 'none'",
         shiny::selectInput(
@@ -45,7 +45,7 @@ ODMDashboard <- function() {
           selectize = TRUE
         )
       ),
-      ##select a date range to return, smaller is quicker.######################
+      ##select a date range to return, smaller is quicker.
       shiny::dateRangeInput(
           "daterange",
           "Date range:",
@@ -53,7 +53,7 @@ ODMDashboard <- function() {
           end   = Sys.Date()
       ),
       shiny::br(),
-      ##button to download data as csv or send directly to R session.###########
+      ##button to download data as csv or send directly to R session.
       shiny::downloadButton("downloadData.csv", "Download", class = "butt"),
       shiny::tags$head(
         shiny::tags$style(
@@ -63,19 +63,20 @@ ODMDashboard <- function() {
       shiny::br(),
       shiny::actionButton("done", "Send to R", width = '104px')
     ),
-    ##map sites, plot selected data, print summary stats########################
+    ##map sites, plot selected data, print summary stats
     shinydashboard::dashboardBody(
       shinydashboard::tabBox(
         width = 12,
         height = '475px',
         shiny::tabPanel("Map", leaflet::leafletOutput("mymap")),
-        shiny::tabPanel("Plot", dygraphs::dygraphOutput("plot")),
+        shiny::tabPanel("Plot", plotly::plotlyOutput("plot")),
         shiny::tabPanel("Summary", shiny::tableOutput("stats"))
       ),
       DT::dataTableOutput("Dtbl")
     )
   )
 
+#SERVER####################################################
   server <- function(input, output) {
     Sites <- ODM %>% dplyr::tbl("Sites") %>%
       dplyr::collect()
@@ -98,14 +99,7 @@ ODMDashboard <- function() {
                            values = Sites$SiteType)
     })
 
-    in_bounding_box <- function(data, bounds) {
-      data %>%
-        dplyr::filter(
-          Latitude > bounds$south &
-            Latitude < bounds$north &
-            Longitude < bounds$east & Longitude > bounds$west
-        )
-    }
+
 
     click <- shiny::reactiveValues(clickedMarker = NULL)
 
@@ -120,13 +114,7 @@ ODMDashboard <- function() {
                         })
 
     data_map <- shiny::reactive({
-      if (is.null(input$mymap_bounds)) {
-        result <- Sites
-      } else {
-        bounds <- input$mymap_bounds
-        result <- in_bounding_box(Sites, bounds)
-        result
-      }
+      result <- Sites
       if (is.null(click$clickedMarker)) {
         result
       } else{
@@ -178,10 +166,9 @@ ODMDashboard <- function() {
       }
       return(result)
     })
-    output$plot <- dygraphs::renderDygraph({
+    output$plot <- plotly::renderPlotly({
       result <- data()
       shiny::req(nrow(result) > 1)
-      #qual <- as.integer(as.factor(result$QualifierID))
       result <-
         ODM %>% dplyr::tbl("Sites") %>% dplyr::collect() %>%
         dplyr::select(SiteID, SiteCode) %>% dplyr::right_join(result)
@@ -203,12 +190,11 @@ ODMDashboard <- function() {
                      MethodID,
                      QualityControlLevelID,
                      sep = "_") %>%
-        tidyr::spread(Label, DataValue) %>%
-        xts::xts(x = .[, -1],
-                 order.by = .$LocalDateTime) %>%
-        dygraphs::dygraph() %>%
-        #dygraphs::dyRibbon(data = qual, top = 0.1, bottom = 0.01) %>%
-        dygraphs::dyRoller(rollPeriod = 1)
+        plotly::plot_ly(x = ~LocalDateTime, y = ~DataValue,
+                        type = "scattergl",
+                        color = ~Label,
+                        mode = 'lines',
+                        line = list(width = 1))
     })
 
     output$stats <- shiny::renderTable({

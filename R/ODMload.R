@@ -6,7 +6,7 @@
 #'acquired using ODMselect or created using ODMcreate.
 #'
 #'A standard SQL query is issued to the ODM database and the values are uploaded
-#'in 100 row chunks. QClevel 1 data is handled by default but data containing
+#'in 1000 row chunks. QClevel 1 data is handled by default but data containing
 #'any QClevel data can be used by setting the argument to the appropriate value.
 #'
 #'@param channel connection handle as returned by odbcConnect
@@ -34,7 +34,7 @@
 #'@export
 #'@name ODMload
 
-ODMload <- function(Data, QCcheck = 1, channel = ODM, batch_size = 500, check_before_load = TRUE) {
+ODMload <- function(Data, QCcheck = 1, channel = ODM, batch_size = 1000, check_before_load = TRUE) {
   stopifnot(QCcheck %in% Data$QualityControlLevelID)
 
   DS <- ODMsummary(Data, channel)

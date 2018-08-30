@@ -152,7 +152,7 @@ ODMgetData <- function(SiteID_,
                                                   gsub("!", result$UTCOffset[1], "Etc/GMT!")
                                                   }
                                               )
-  result %>% dplyr::ungroup()
+  result <- result %>% dplyr::ungroup()
   Sys.setenv(TZ = Old.TZ)
   result
 }
