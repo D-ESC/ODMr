@@ -31,8 +31,8 @@ sqlmerge <- function(Data, TableName, By, Key, channel = ODM) {
   }
   Matching <- paste0(lapply(By, function(x) paste0("T.", x, " = S.", x)), collapse = " AND ")
 
-    if (dbExistsTable(ODM, "##LOADtmp", catalog_name = "tempdb")) {
-    dbRemoveTable(ODM, "##LOADtmp", catalog_name = "tempdb")
+    if (DBI::dbExistsTable(ODM, "##LOADtmp", catalog_name = "tempdb")) {
+      DBI::dbRemoveTable(ODM, "##LOADtmp", catalog_name = "tempdb")
   }
   DBI::dbWriteTable(channel, "##LOADtmp", Data)
 
