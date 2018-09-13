@@ -31,12 +31,6 @@ ODMtools <- function() {
         selected = NULL
       ),
       shiny::uiOutput("choose_series"),
-      shiny::radioButtons(
-        "mode",
-        "Plot Type:",
-        choices = list("point" = "markers", "line" = "lines"),
-        inline = TRUE
-      ),
       shiny::br(),
       shiny::downloadButton("downloadData.csv", "Download", class = "butt"),
       shiny::tags$head(
@@ -55,24 +49,12 @@ ODMtools <- function() {
           collapsible = TRUE,
           plotly::plotlyOutput("plot1")
         ),
-        shinydashboard::box(
-          width = NULL,
-          collapsible = TRUE,
-          DT::dataTableOutput("DTable")
-        )
+        source(file.path("R/ODMtools", "tableUI.R"), local = TRUE)$value
       ),
       shiny::column(
         width = 4,
-        UI_Tools(),
-        shinydashboard::box(
-          width = NULL,
-          collapsible = TRUE,
-          shinyAce::aceEditor("code", mode = "r", height = 200),
-          shiny::actionButton("eval", "Evaluate"),
-          shiny::br(),
-          shiny::br(),
-          shiny::verbatimTextOutput("output")
-        )
+        source(file.path("R/ODMtools", "toolboxUI.R"), local = TRUE)$value,
+        source(file.path("R/ODMtools", "consoleUI.R"), local = TRUE)$value
       )
     ))
   )
@@ -96,26 +78,20 @@ ODMtools <- function() {
       values$series <- unique(values$ODMdata$label)
       values$ODMdata$LocalDateTime <-
         lubridate::force_tz(values$ODMdata$LocalDateTime, "UTC")
+      values$ODMdata$index <- 1:nrow(values$ODMdata)
     })
 
-    Data <- function(x = NULL, insert = FALSE) {
-      LocalDate <- as.POSIXct(plotly::event_data("plotly_selected", source = "subset")$x / 1000,
-                              origin = "1970-01-01", tz = "UTC"
-      )
-      if (length(LocalDate) == 0) {
-        LocalDate <- values$ODMdata$LocalDateTime
+    Data <- function(x = NULL) {
+      key <- plotly::event_data("plotly_selected", source = "subset")$key
+      if(length(key) == 0) {
+        key = 1:nrow(values$ODMdata)
       }
       if (!is.null(x)) {
-        if (insert == FALSE) {
-          values$ODMdata[values$ODMdata$LocalDateTime %in%
-                           LocalDate & values$ODMdata$label == input$series, ] <-
-            x[x$LocalDateTime %in% LocalDate & x$label == input$series, ]
-        } else {
-          values$ODMdata <- dplyr::anti_join(x, values$ODMdata, by = c("LocalDateTime", "label")) %>%
-            dplyr::bind_rows(values$ODMdata) %>% dplyr::arrange(label, LocalDateTime)
-        }
+        values$ODMdata[values$ODMdata$index %in%
+                         key & values$ODMdata$label == input$series, ] <-
+          x[x$index %in% key & x$label == input$series, ]
       }
-      result <- values$ODMdata[values$ODMdata$LocalDateTime %in% LocalDate &
+      result <- values$ODMdata[values$ODMdata$index %in% key &
                                  values$ODMdata$label == input$series, ]
       result
     }
@@ -129,10 +105,11 @@ ODMtools <- function() {
       P <- plotly::plot_ly(
         x = values$ODMdata$LocalDateTime,
         y = values$ODMdata$DataValue,
+        key = values$ODMdata$index,
         color = values$ODMdata$label,
         type = "scatter",
-        mode = input$mode,
-        opacity = 0.6,
+        mode = "markers",
+        opacity = 0.8,
         source = "subset"
       ) %>%
         plotly::layout(legend = list(orientation = "h")) %>%
@@ -140,38 +117,9 @@ ODMtools <- function() {
       P
     })
 
-    output$DTable <- DT::renderDataTable({
-      shiny::req(plotly::event_data("plotly_selected", source = "subset"))
-      dt <-
-        DT::datatable(Data(), style = "bootstrap", editable = TRUE)
-    })
-
-    shiny::observeEvent(input$DTable_cell_edit, {
-      info <- input$DTable_cell_edit
-      i <- info$row
-      j <- info$col
-      v <- info$value
-      d <- Data()
-      d[i, j] <- DT::coerceValue(v, Data()[[i, j]])
-      d %>% Data()
-      # replaceData(proxy2, d2, resetPaging = FALSE)  # important
-    })
-
-    Server_Tools()
-
-    shiny::observe({
-      shinyAce::updateAceEditor(session, "code",
-                                shiny::isolate(eval(parse(text = input$code))),
-                                mode = "r"
-      )
-    })
-
-    output$output <- shiny::renderPrint({
-      input$eval
-      return(shiny::isolate(eval(
-        parse(text = stringr::str_replace_all(input$code, "[\r]", ""))
-      )))
-    })
+    source(file.path("R/ODMtools", "tableServer.R"), local = TRUE)$value
+    source(file.path("R/ODMtools", "toolboxServer.R"), local = TRUE)$value
+    source(file.path("R/ODMtools", "consoleServer.R"), local = TRUE)$value
 
     output$downloadData.csv <- shiny::downloadHandler(
       filename = function() {

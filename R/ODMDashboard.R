@@ -9,7 +9,7 @@ ODMDashboard <- function() {
   ODM <-  pool::dbPool(
     odbc::odbc(),
     dsn = "ODM",
-    database = "OD",
+    database = "ODM",
     UID = "update",
     PWD = "update",
     Port = 1433
@@ -65,19 +65,23 @@ ODMDashboard <- function() {
     ),
     ##map sites, plot selected data, print summary stats
     shinydashboard::dashboardBody(
+      shiny::fluidRow(
       shinydashboard::tabBox(
         width = 12,
-        height = '475px',
-        shiny::tabPanel("Map", leaflet::leafletOutput("mymap")),
-        shiny::tabPanel("Plot", plotly::plotlyOutput("plot")),
+        height = "100%",
+        shiny::tabPanel("Map", leaflet::leafletOutput("mymap"),
+                        shiny::br(),
+                        DT::dataTableOutput("Dtbl")),
+        shiny::tabPanel("Plot", plotly::plotlyOutput("plot", width = "99%",
+                                                    height = "99%")),
         shiny::tabPanel("Summary", shiny::tableOutput("stats"))
-      ),
-      DT::dataTableOutput("Dtbl")
+      )
+    )
     )
   )
 
 #SERVER####################################################
-  server <- function(input, output) {
+  server <- function(input, output, session) {
     Sites <- ODM %>% dplyr::tbl("Sites") %>%
       dplyr::collect()
 
@@ -98,8 +102,6 @@ ODMDashboard <- function() {
                            pal = pal,
                            values = Sites$SiteType)
     })
-
-
 
     click <- shiny::reactiveValues(clickedMarker = NULL)
 
@@ -193,8 +195,8 @@ ODMDashboard <- function() {
         plotly::plot_ly(x = ~LocalDateTime, y = ~DataValue,
                         type = "scattergl",
                         color = ~Label,
-                        mode = 'lines',
-                        line = list(width = 1))
+                        mode = "markers",
+                        height = session$clientData$output_plot_width*0.5)
     })
 
     output$stats <- shiny::renderTable({
