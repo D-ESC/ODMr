@@ -32,11 +32,12 @@ sqlmerge <- function(Data, TableName, By, Key, channel = ODM) {
   Matching <- paste0(lapply(By, function(x) paste0("T.", x, " = S.", x)), collapse = " AND ")
 
   ID <- paste0("##LOAD", round(runif(1, min = 1000000 , max = 9000000)))
+
   DBI::dbWriteTable(channel, ID, Data)
 
-  glue::glue(
+  SQL <- glue::glue(
     "MERGE {TableName} AS T
-    USING tempdb.[##LOADtmp] AS S
+    USING tempdb.[{ID}] AS S
     ON ({Matching})
     WHEN NOT MATCHED
     THEN INSERT({Insert}) VALUES({Source})
@@ -44,6 +45,9 @@ sqlmerge <- function(Data, TableName, By, Key, channel = ODM) {
     THEN UPDATE SET {Updating}
     OUTPUT $action;"
   )
+  success <- DBI::dbExecute(channel,
+    SQL)
 
-  DBI::dbRemoveTable(ODM, ID, catalog_name = "tempdb")
+  DBI::dbRemoveTable(channel, ID, catalog_name = "tempdb")
+  return(success)
 }

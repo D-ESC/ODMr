@@ -54,32 +54,29 @@ ODMload <- function(Data, QCcheck = 1, channel = ODM, batch_size = 1000, check_b
     question1 <- readline("Would you like to proceed? (Y/N) ")
     stopifnot(regexpr(question1, 'y', ignore.case = TRUE) == 1)}
 
-  Data$DateTimeUTC <- Data$LocalDateTime -
-    (60 * 60 * (as.numeric(Data$UTCOffset)))
-  Data$CensorCode <- "nc"
-
   chunk <- batch_size
   if (nrow(Data) < chunk) {
     chunk <- 1
   }
+
+  Data$LocalDateTime = lubridate::force_tz(Data$LocalDateTime, "UTC")
 
   Data <- suppressWarnings(split(Data, 1:round(nrow(Data) / chunk)))
   pb <- progress::progress_bar$new(total = length(Data))
 
   mergeSQL <- function(x){
     if ("ValueID" %in% names(x) & !anyNA(x$ValueID)) {
-      SQL <- sqlmerge(x, TableName = "DataValues",
-                      By = "ValueID",
-                      Key = "ValueID")
+      success <- sqlmerge(x, TableName = "DataValues",
+                          By = "ValueID",
+                          Key = "ValueID",
+                          channel = channel)
     } else {
-      SQL <- sqlmerge(x, TableName = "DataValues",
-                      By = c("LocalDateTime", "SiteID", "VariableID", "MethodID",
-                             "QualityControlLevelID", "SourceID"),
-                      Key = "ValueID")
+      success <- sqlmerge(x, TableName = "DataValues",
+                          By = c("LocalDateTime", "SiteID", "VariableID", "MethodID",
+                                 "QualityControlLevelID", "SourceID"),
+                          Key = "ValueID",
+                          channel = channel)
     }
-    success <- DBI::dbExecute(channel, {
-      SQL
-    })
     if (is.character(success)) {
       stop(paste(success, collapse = "\n"))
     }
@@ -93,16 +90,14 @@ ODMload <- function(Data, QCcheck = 1, channel = ODM, batch_size = 1000, check_b
     Catalog <- DS} else {
       Catalog$BeginDateTime = min(c(Catalog$BeginDateTime, DS$BeginDateTime))
       Catalog$EndDateTime = max(c(Catalog$EndDateTime, DS$EndDateTime))
-      Catalog$BeginDateTimeUTC = min(c(Catalog$BeginDateTimeUTC, DS$BeginDateTimeUTC))
-      Catalog$EndDateTimeUTC = max(c(Catalog$EndDateTimeUTC, DS$EndDateTimeUTC))
     }
 
   Catalog <- data.frame(lapply(Catalog, gsub, pattern = "'", replacement = " "))
-  SQL <- sqlmerge(Catalog, TableName = "SeriesCatalog",
-                  By = c("SiteID", "VariableID", "MethodID",
-                         "QualityControlLevelID", "SourceID"),
-                  Key = "SeriesID")
-  DBI::dbExecute(channel, SQL)
+  sqlmerge(Catalog, TableName = "SeriesCatalog",
+           By = c("SiteID", "VariableID", "MethodID",
+                  "QualityControlLevelID", "SourceID"),
+           Key = "SeriesID",
+           channel = channel)
 
   return(out)
 }
