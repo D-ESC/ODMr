@@ -15,7 +15,8 @@
 #'@param SiteID_ index value for the location at which the observation was made
 #'@param VariableID_ index value for the variable that the data represents
 #'@param MethodID_ index value for the method used to collect the observation
-#'@param QualityCControlLevelID_ the level of quality control processing
+#'@param QualityControlLevelID_ the level of quality control processing
+#'@param SourceID_ the source of the data
 #'@param AggregateBy aggregation level to include in SQL query. Either hour,
 #'day, month, year or none
 #'@param FUN function to aggregate by. Either min, max, mean, or sum
@@ -46,6 +47,7 @@ ODMgetData <- function(SiteID_,
                        VariableID_,
                        MethodID_,
                        QualityControlLevelID_,
+                       SourceID_ = 1,
                        AggregateBy = 'day',
                        FUN = 'mean',
                        startDate = NULL,
@@ -66,7 +68,8 @@ ODMgetData <- function(SiteID_,
       SiteID %in% SiteID_,
       VariableID %in% VariableID_,
       MethodID %in% MethodID_,
-      QualityControlLevelID %in% QualityControlLevelID_
+      QualityControlLevelID %in% QualityControlLevelID_,
+      SourceID %in% SourceID_
     ) %>%
     dplyr::group_by(UTCOffset,
                     SiteID,
