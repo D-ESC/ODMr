@@ -42,8 +42,7 @@ sqlmerge <- function(Data, TableName, By, Key, channel = ODM) {
     WHEN NOT MATCHED
     THEN INSERT({Insert}) VALUES({Source})
     WHEN MATCHED
-    THEN UPDATE SET {Updating}
-    OUTPUT $action;"
+    THEN UPDATE SET {Updating};"
   )
   success <- DBI::dbExecute(channel,
     SQL)
