@@ -155,6 +155,7 @@ ODMDashboard <- function() {
                                VariableID = selection$VariableID[i],
                                MethodID = selection$MethodID[i],
                                QualityControlLevelID = selection$QualityControlLevelID[i],
+                               SourceID_ = selection$SourceID[i],
                                startDate = input$daterange[1],
                                endDate = input$daterange[2],
                                AggregateBy = input$aggregate,
@@ -201,6 +202,7 @@ ODMDashboard <- function() {
 
     output$stats <- shiny::renderTable({
       data() %>% dplyr::rename("QCLevelID" = "QualityControlLevelID") %>%
+        dplyr::group_by(SiteID, VariableID, MethodID, QCLevelID, SourceID) %>%
         dplyr::summarise(
           n = length(DataValue),
           mean = mean(DataValue, na.rm = TRUE),

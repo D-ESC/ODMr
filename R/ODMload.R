@@ -43,7 +43,8 @@ ODMload <- function(Data, QCcheck = 1, channel = ODM, batch_size = 1000, check_b
     dplyr::filter(SiteID == DS$SiteID,
                   VariableID == DS$VariableID,
                   MethodID == DS$MethodID,
-                  QualityControlLevelID == DS$QualityControlLevelID)
+                  QualityControlLevelID == DS$QualityControlLevelID,
+                  SourceID == DS$SourceID)
 
   if (check_before_load) {
     cat("loading: ", DS$SiteCode, DS$VariableCode, DS$MethodDescription, "\n")
