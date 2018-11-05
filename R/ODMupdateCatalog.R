@@ -20,5 +20,5 @@
 #' @export
 
 ODMupdateCatalog <- function(channel = ODM) {
-  DBI::dbExecute(channel, "OD.dbo.spUpdateSeriesCatalog")
+  DBI::dbExecute(channel, "ODM.dbo.spUpdateSeriesCatalog")
 }

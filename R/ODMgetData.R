@@ -148,13 +148,14 @@ ODMgetData <- function(SiteID_,
                      SourceID,
                      QualityControlLevelID)
   }
-  result$LocalDateTime <- lubridate::force_tz(result$LocalDateTime,
-                                              if (result$UTCOffset[1] < 0){
-                                                gsub("!", -result$UTCOffset[1], "Etc/GMT+!")
+  if (exists("results")) {
+    result$LocalDateTime <- lubridate::force_tz(result$LocalDateTime,
+                                                if (result$UTCOffset[1] < 0){
+                                                  gsub("!", -result$UTCOffset[1], "Etc/GMT+!")
                                                 } else {
                                                   gsub("!", result$UTCOffset[1], "Etc/GMT!")
-                                                  }
-                                              )
+                                                }
+    )}
   result <- result %>% dplyr::ungroup()
   Sys.setenv(TZ = Old.TZ)
   result

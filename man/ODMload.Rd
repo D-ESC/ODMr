@@ -4,7 +4,7 @@
 \alias{ODMload}
 \title{Load data to an ODM database}
 \usage{
-ODMload(Data, QCcheck = 1, channel = ODM, batch_size = 500,
+ODMload(Data, QCcheck = 1, channel = ODM, batch_size = 1000,
   check_before_load = TRUE)
 }
 \arguments{
@@ -26,7 +26,7 @@ acquired using ODMselect or created using ODMcreate.
 }
 \details{
 A standard SQL query is issued to the ODM database and the values are uploaded
-in 100 row chunks. QClevel 1 data is handled by default but data containing
+in 1000 row chunks. QClevel 1 data is handled by default but data containing
 any QClevel data can be used by setting the argument to the appropriate value.
 }
 \examples{

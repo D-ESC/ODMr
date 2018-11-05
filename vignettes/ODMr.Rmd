@@ -28,7 +28,7 @@ Here is a quick example. You'll need the package RODBC in order to establish a c
 
 ```{r} 
 library(ODMr)
-ODM <- DBI::dbConnect(odbc::odbc(), dsn = "ODM", database = "OD", UID = "update", 
+ODM <- DBI::dbConnect(odbc::odbc(), dsn = "ODM", database = "ODM", UID = "update", 
     PWD = "update", Port = 1433)
 Catalog = ODMgetCatalog()
 ```

@@ -35,7 +35,7 @@
 #'@name ODMload
 
 ODMload <- function(Data, QCcheck = 1, channel = ODM, batch_size = 1000, check_before_load = TRUE) {
-  stopifnot(QCcheck %in% Data$QualityControlLevelID)
+  stopifnot(Data$QualityControlLevelID %in% QCcheck)
 
   DS <- ODMsummary(Data, channel)
 
@@ -57,7 +57,7 @@ ODMload <- function(Data, QCcheck = 1, channel = ODM, batch_size = 1000, check_b
 
   chunk <- batch_size
   if (nrow(Data) < chunk) {
-    chunk <- 1
+    chunk <- nrow(Data)
   }
 
   Data$LocalDateTime = lubridate::force_tz(Data$LocalDateTime, "UTC")
