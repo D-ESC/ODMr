@@ -14,9 +14,11 @@ ODMload(Data, QCcheck = 1, channel = ODM, batch_size = 1000,
 
 \item{channel}{connection handle as returned by odbcConnect}
 
-\item{batch_size}{data is sent in small chunks to the database. This setting decides the size of those chunks.}
+\item{batch_size}{data is sent in small chunks to the database. This setting
+decides the size of those chunks.}
 
-\item{check_before_load}{the function will let you know what data you are about to load to the database. You can turn this behavior off by setting this to FALSE.}
+\item{check_before_load}{will let you know what data you are about to load to
+the database. You can turn this behavior off by setting this to FALSE.}
 }
 \description{
 The function ODMload can be used to get data into the DataValues table in an

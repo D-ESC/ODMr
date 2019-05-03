@@ -12,8 +12,10 @@
 #'@param channel connection handle as returned by odbcConnect
 #'@param Data containing the required columns
 #'@param QCcheck must match the quality control level of the data to be loaded
-#'@param batch_size data is sent in small chunks to the database. This setting decides the size of those chunks.
-#'@param check_before_load the function will let you know what data you are about to load to the database. You can turn this behavior off by setting this to FALSE.
+#'@param batch_size data is sent in small chunks to the database. This setting
+#'decides the size of those chunks.
+#'@param check_before_load will let you know what data you are about to load to
+#'the database. You can turn this behavior off by setting this to FALSE.
 #'
 #'@examples
 #'
@@ -34,7 +36,8 @@
 #'@export
 #'@name ODMload
 
-ODMload <- function(Data, QCcheck = 1, channel = ODM, batch_size = 1000, check_before_load = TRUE) {
+ODMload <- function(Data, QCcheck = 1, channel = ODM, batch_size = 1000,
+                    check_before_load = TRUE) {
   stopifnot(Data$QualityControlLevelID %in% QCcheck)
 
   DS <- ODMsummary(Data, channel)
