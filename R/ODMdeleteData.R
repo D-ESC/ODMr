@@ -42,6 +42,17 @@ ODMdeleteData <- function(SiteID_,
                           SourceID_ = 1,
                           startDate = "1970-01-1 00:00:00",
                           endDate = Sys.Date(), channel = ODM) {
+
+  Catalog <- ODMgetCatalog(channel) %>%
+    dplyr::filter(SiteID == SiteID_,
+                  VariableID == VariableID_,
+                  MethodID == MethodID_,
+                  QualityControlLevelID == QualityControlLevelID_,
+                  SourceID == SourceID_)
+  cat("deleting: ", Catalog$SiteCode, Catalog$VariableCode, Catalog$MethodDescription, "\n")
+  question1 <- readline("Would you like to proceed? (Y/N) ")
+  stopifnot(regexpr(question1, 'y', ignore.case = TRUE) == 1)
+
   Data <- DBI::dbExecute(channel, {
     paste ("DELETE
            FROM DataValues
@@ -63,4 +74,4 @@ ODMdeleteData <- function(SiteID_,
            AND (SeriesCatalog.EndDateTime < '", endDate, "'))", sep = "")
   })
   return(Data)
-  }
+}
