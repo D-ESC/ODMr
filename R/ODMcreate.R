@@ -59,8 +59,8 @@ ODMcreate <- function(LocalDateTime, DataValue, UTCOffset = -5, SiteID,
     stop("Invalid UTCOffset. Value should be between -12 and 12.")
 
   if (UTCOffset > 0)
-    TZ <- gsub("!", abs(UTCOffset), "Etc/GMT!+") else
-      TZ <- gsub("!", abs(UTCOffset), "Etc/GMT!")
+    TZ <- gsub("!", abs(UTCOffset), "Etc/GMT-!") else
+      TZ <- gsub("!", abs(UTCOffset), "Etc/GMT+!")
   Data <- data.frame(ValueID = rep(NA, length(DataValue)))
   Data$DataValue <- as.numeric(DataValue)
   Data$LocalDateTime <-
