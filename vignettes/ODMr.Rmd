@@ -109,10 +109,10 @@ PC1_CR1000_Weir <- read_csv("PC1_CR1000_Weir.dat",
     col_types = cols(TIMESTAMP = col_datetime(format = "%Y-%m-%d %H:%M:%S")))
 ```
 
-`ODMcreate()` can be used to create a dataframe with all the required data for importing into ODM. 
+`odm_data()` can be used to create a dataframe with all the required data for importing into ODM. 
 
 ```R
-PC1_new <- ODMcreate(PC1_CR1000_Weir$TIMESTAMP, PC1_CR1000_Weir$ShaftEnc_Avg, 
+PC1_new <- odm_data(PC1_CR1000_Weir$TIMESTAMP, PC1_CR1000_Weir$ShaftEnc_Avg, 
   SiteID = 15, VariableID = 8, MethodID = 1)
 ```
 

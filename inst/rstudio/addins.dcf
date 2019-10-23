@@ -1,9 +1,4 @@
 Name: ODMtools
 Description: Edit ODM data
-Binding: ODMtools
-Interactive: true
-
-Name: ODMdashboard
-Description: Interactively visualise and access ODM data
-Binding: ODMDashboard
+Binding: odm_tools
 Interactive: true

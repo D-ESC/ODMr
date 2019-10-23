@@ -3,7 +3,7 @@
 #'The function ODMload can be used to get data into the DataValues table in an
 #'ODM database. ODMload takes a dataframe containing the required columns for
 #'working with ODM data and loads it. The dataframes will either have been
-#'acquired using ODMselect or created using ODMcreate.
+#'acquired using ODMselect or created using odm_data.
 #'
 #'A standard SQL query is issued to the ODM database and the values are uploaded
 #'in 1000 row chunks. QClevel 1 data is handled by default but data containing

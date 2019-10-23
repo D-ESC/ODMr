@@ -1,7 +1,8 @@
 #'Query an ODM database
 #'
 #'The function ODMselect can be used to get data from ODM database. ODMselect
-#'returns a data frame containing the required columns for working with ODM data.
+#'returns a data frame containing the required columns for working with ODM
+#'data.
 #'
 #'A standard SQL query is issued to the ODM database and the values are
 #'returned. The data returned can be limited by a start
@@ -37,8 +38,8 @@
 #'# Extract data by site, variable, method and QC level. Clear and consistent
 #'# method to extract data.
 #'tmp <- ODMgetData(SiteID = 1, VariableID = 1, MethodID = 9,
-#'  QualityCcontrolLevelID = 0, startDate = "2013-06-01", endDate = "2013-07-01",
-#'  channel = ODM)
+#'  QualityCcontrolLevelID = 0, startDate = "2013-06-01",
+#'  endDate = "2013-07-01", channel = ODM)
 #'}
 #'
 #'@export
@@ -48,22 +49,23 @@ ODMgetData <- function(SiteID_,
                        MethodID_,
                        QualityControlLevelID_,
                        SourceID_ = 1,
-                       AggregateBy = 'day',
-                       FUN = 'mean',
+                       AggregateBy = "day",
+                       FUN = "mean",
                        startDate = NULL,
                        endDate = NULL,
                        channel = ODM) {
 
-  choices = c(
-    'min' = 'min(DataValue, na.rm = TRUE)',
-    'max' = 'max(DataValue, na.rm = TRUE)',
-    'mean' = 'mean(DataValue, na.rm = TRUE)',
-    'sum' = 'sum(DataValue, na.rm = TRUE)'
+  choices <- c(
+    "min" = "min(DataValue, na.rm = TRUE)",
+    "max" = "max(DataValue, na.rm = TRUE)",
+    "mean" = "mean(DataValue, na.rm = TRUE)",
+    "sum" = "sum(DataValue, na.rm = TRUE)"
   )
   Old.TZ <- Sys.getenv("TZ")
   Sys.setenv(TZ = "Etc/GMT")
 
-  result <- channel %>% dplyr::tbl("DataValues") %>%
+  result <- channel %>%
+    dplyr::tbl("DataValues") %>%
     dplyr::filter(
       SiteID %in% SiteID_,
       VariableID %in% VariableID_,
@@ -88,22 +90,25 @@ ODMgetData <- function(SiteID_,
       dplyr::filter(LocalDateTime < endDate)
   }
 
-  if (AggregateBy == 'hour') {
+  if (AggregateBy == "hour") {
     result <- result %>%
-      dplyr::group_by(LocalDateTime = DATEADD(HOUR, DATEDIFF(HOUR, 0, LocalDateTime), 0),
+      dplyr::group_by(LocalDateTime =
+                        DATEADD(HOUR, DATEDIFF(HOUR, 0, LocalDateTime), 0),
                       add = TRUE)
   }
-  if (AggregateBy == 'day') {
+  if (AggregateBy == "day") {
     result <- result %>%
-      dplyr::group_by(LocalDateTime = DATEADD(DAY, DATEDIFF(DAY, 0, LocalDateTime), 0),
+      dplyr::group_by(LocalDateTime =
+                        DATEADD(DAY, DATEDIFF(DAY, 0, LocalDateTime), 0),
                       add = TRUE)
   }
-  if (AggregateBy == 'month') {
+  if (AggregateBy == "month") {
     result <- result %>%
-      dplyr::group_by(LocalDateTime = DATEADD(MONTH, DATEDIFF(MONTH, 0, LocalDateTime), 0),
+      dplyr::group_by(LocalDateTime =
+                        DATEADD(MONTH, DATEDIFF(MONTH, 0, LocalDateTime), 0),
                       add = TRUE)
   }
-  if (AggregateBy == 'none') {
+  if (AggregateBy == "none") {
     result <- result %>%
       dplyr::select(
         ValueID,
@@ -119,7 +124,7 @@ ODMgetData <- function(SiteID_,
       ) %>%
       dplyr::collect()
   }
-  if (AggregateBy != 'none') {
+  if (AggregateBy != "none") {
     result <-
       result %>%
       dplyr::summarise(
@@ -149,13 +154,14 @@ ODMgetData <- function(SiteID_,
                      QualityControlLevelID)
   }
   if (exists("results")) {
-    result$LocalDateTime <- lubridate::force_tz(result$LocalDateTime,
-                                                if (result$UTCOffset[1] < 0){
-                                                  gsub("!", -result$UTCOffset[1], "Etc/GMT+!")
-                                                } else {
-                                                  gsub("!", result$UTCOffset[1], "Etc/GMT!")
-                                                }
-    )}
+    result$LocalDateTime <-
+      lubridate::force_tz(result$LocalDateTime,
+                          if (result$UTCOffset[1] < 0){
+                            gsub("!", -result$UTCOffset[1], "Etc/GMT+!")
+                          } else {
+                            gsub("!", result$UTCOffset[1], "Etc/GMT!")
+                          }
+      )}
   result <- result %>% dplyr::ungroup()
   Sys.setenv(TZ = Old.TZ)
   result

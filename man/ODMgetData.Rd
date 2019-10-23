@@ -35,7 +35,8 @@ A data frame
 }
 \description{
 The function ODMselect can be used to get data from ODM database. ODMselect
-returns a data frame containing the required columns for working with ODM data.
+returns a data frame containing the required columns for working with ODM
+data.
 }
 \details{
 A standard SQL query is issued to the ODM database and the values are
@@ -58,8 +59,8 @@ ODM <- odbc::dbConnect(odbc::odbc(), dsn = "ODM", database = "OD",
 # Extract data by site, variable, method and QC level. Clear and consistent
 # method to extract data.
 tmp <- ODMgetData(SiteID = 1, VariableID = 1, MethodID = 9,
- QualityCcontrolLevelID = 0, startDate = "2013-06-01", endDate = "2013-07-01",
- channel = ODM)
+ QualityCcontrolLevelID = 0, startDate = "2013-06-01",
+ endDate = "2013-07-01", channel = ODM)
 }
 
 }

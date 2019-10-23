@@ -36,7 +36,9 @@ Imports:
     shinydashboard (>= 0.7),
     RColorBrewer (>= 1.1),
     DT (>= 0.2)
-RoxygenNote: 6.1.0
-Suggests: knitr,
-    rmarkdown
+RoxygenNote: 6.1.1
+Suggests: 
+    knitr,
+    rmarkdown,
+    testthat
 VignetteBuilder: knitr

@@ -12,7 +12,7 @@
 #'   ODMload can be used to get data into an ODM database. ODMload takes an
 #'   dataframe containing the required columns for working with ODM data and loads
 #'   it. The dataframe will usually have been acquired using ODMselect or created
-#'   using ODMcreate.
+#'   using odm_data.
 #'
 #' @docType package
 #' @name ODMr
