@@ -8,7 +8,6 @@ ui <- shinydashboard::dashboardPage(
       shinydashboard::menuItem("Table", tabName = "datatable", icon = shiny::icon("table")),
       shinydashboard::menuItem("Stats", tabName = "stat", icon = shiny::icon("calculator")),
       shinydashboard::menuItem("Toolbox", tabName = "toolbox", icon = shiny::icon("wrench")),
-      shinydashboard::menuItem("Model", tabName = "model", icon = shiny::icon("line-chart")),
       shinydashboard::menuItem("Import", tabName = "import", icon = shiny::icon("upload"))
     ),
     shiny::br(),
@@ -22,7 +21,7 @@ ui <- shinydashboard::dashboardPage(
     shinydashboard::tabItems(
       shinydashboard::tabItem(
         tabName = "catalog",
-        SeriesCatalog_ui("getData")
+        Seriescatalog_ui("getData")
       ),
       shinydashboard::tabItem(
         tabName = "plot",
@@ -30,11 +29,11 @@ ui <- shinydashboard::dashboardPage(
       ),
       shinydashboard::tabItem(
         tabName = "datatable",
-        Table_ui("getTable")
+        table_ui("getTable")
       ),
       shinydashboard::tabItem(
         tabName = "stat",
-        Stat_ui("getStat")
+        stat_ui("getStat")
       ),
       shinydashboard::tabItem(
         tabName = "toolbox",
@@ -45,18 +44,12 @@ ui <- shinydashboard::dashboardPage(
           shiny::column(width = 6,
                         Toolbox_ui("getToolbox")),
           shiny::column(width = 6,
-                        Console_ui("getConsole"))
+                        console_ui("getConsole"))
         )
       ),
       shinydashboard::tabItem(
-        tabName = "model",
-        DT::dataTableOutput("activeseries2"),
-        shiny::br(),
-        Model_ui("getModel")
-        ),
-      shinydashboard::tabItem(
         tabName = "import",
-        Import_ui("getImport")
+        import_ui("getImport")
       )
     )
   )

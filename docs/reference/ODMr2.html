@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Pipe operator — %&gt;% • ODMr</title>
+<title>ODMr2: A package for working with the CUAHSI ODM — ODMr2 • ODMr1</title>
 
 
 <!-- jquery -->
@@ -35,8 +35,11 @@
 
 
 
-<meta property="og:title" content="Pipe operator — %&gt;%" />
-<meta property="og:description" content="Pipe operator" />
+<meta property="og:title" content="ODMr2: A package for working with the CUAHSI ODM — ODMr2" />
+<meta property="og:description" content="The aim of this package is to provide some functions for retrieving and
+loading data into an instance of a MS-SQL CUAHSI ODM database. In order to
+make use of these functions a valid ODBC connection for the target database
+needs to be defined." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -68,7 +71,7 @@
         <span class="icon-bar"></span>
       </button>
       <span class="navbar-brand">
-        <a class="navbar-link" href="../index.html">ODMr</a>
+        <a class="navbar-link" href="../index.html">ODMr1</a>
         <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1</span>
       </span>
     </div>
@@ -82,9 +85,6 @@
   </a>
 </li>
 <li>
-  <a href="../articles/ODMr.html">Get started</a>
-</li>
-<li>
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
@@ -94,6 +94,9 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/ODMr.html">ODMr</a>
+    </li>
     <li>
       <a href="../articles/ODM_notes.html">ODM notes</a>
     </li>
@@ -118,23 +121,35 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Pipe operator</h1>
+    <h1>ODMr2: A package for working with the CUAHSI ODM</h1>
     
-    <div class="hidden name"><code>pipe.Rd</code></div>
+    <div class="hidden name"><code>ODMr2.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Pipe operator</p>
+    <p>The aim of this package is to provide some functions for retrieving and
+loading data into an instance of a MS-SQL CUAHSI ODM database. In order to
+make use of these functions a valid ODBC connection for the target database
+needs to be defined.</p>
     </div>
 
-    <pre class="usage"><span class='no'>lhs</span> <span class='kw'>%&gt;%</span> <span class='no'>rhs</span></pre>
 
 
+    <h2 class="hasAnchor" id="odmr-functions"><a class="anchor" href="#odmr-functions"></a>ODMr2 functions</h2>
+
+    <p>odm_read can be used to retrieve data from an ODM
+  database. odm_read returns a dataframe containing the required columns
+  for working with ODM data.</p>
+<p>odm_write can be used to get data into an ODM database. ODMload takes an
+  dataframe containing the required columns for working with ODM data and loads
+  it. The dataframe will usually have been acquired using ODMselect or created
+  using odm_data.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
+      <li><a href="#odmr-functions">ODMr2 functions</a></li>
     </ul>
 
   </div>

@@ -5,8 +5,7 @@
 #'with the functions in this package. site_id, variable_id, and method_id need
 #'to already exist in their respective tables in the ODM.
 #'
-#'The vectors are given with the arguments for site_id, variable_id and
-#'method_id. The output is a properly formated dataframe suitable for further
+#'The output is a properly formated dataframe suitable for further
 #'use in workflows involving this package.
 #'
 #'@param date_time local date time for each record
@@ -18,6 +17,7 @@
 #'@param method_id corresponds to an existing record in the Methods table
 #'@param source_id corresponds to an existing record in the Sources table
 #'@param level_id corresponds to a record in the QualityControlLevels table
+#'@param channel connection handle as returned by odbcConnect
 #'
 #'@examples
 #'
@@ -43,7 +43,8 @@ odm_data <-
            qualifier_id = NA,
            method_id,
            source_id = 1,
-           level_id = 0) {
+           level_id = 0,
+           channel = ODM) {
     if (!is.numeric(as.numeric(data_value)))
       stop("data_value needs to be convertable to type numeric.")
     if (!lubridate::is.POSIXt(date_time))
@@ -62,9 +63,6 @@ odm_data <-
       stop("source_idshould be convertable to type integer.")
     if (!is.integer(as.integer(utc_offset[1])))
       stop("utc_offset should be convertable to type integer.")
-    if (as.integer(utc_offset[1]) < -12 |
-        as.integer(utc_offset[1]) > 12)
-      stop("Invalid utc_offset. Value should be between -12 and 12.")
 
     if (utc_offset > 0)
       TZ <- gsub("!", abs(utc_offset), "Etc/GMT-!")
@@ -81,5 +79,7 @@ odm_data <-
     Data$MethodID <- as.integer(method_id)
     Data$SourceID <- as.integer(source_id)
     Data$QualityControlLevelID <- as.integer(level_id)
+
+    is_valid_odm(Data, channel = channel)
     return(Data)
   }

@@ -1,5 +1,5 @@
 ###############################################################################
-SeriesCatalog_ui <-
+Seriescatalog_ui <-
   function(id) {
     ns <- shiny::NS(id)
     shiny::tagList(
@@ -12,7 +12,7 @@ SeriesCatalog_ui <-
             start = "1900-01-01",
             end   = Sys.Date()
           )
-          
+
         ),
         shiny::column(
           width = 3,
@@ -20,12 +20,12 @@ SeriesCatalog_ui <-
             inputId = ns("aggregate"),
             label = "Aggregate By:",
             choices = c(
-              'none' = 'none',
-              'hour' = 'hour',
-              'day' = 'day',
-              'month' = 'month'
+              "none" = "none",
+              "hour" = "hour",
+              "day" = "day",
+              "month" = "month"
             ),
-            selected = 'day',
+            selected = "day",
             selectize = TRUE
           )
         ),
@@ -59,16 +59,16 @@ SeriesCatalog_ui <-
   }
 
 ###############################################################################
-SeriesCatalog_server <-
+series_catalog_server <-
   function(input, output, session, connection) {
     ###########################################################################
     values <- shiny::reactiveValues(meta = NULL, ODMData = NULL)
     ###########################################################################
-    Catalog <-
-      connection %>% dplyr::tbl("SeriesCatalog") %>% dplyr::collect()
+    catalog <-
+      connection %>% dplyr::tbl("Seriescatalog") %>% dplyr::collect()
     ###########################################################################
-    output$Dtbl = DT::renderDataTable({
-      Catalog %>%
+    output$Dtbl <- DT::renderDataTable({
+      catalog %>%
         dplyr::select(
           SiteCode,
           VariableCode,
@@ -78,14 +78,14 @@ SeriesCatalog_server <-
           EndDateTime,
           Count = ValueCount
         ) %>%
-        DT::datatable(filter = 'top', style = 'bootstrap')
+        DT::datatable(filter = "top", style = "bootstrap")
     })
     ###########################################################################
     shiny::observeEvent(input$getdata, {
       shiny::req(input$Dtbl_rows_selected)
       shinyjs::disable("getdata")
       shiny::withProgress(message = "Loading data...", value = 1, {
-        selection <- Catalog %>%
+        selection <- catalog %>%
           dplyr::select(
             SiteID,
             SiteCode,
@@ -97,20 +97,19 @@ SeriesCatalog_server <-
             Organization,
             QualityControlLevelID
           ) %>%
-          .[input$Dtbl_rows_selected,]
-        
+          .[input$Dtbl_rows_selected, ]
         for (i in seq_along(selection$SiteID)) {
-          df <- ODMr::ODMgetData(
-            SiteID_ = selection$SiteID[i],
-            VariableID_ = selection$VariableID[i],
-            MethodID_ = selection$MethodID[i],
-            QualityControlLevelID_ = selection$QualityControlLevelID[i],
-            SourceID_ = selection$SourceID[i],
-            startDate = input$daterange[1],
-            endDate = input$daterange[2],
-            AggregateBy = input$aggregate,
-            FUN = input$fun,
-            channel = connection
+          df <- odm_read(site_id = selection$SiteID[i],
+                         variable_id = selection$VariableID[i],
+                         method_id = selection$MethodID[i],
+                         level_id = selection$QualityControlLevelID[i],
+                         source_id = selection$SourceID[i],
+                         start_date = input$daterange[1],
+                         end_date = input$daterange[2],
+                         aggregate_by = input$aggregate,
+                         FUN = input$fun,
+                         channel = connection,
+                         n = 2000000
           )
           if (i == 1) {
             values$ODMdata = df
@@ -118,7 +117,7 @@ SeriesCatalog_server <-
             values$ODMdata = dplyr::bind_rows(values$ODMdata, df)
           }
         }
-        
+
         values$meta <- selection %>%
           tidyr::unite(label,
                        SiteID,

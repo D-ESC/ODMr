@@ -12,11 +12,11 @@ make use of these functions a valid ODBC connection for the target database
 needs to be defined.
 }
 \section{ODMr functions}{
- ODMselect can be used to retrieve data from an ODM
-  database. ODMSelect returns a dataframe containing the required columns
+ odm_read can be used to retrieve data from an ODM
+  database. odm_read returns a dataframe containing the required columns
   for working with ODM data.
 
-  ODMload can be used to get data into an ODM database. ODMload takes an
+  odm_write can be used to get data into an ODM database. ODMload takes an
   dataframe containing the required columns for working with ODM data and loads
   it. The dataframe will usually have been acquired using ODMselect or created
   using odm_data.

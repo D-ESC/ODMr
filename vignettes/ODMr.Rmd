@@ -24,44 +24,35 @@ Click "Next" again, and it'll contact the database to make sure that you have th
 ## The Basics
 This will all be easier to use and understand if you have a fundamental understanding of the underlying data model. The model and the underlying motives for it's design can be found at http://www.cuahsi.org 
 
-Here is a quick example. You'll need the package RODBC in order to establish a connection using an ODBC connection. `DBI::dbConnect()` establishes a connection to the specified DSN and `ODMgetCatalog()` can be used to import the series catalog.
+Here is a quick example. You'll need the package DBI in order to establish a connection using an ODBC connection. `DBI::dbConnect()` establishes a connection to the specified DSN and `odm_read_tbl()` can be used to import the series catalog.
 
 ```{r} 
 library(ODMr)
 ODM <- DBI::dbConnect(odbc::odbc(), dsn = "ODM", database = "ODM", UID = "update", 
     PWD = "update", Port = 1433)
-Catalog = ODMgetCatalog()
+catalog = odm_read_tbl()
 ```
 
-Using the established connection and referencing the series catalog we can import data from the database. The series catalog is not stable so only refernce series IDs to quickly look at certain data.
-
-```R
-Data <- ODMgetData(SeriesID = 10, startDate = "2013-06-01",
-  endDate = "2014-06-01")
-```
-
-A more stable reference can be had by specifying SiteID, VariableID, MethodID and QualityControlLevelID.
+Using the established connection and referencing the series catalog we can import data by specifying site_id, variable_id, method_id and level_id.
 
 ```{r}
-Data <- ODMgetData(SiteID = 15, VariableID = 3, MethodID = 1, QualityControlLevelID = 1,
-                  startDate = "2016-03-01", endDate = "2016-06-01")
+Data <- odm_read(site_id = 15, variable_id = 3, method_id = 1, level_id = 1,
+                  start_date = "2016-03-01", end_date = "2016-06-01")
 ```
 
 Multiple data series can be queried at once. The function makes use of the IN
 operator in the underlying SQL statement to specify multiple values. 
 
 ```R
-Data <- ODMgetData(SiteID = c(1,5) , VariableID = 1, MethodID = 9,
-  QualityControlLevelID = 0, startDate = "2013-06-01", endDate = "2013-07-01")
+Data <- odm_read(site_id = c(1,5) , variable_id = 1, method_id = 9,
+  level_id = 0, start_date = "2013-06-01", end_date = "2013-07-01")
 ```
 
 ## Addins
 
-There are a number of addins included in the package. Once the package is installed they should be available under Addins on the main application toolbar of Rstudio.
+There is an addin included in the package. Once the package is installed it should be available under Addins on the main application toolbar of Rstudio.
 
-`ODMDashboard()` provides a simple GUI to access and download data from ODM.
-
-`ODMtools()` provides an interactive way of viewing, validating, and/or correcting values.
+`odm_tools()` provides an interactive way of viewing, validating, and/or correcting values.
 
 ## Visualising Data
 Base graphics is the default graphics system in R, the easiest to learn to use, but is static.
@@ -79,24 +70,24 @@ Data %>%
   dygraph()
 ```
 
-You can also use the `ODMtools()` addin. It will recognize any dataframe that you have that fits the general structure of the ODM data values table. Specifically containing a LocalDateTime column and a Datavalue column.
+You can also use the `odm_tools()` addin.
 
 ## Editing data
 
-The `ODMtools()` addin includes a console to evaluate R expressions. You can use the function `Data()` to access the underlying data for the plot and interact with it. You can also write back to this data using the same function enabling you to make changes to selected points. Useful code bits that can be run in ODMtools are below.
+The `odm_tools()` addin includes a console to evaluate R expressions. You can use the function `Data()` to access the underlying data for the plot and interact with it. You can also write back to this data using the same function enabling you to make changes to selected points. Useful code bits that can be run in ODMtools are below.
 
 ```R
-values$ODMdata %>% 
-  mutate(LocalDateTime = floor_date(LocalDateTime, "hour")) %>% 
-  filter(label == "15_236_46_0") %>%
-  inner_join(Data(), by = "LocalDateTime") %>% 
+DataValues() %>% 
+  filter(label == "TS1_3_53_2_1") %>%
+  inner_join(DataValues() %>% filter(label != "TS1_3_53_2_1") , 
+    by = "LocalDateTime") %>% 
   mutate(Diff = DataValue.x - DataValue.y) %>% 
   select(Diff) %>% summary()
 
-Data() %>%
+DataValues() %>%
   mutate(DataValue = DataValue - 0.108,
   QualifierID = 106) %>% 
-  Data()
+  Upsert()
 ```
 
 ## Importing data into the ODM database
@@ -113,9 +104,9 @@ PC1_CR1000_Weir <- read_csv("PC1_CR1000_Weir.dat",
 
 ```R
 PC1_new <- odm_data(PC1_CR1000_Weir$TIMESTAMP, PC1_CR1000_Weir$ShaftEnc_Avg, 
-  SiteID = 15, VariableID = 8, MethodID = 1)
+  site_id = 15, variable_id = 8, method_id = 1)
 ```
 
 ```R
-ODMload(ODM,PC1_new, QCcheck = 0)
+odm_write(PC1_new, qc_check = 0, channel = ODM)
 ```

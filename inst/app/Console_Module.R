@@ -1,4 +1,4 @@
-Console_ui <- function(id) {
+console_ui <- function(id) {
   ns <- shiny::NS(id)
   shiny::tagList(
     shinyAce::aceEditor(ns("code"), mode = "r", height = 200),
@@ -9,34 +9,34 @@ Console_ui <- function(id) {
     shiny::helpText(
       "Access the full dataframe loaded into ODMtools",
       shiny::br(),
-      "> data$ODMdata",
+      "> DataValues()",
       shiny::br(), shiny::br(),
       "Retrieve just selected values",
       shiny::br(),
-      "> getValues(data, selected, active())",
+      "> Selected()",
       shiny::br(), shiny::br(),
       "Write any modifications back to the dataframe",
       shiny::br(),
-      "> upsert(data, .)",
+      "> Upsert()",
       shiny::br(), shiny::br(),
-      "Must set/create column 'edited' and set fo TRUE for any edited rows",
-      shiny::br(),
       "Example:",
       shiny::br(),
-      "> getValues(data, selected, active()) %>%",
+      "> Selected() %>%",
       shiny::br(),
       "dplyr::mutate(DataValue = DataValue + 10,",
       shiny::br(),
-      "QualifierID = 106,",
+      "QualifierID = 106) %>%",
       shiny::br(),
-      "edited = TRUE) %>%",
-      shiny::br(),
-      "upsert(data, .)"
+      "Upsert()"
     )
   )
 }
 
-Console_server <- function(input, output, session, data, selected, active) {
+console_server <- function(input, output, session, data, selected, active) {
+  DataValues <- reactive({data$ODMdata})
+  Selected <- reactive({ODMr:::get_values(data, selected, active())})
+  Upsert <- function(df) {ODMr:::upsert(data = data, insert = df)}
+
   shiny::observe({
     shinyAce::updateAceEditor(session, "code",
                               shiny::isolate(eval(parse(text = input$code))),

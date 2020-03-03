@@ -68,8 +68,8 @@ Convert the barometric data column from its barometric measurement units (typica
 
 ```R
 PTMET_BarPre_10minAvg_2m_12_1 <- 
-    ODMr::ODMselect(ODM, SiteID = 13, 
-    VariableID = 100, MethodID = 12, QCLevelID = 1)
+    odm_read(site_id = 13, variable_id = 100, 
+    method_id = 12, level_id = 1)
 ```
 
 How many hPa in 1 meter of head? The answer is 98.04139432.

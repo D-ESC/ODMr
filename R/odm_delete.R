@@ -9,6 +9,7 @@
 #'@param site_id index value for the location at which the observation was made
 #'@param variable_id index value for the variable that the data represents
 #'@param method_id index value for the method used to collect the observation
+#'@param source_id index value for the source of the observation
 #'@param level_id the level of quality control processing
 #'@param start_date access data from this date forward
 #'@param end_date access data up to this date
@@ -38,7 +39,7 @@ odm_delete <- function(site_id,
                        start_date = "1970-01-1 00:00:00",
                        end_date = Sys.Date(),
                        channel = ODM) {
-  Catalog <- ODMgetCatalog(channel) %>%
+  catalog <- odm_read_tbl(odm_tbl = "Seriescatalog", channel = channel) %>%
     dplyr::filter(
       SiteID == site_id,
       VariableID == variable_id,
@@ -48,9 +49,9 @@ odm_delete <- function(site_id,
     )
   cat(
     "deleting: ",
-    Catalog$SiteCode,
-    Catalog$VariableCode,
-    Catalog$MethodDescription,
+    catalog$SiteCode,
+    catalog$VariableCode,
+    catalog$MethodDescription,
     "\n"
   )
   question1 <- readline("Would you like to proceed? (Y/N) ")

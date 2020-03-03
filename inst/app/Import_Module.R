@@ -1,5 +1,5 @@
 ###############################################################################
-Import_ui <-
+import_ui <-
   function(id) {
     ns <- shiny::NS(id)
     shiny::tagList(
@@ -30,7 +30,7 @@ Import_ui <-
           )
         ),
         conditionalPanel(
-          condition = sprintf("output['%s'] == true", ns("fileUploaded")),
+          condition = sprintf("output['%s'] == true", ns("file_uploadeded")),
           shiny::column(
             width = 4,
             shiny::selectInput(
@@ -70,8 +70,7 @@ Import_ui <-
             condition = sprintf(
               "input['%s'] && input['%s'] != ''
                            && input['%s'] != '' && input['%s'] != ''
-                           && input['%s'] != '' && input['%s'] != ''",
-              ns("QClevel_rows_selected"),
+                           && input['%s'] != ''",
               ns("QClevel_rows_selected"),
               ns("sources_rows_selected"),
               ns("methods_rows_selected"),
@@ -80,15 +79,15 @@ Import_ui <-
             ),
             shiny::actionButton(ns("update"), "Import to Tools"),
             shiny::tags$head(shiny::tags$style(
-              shiny::HTML('#getImport-errors{color: red}')
+              shiny::HTML("#getImport-errors{color: red}")
             )),
             shiny::textOutput(ns("errors")),
           )
         )
       ),
       shiny::br(),
-      conditionalPanel(
-        condition = sprintf("output['%s'] == true", ns("fileUploaded")),
+      shiny::conditionalPanel(
+        condition = sprintf("output['%s'] == true", ns("file_uploadeded")),
         shinycssloaders::withSpinner(DT::dataTableOutput(ns("upload_table"))),
         shinycssloaders::withSpinner(DT::dataTableOutput(ns("sites"))),
         shinycssloaders::withSpinner(DT::dataTableOutput(ns("variables"))),
@@ -100,21 +99,30 @@ Import_ui <-
   }
 
 ###############################################################################
-Import_server <-
+import_server <-
   function(input, output, session, connection, data) {
     ###########################################################################
+
     upload_data <- shiny::reactive({
       shiny::req(input$dataset)
-      read.csv(input$dataset$datapath,
-               header = input$header,
-               sep = input$sep)
+      tryCatch({
+        read.csv(input$dataset$datapath,
+                 header = input$header,
+                 sep = input$sep)
+      },
+      error = function(e) {
+        output$errors <- shiny::renderText({
+          paste(e)
+        })
+      }
+      )
     })
     ###########################################################################
-    output$fileUploaded <- reactive({
+    output$file_uploaded <- reactive({
       return(!is.null(upload_data()))
     })
     ###########################################################################
-    outputOptions(output, "fileUploaded", suspendWhenHidden = FALSE)
+    #outputOptions(output, "file_uploadeded", suspendWhenHidden = FALSE)
     ###########################################################################
     shiny::observeEvent(upload_data(), {
       shiny::updateSelectInput(session, "select_localdatetime",
@@ -130,11 +138,11 @@ Import_server <-
                      lengthMenu = c(5, 10, 15, 20))
     )
     ###########################################################################
-    proxy = DT::dataTableProxy("upload_table")
+    proxy <- DT::dataTableProxy("upload_table")
     ###########################################################################
     output$sites  <-
       DT::renderDT(
-        ODMr::ODMgetSites(channel = connection) %>%
+        odm_read_tbl(odm_tbl = "Sites", channel = connection) %>%
           dplyr::select(1:3) %>%
           dplyr::mutate_all(stringr::str_trunc, width = 128),
         options = list(pageLength = 3,
@@ -144,7 +152,7 @@ Import_server <-
     ###########################################################################
     output$variables  <-
       DT::renderDT(
-        ODMr::ODMgetVariables(channel = connection) %>%
+        odm_read_tbl(odm_tbl = "Variables", channel = connection) %>%
           dplyr::select(1:3) %>%
           dplyr::mutate_all(stringr::str_trunc, width = 128),
         options = list(pageLength = 3,
@@ -154,7 +162,7 @@ Import_server <-
     ###########################################################################
     output$methods  <-
       DT::renderDT(
-        ODMr::ODMgetMethods(channel = connection) %>%
+        odm_read_tbl(odm_tbl = "Methods", channel = connection) %>%
           dplyr::mutate_all(stringr::str_trunc, width = 128),
         options = list(pageLength = 3,
                        lengthMenu = c(3, 10, 15, 20)),
@@ -163,7 +171,7 @@ Import_server <-
     ###########################################################################
     output$sources  <-
       DT::renderDT(
-        ODMr::ODMgetSource(channel = connection) %>%
+        odm_read_tbl(odm_tbl = "Sources", channel = connection) %>%
           dplyr::select(1:3) %>%
           dplyr::mutate_all(stringr::str_trunc, width = 128),
         options = list(
@@ -175,7 +183,7 @@ Import_server <-
     ###########################################################################
     output$QClevel  <-
       DT::renderDT(
-        ODMr::ODMgetQCLevel(channel = connection) %>%
+        odm_read_tbl(odm_tbl = "QualityControlLevelID", channel = connection) %>%
           dplyr::select(-QualityControlLevelCode) %>%
           dplyr::mutate_all(stringr::str_trunc, width = 128),
         options = list(
@@ -186,8 +194,7 @@ Import_server <-
       )
     ###########################################################################
     shiny::observeEvent(
-      input$update,
-      {
+      input$update, {
         tryCatch({
           data_to_import <- upload_data()
           data$ODMdata <- ODMr::odm_data(
@@ -195,15 +202,15 @@ Import_server <-
             data_value = data_to_import[, input$select_datavalues],
             utc_offset = as.numeric(input$select_utcoffset),
             site_id =
-              ODMr::ODMgetSites(channel = connection)[input$sites_rows_selected, "SiteID"],
+              odm_read_tbl(odm_tbl = "Sites", channel = connection)[input$sites_rows_selected, "SiteID"],
             variable_id =
-              ODMr::ODMgetVariables(channel = connection)[input$variables_rows_selected, "VariableID"],
+              odm_read_tbl(odm_tbl = "Variables", channel = connection)[input$variables_rows_selected, "VariableID"],
             method_id =
-              ODMr::ODMgetMethods(channel = connection)[input$methods_rows_selected, "MethodID"],
+              odm_read_tbl(odm_tbl = "Methods", channel = connection)[input$methods_rows_selected, "MethodID"],
             source_id =
-              ODMr::ODMgetSource(channel = connection)[input$sources_rows_selected, "SourceID"],
+              odm_read_tbl(odm_tbl = "Sources", channel = connection)[input$sources_rows_selected, "SourceID"],
             level_id =
-              ODMr::ODMgetQCLevel(channel = connection)[input$QClevel_rows_selected, "QualityControlLevelID"]
+              odm_read_tbl(odm_tbl = "QualityControlLevelID", channel = connection)[input$QClevel_rows_selected, "QualityControlLevelID"]
           ) %>%
             dplyr::mutate(index = seq_len(length(DataValue))) %>%
             dplyr::mutate(import = TRUE) %>%
@@ -216,7 +223,7 @@ Import_server <-
                          remove = FALSE) %>%
             dplyr::mutate(label = paste0("TS", label))
           data$meta <-
-            ODMr::ODMsummary(data$ODMdata, channel = connection) %>%
+            odm_summary(data$ODMdata, channel = connection) %>%
             dplyr::select(
               SiteID,
               SiteCode,

@@ -1,4 +1,4 @@
 library(testthat)
-library(ODMr)
+library(ODMr1)
 
-test_check("ODMr")
+test_check("ODMr1")

@@ -1,12 +1,12 @@
 ###############################################################################
-Stat_ui <-
+stat_ui <-
   function(id) {
     ns <- shiny::NS(id)
     shiny::tagList(
       shiny::tableOutput(ns("stats")),
-      shinycssloaders::withSpinner(shiny::plotOutput(ns("densityplot"), height = "250px")),
+      shinycssloaders::withSpinner(
+        shiny::plotOutput(ns("densityplot"), height = "250px")),
       shiny::br(),
-      shiny::h4("difference (x-y)"),
       shiny::tableOutput(ns("diffstats"))
     )
   }
@@ -42,7 +42,8 @@ Stat_server <-
     ###########################################################################
     output$densityplot <- shiny::renderPlot({
       shiny::req(data$ODMdata)
-      data$ODMdata %>% dplyr::filter(index %in% selected()) %>%
+      data$ODMdata %>%
+        dplyr::filter(index %in% selected()) %>%
         ggplot2::ggplot(ggplot2::aes(DataValue, colour = label)) +
         ggplot2::geom_density() +
         ggplot2::theme_minimal()
@@ -52,13 +53,17 @@ Stat_server <-
       shiny::req(active())
       shiny::req(nrow(data$meta) > 1)
       data$ODMdata %>%
-        dplyr::mutate(LocalDateTime = lubridate::floor_date(LocalDateTime, "10 minutes")) %>%
+        dplyr::mutate(
+          LocalDateTime = lubridate::floor_date(LocalDateTime, "10 minutes")) %>%
         dplyr::filter(index %in% selected()) %>%
         dplyr::ungroup() %>%
-        dplyr::inner_join(data$ODMdata %>%
-                            dplyr::mutate(LocalDateTime = lubridate::floor_date(LocalDateTime, "10 minutes")),
-                          by = "LocalDateTime") %>%
-        dplyr::filter(label.x == data$meta$label[active()], label.y != data$meta$label[active()]) %>%
+        dplyr::inner_join(
+          data$ODMdata %>%
+            dplyr::mutate(
+              LocalDateTime = lubridate::floor_date(LocalDateTime, "10 minutes")),
+          by = "LocalDateTime") %>%
+        dplyr::filter(label.x == data$meta$label[active()],
+                      label.y != data$meta$label[active()]) %>%
         dplyr::group_by(label.x, label.y, LocalDateTime) %>%
         dplyr::mutate(Diff = DataValue.x - DataValue.y) %>%
         dplyr::group_by(label.x, label.y) %>%
@@ -74,5 +79,6 @@ Stat_server <-
           p.95 = stats::quantile(Diff, 0.95, na.rm = TRUE),
           max = max(Diff, na.rm = TRUE)
         )
-    }, digits = 3)
+    }, digits = 3, caption = "difference (x-y)",
+    caption.placement = getOption("xtable.caption.placement", "top"))
   }

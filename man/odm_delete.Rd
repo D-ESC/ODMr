@@ -17,6 +17,8 @@ odm_delete(site_id, variable_id, method_id, level_id, source_id = 1,
 
 \item{level_id}{the level of quality control processing}
 
+\item{source_id}{index value for the source of the observation}
+
 \item{start_date}{access data from this date forward}
 
 \item{end_date}{access data up to this date}

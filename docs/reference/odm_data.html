@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Pipe operator — %&gt;% • ODMr</title>
+<title>Create ODM formated dataframe — odm_data • ODMr</title>
 
 
 <!-- jquery -->
@@ -35,8 +35,11 @@
 
 
 
-<meta property="og:title" content="Pipe operator — %&gt;%" />
-<meta property="og:description" content="Pipe operator" />
+<meta property="og:title" content="Create ODM formated dataframe — odm_data" />
+<meta property="og:description" content="The function odm_data can be used to help in formating new data. odm_data
+takes a vector of dates and data and outputs a dataframe formated for use
+with the functions in this package. site_id, variable_id, and method_id need
+to already exist in their respective tables in the ODM." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -118,23 +121,91 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Pipe operator</h1>
+    <h1>Create ODM formated dataframe</h1>
     
-    <div class="hidden name"><code>pipe.Rd</code></div>
+    <div class="hidden name"><code>odm_data.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Pipe operator</p>
+    <p>The function odm_data can be used to help in formating new data. odm_data
+takes a vector of dates and data and outputs a dataframe formated for use
+with the functions in this package. site_id, variable_id, and method_id need
+to already exist in their respective tables in the ODM.</p>
     </div>
 
-    <pre class="usage"><span class='no'>lhs</span> <span class='kw'>%&gt;%</span> <span class='no'>rhs</span></pre>
+    <pre class="usage"><span class='fu'>odm_data</span>(<span class='no'>date_time</span>, <span class='no'>data_value</span>, <span class='kw'>utc_offset</span> <span class='kw'>=</span> -<span class='fl'>5</span>, <span class='no'>site_id</span>, <span class='no'>variable_id</span>,
+  <span class='kw'>qualifier_id</span> <span class='kw'>=</span> <span class='fl'>NA</span>, <span class='no'>method_id</span>, <span class='kw'>source_id</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>level_id</span> <span class='kw'>=</span> <span class='fl'>0</span>,
+  <span class='kw'>channel</span> <span class='kw'>=</span> <span class='no'>ODM</span>)</pre>
 
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>date_time</th>
+      <td><p>local date time for each record</p></td>
+    </tr>
+    <tr>
+      <th>data_value</th>
+      <td><p>matching data value for each date time record</p></td>
+    </tr>
+    <tr>
+      <th>utc_offset</th>
+      <td><p>difference in hours from Coordinated Universal Time (UTC)</p></td>
+    </tr>
+    <tr>
+      <th>site_id</th>
+      <td><p>corresponds to an existing Sites record in the Sites table</p></td>
+    </tr>
+    <tr>
+      <th>variable_id</th>
+      <td><p>corresponds to an existing record in the Variables table</p></td>
+    </tr>
+    <tr>
+      <th>qualifier_id</th>
+      <td><p>corresponds to an existing record in the Qualifiers table</p></td>
+    </tr>
+    <tr>
+      <th>method_id</th>
+      <td><p>corresponds to an existing record in the Methods table</p></td>
+    </tr>
+    <tr>
+      <th>source_id</th>
+      <td><p>corresponds to an existing record in the Sources table</p></td>
+    </tr>
+    <tr>
+      <th>level_id</th>
+      <td><p>corresponds to a record in the QualityControlLevels table</p></td>
+    </tr>
+    <tr>
+      <th>channel</th>
+      <td><p>connection handle as returned by odbcConnect</p></td>
+    </tr>
+    </table>
 
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
+    <p>The output is a properly formated dataframe suitable for further
+use in workflows involving this package.</p>
+
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'>
+<span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
+<span class='co'># dates</span>
+<span class='no'>date</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/as.Date.html'>as.Date</a></span>(<span class='st'>"2010/1/1"</span>), <span class='fu'><a href='https://rdrr.io/r/base/as.Date.html'>as.Date</a></span>(<span class='st'>"2011/1/1"</span>), <span class='st'>"days"</span>)
+<span class='co'># dummy data values</span>
+<span class='no'>value</span> <span class='kw'>=</span> <span class='fl'>1</span>:<span class='fl'>366</span>
+
+<span class='co'># creation of dataframe that meets the requirements of the ODM.</span>
+<span class='no'>tmp</span> <span class='kw'>=</span> <span class='fu'>odm_data</span>(<span class='kw'>date_time</span> <span class='kw'>=</span> <span class='no'>date</span>, <span class='kw'>data_value</span> <span class='kw'>=</span> <span class='no'>value</span>, <span class='kw'>site_id</span> <span class='kw'>=</span> <span class='fl'>1</span>,
+ <span class='kw'>variable_id</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>method_id</span> <span class='kw'>=</span> <span class='fl'>9</span>)
+}</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
+      <li><a href="#arguments">Arguments</a></li>
+      <li><a href="#details">Details</a></li>
+      <li><a href="#examples">Examples</a></li>
     </ul>
 
   </div>

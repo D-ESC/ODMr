@@ -17,26 +17,19 @@ Here is a quick example. You'll need the package RODBC in order to establish a c
 library(ODMr)
 ODM <- DBI::dbConnect(odbc::odbc(), dsn = "ODM", database = "OD", UID = "update", 
     PWD = "update", Port = 1433)
-Catalog = ODMgetCatalog()
+Catalog = odm_read_tbl()
 ```
 
-Using the established connection and referencing the series catalog we can import data from the database. The series catalog is not stable so only use this method to quickly look at certain data.
+Using the established connection and referencing the series catalog we can import data by specifying site_id, variable_id, method_id and level_id.
 
-```R
-Data <- ODMgetData(SeriesID = 10, startDate = "2013-06-01",
-  endDate = "2014-06-01")
+```{r}
+Data <- odm_read(site_id = 15, variable_id = 3, method_id = 1, level_id = 1,
+                  start_date = "2016-03-01", end_date = "2016-06-01")
 ```
 
-A more stable reference can be had by specifying SiteID, VariableID, MethodID and QualityControlLevelID.
+Multiple data series can be queried at once. The function makes use of the IN operator in the underlying SQL statement to specify multiple values. 
 
 ```R
-Data <- ODMgetData(SiteID = 1, VariableID = 1, MethodID = 9, QCLevelID = 0)
-```
-
-Multiple data series can be queried at once. The function makes use of the IN
-operator in the underlying SQL statement to specify multiple values. 
-
-```R
-tmp = ODMgetData(SiteID = c(1,5) , VariableID = 1, MethodID = 9,
-  QCLevelID = 0, startDate = "2013-06-01", endDate = "2013-07-01")
+Data <- odm_read(site_id = c(1,5) , variable_id = 1, method_id = 9,
+  level_id = 0, start_date = "2013-06-01", end_date = "2013-07-01")
 ```
