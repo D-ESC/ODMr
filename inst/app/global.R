@@ -1,4 +1,4 @@
-source("Seriescatalog_Module.R")
+source("SeriesCatalog_Module.R")
 source("Plot_Module.R")
 source("Stats_Module.R")
 source("Console_Module.R")
