@@ -4,8 +4,13 @@
 \alias{odm_write}
 \title{Load data to an ODM database}
 \usage{
-odm_write(Data, qc_check = 1, channel = ODM, batch_size = 1000,
-  check_before_load = TRUE)
+odm_write(
+  Data,
+  qc_check = 1,
+  channel = ODM,
+  batch_size = 1000,
+  check_before_load = TRUE
+)
 }
 \arguments{
 \item{Data}{containing the required columns}

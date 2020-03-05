@@ -4,9 +4,18 @@
 \alias{odm_data}
 \title{Create ODM formated dataframe}
 \usage{
-odm_data(date_time, data_value, utc_offset = -5, site_id, variable_id,
-  qualifier_id = NA, method_id, source_id = 1, level_id = 0,
-  channel = ODM)
+odm_data(
+  date_time,
+  data_value,
+  utc_offset = -5,
+  site_id,
+  variable_id,
+  qualifier_id = NA,
+  method_id,
+  source_id = 1,
+  level_id = 0,
+  channel = ODM
+)
 }
 \arguments{
 \item{date_time}{local date time for each record}

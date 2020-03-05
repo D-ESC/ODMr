@@ -3,7 +3,6 @@
 \docType{package}
 \name{ODMr}
 \alias{ODMr}
-\alias{ODMr-package}
 \title{ODMr: A package for working with the CUAHSI ODM}
 \description{
 The aim of this package is to provide some functions for retrieving and

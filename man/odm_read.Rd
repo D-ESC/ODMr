@@ -4,10 +4,21 @@
 \alias{odm_read}
 \title{Query an ODM database}
 \usage{
-odm_read(utc_offset = -5, site_id = NULL, variable_id = NULL,
-  qualifier_id = NULL, method_id = NULL, source_id = NULL,
-  level_id = NULL, aggregate_by = "day", FUN = "mean",
-  start_date = NULL, end_date = NULL, n = 1e+06, channel = ODM)
+odm_read(
+  utc_offset = -5,
+  site_id = NULL,
+  variable_id = NULL,
+  qualifier_id = NULL,
+  method_id = NULL,
+  source_id = NULL,
+  level_id = NULL,
+  aggregate_by = "day",
+  FUN = "mean",
+  start_date = NULL,
+  end_date = NULL,
+  n = 1e+06,
+  channel = ODM
+)
 }
 \arguments{
 \item{utc_offset}{of the observation}

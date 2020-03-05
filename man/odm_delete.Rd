@@ -4,9 +4,16 @@
 \alias{odm_delete}
 \title{Delete records from ODM database}
 \usage{
-odm_delete(site_id, variable_id, method_id, level_id, source_id = 1,
-  start_date = "1970-01-1 00:00:00", end_date = Sys.Date(),
-  channel = ODM)
+odm_delete(
+  site_id,
+  variable_id,
+  method_id,
+  level_id,
+  source_id = 1,
+  start_date = "1970-01-1 00:00:00",
+  end_date = Sys.Date(),
+  channel = ODM
+)
 }
 \arguments{
 \item{site_id}{index value for the location at which the observation was made}

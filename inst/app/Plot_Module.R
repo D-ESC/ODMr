@@ -19,15 +19,13 @@ Plot_server <- function(input, output, session, data) {
         split = ~get(input$plot_color),
         type = "scatter",
         mode = "markers",
-        opacity = 0.8,
-        source = "subset"
-      ) %>%
+        opacity = 0.8) %>%
       plotly::layout(legend = list(orientation = "h")) %>%
       plotly::toWebGL()
   })
 
   selected <- reactive({
-    key = plotly::event_data("plotly_selected", source = "subset")$key
+    key = plotly::event_data("plotly_selected")$key
     if(length(key) < 1) {
       key = 1:nrow(data$ODMdata)
     }
