@@ -59,27 +59,27 @@ import_ui <-
             multiple = FALSE
           )
         ),
-          shiny::column(
-            width = 4,
-            shiny::selectInput(
-              ns("select_siteid"),
-              "Select site ID column/table",
-              NULL,
-              multiple = FALSE
-            ),
-            shiny::selectInput(
-              ns("select_variableid"),
-              "Select variable ID column/table",
-              NULL,
-              multiple = FALSE
-            ),
-            shiny::selectInput(
-              ns("select_qualifierid"),
-              "Select qualifier column/default",
-              NULL,
-              multiple = FALSE
-            )
+        shiny::column(
+          width = 4,
+          shiny::selectInput(
+            ns("select_siteid"),
+            "Select site ID column/table",
+            NULL,
+            multiple = FALSE
           ),
+          shiny::selectInput(
+            ns("select_variableid"),
+            "Select variable ID column/table",
+            NULL,
+            multiple = FALSE
+          ),
+          shiny::selectInput(
+            ns("select_qualifierid"),
+            "Select qualifier column/default",
+            NULL,
+            multiple = FALSE
+          )
+        ),
         shiny::column(
           width = 4,
           shiny::selectInput(
@@ -104,12 +104,15 @@ import_ui <-
       ),
       shiny::br(),
       shinycssloaders::withSpinner(DT::dataTableOutput(ns("upload_table"))),
-      shinycssloaders::withSpinner(DT::dataTableOutput(ns("sites"))),
-      shinycssloaders::withSpinner(DT::dataTableOutput(ns("variables"))),
-      shinycssloaders::withSpinner(DT::dataTableOutput(ns("methods"))),
-      shinycssloaders::withSpinner(DT::dataTableOutput(ns("sources"))),
-      shinycssloaders::withSpinner(DT::dataTableOutput(ns("QClevel"))),
-      shiny::br()
+      shiny::br(),
+      shiny::tabsetPanel(
+        shiny::tabPanel("Sites", shinycssloaders::withSpinner(DT::dataTableOutput(ns("sites")))),
+        shiny::tabPanel("Variables", shinycssloaders::withSpinner(DT::dataTableOutput(ns("variables")))),
+        shiny::tabPanel("Methods", shinycssloaders::withSpinner(DT::dataTableOutput(ns("methods")))),
+        shiny::tabPanel("Qualifiers", shinycssloaders::withSpinner(DT::dataTableOutput(ns("qualifiers")))),
+        shiny::tabPanel("Sources", shinycssloaders::withSpinner(DT::dataTableOutput(ns("sources")))),
+        shiny::tabPanel("QC Levels", shinycssloaders::withSpinner(DT::dataTableOutput(ns("QClevel"))))
+      )
     )
   }
 
@@ -134,35 +137,59 @@ import_server <-
       shiny::updateSelectInput(session, "select_localdatetime",
                                choices = colnames(upload_data()),
                                selected = agrep("localdatetime", colnames(upload_data()), 
-                                     ignore.case = TRUE, value = TRUE))
+                                                ignore.case = TRUE, value = TRUE)[1])
       shiny::updateSelectInput(session, "select_datavalues",
                                choices = colnames(upload_data()), 
                                selected = agrep("datavalue", colnames(upload_data()), 
-                                                ignore.case = TRUE, value = TRUE)) 
+                                                ignore.case = TRUE, value = TRUE)[1]) 
       shiny::updateSelectInput(session, "select_siteid",
-                               choices = c("Sites Table", colnames(upload_data())),
-                               selected = agrep("siteid", colnames(upload_data()), 
-                                     ignore.case = TRUE, value = TRUE)) 
+                               choices = c("Select from table", colnames(upload_data())),
+                               selected = ifelse(length(agrep("siteid", colnames(upload_data()), 
+                                                              ignore.case = TRUE, value = TRUE)) == 0,
+                                                 "Select from table", 
+                                                 agrep("siteid", colnames(upload_data()), 
+                                                       ignore.case = TRUE, value = TRUE)[1])
+      )
       shiny::updateSelectInput(session, "select_variableid",
-                               choices = c("Variables Table", colnames(upload_data())),
-                               selected = agrep("variableid", colnames(upload_data()), 
-                                     ignore.case = TRUE, value = TRUE)) 
+                               choices = c("Select from table", colnames(upload_data())),
+                               selected = ifelse(length(agrep("variableid", colnames(upload_data()), 
+                                                              ignore.case = TRUE, value = TRUE)) == 0,
+                                                 "Select from table",
+                                                 agrep("variableid", colnames(upload_data()), 
+                                                       ignore.case = TRUE, value = TRUE)[1])
+      )
       shiny::updateSelectInput(session, "select_qualifierid",
-                               choices = c("Default Value", colnames(upload_data())),
-                               selected = agrep("qualifierid", colnames(upload_data()), 
-                                     ignore.case = TRUE, value = TRUE)) 
+                               choices = c("Select from table", colnames(upload_data())),
+                               selected = ifelse(length(agrep("qualifierid", colnames(upload_data()), 
+                                                              ignore.case = TRUE, value = TRUE)) == 0,
+                                                 "Select from table",
+                                                 agrep("qualifierid", colnames(upload_data()), 
+                                                       ignore.case = TRUE, value = TRUE)[1])
+      )
       shiny::updateSelectInput(session, "select_methodid",
-                               choices = c("Methods Table", colnames(upload_data())),
-                               selected = agrep("methodid", colnames(upload_data()), 
-                                     ignore.case = TRUE, value = TRUE)) 
+                               choices = c("Select from table", colnames(upload_data())),
+                               selected = ifelse(length(agrep("methodid", colnames(upload_data()), 
+                                                              ignore.case = TRUE, value = TRUE)) == 0,
+                                                 "Select from table",
+                                                 agrep("methodid", colnames(upload_data()), 
+                                                       ignore.case = TRUE, value = TRUE)[1])
+      )
       shiny::updateSelectInput(session, "select_sourceid",
-                               choices = c("Sources Table", colnames(upload_data())),
-                               selected = agrep("sourceid", colnames(upload_data()), 
-                                     ignore.case = TRUE, value = TRUE)) 
+                               choices = c("Select from table", colnames(upload_data())),
+                               selected = ifelse(length(agrep("sourceid", colnames(upload_data()), 
+                                                              ignore.case = TRUE, value = TRUE)) == 0,
+                                                 "Select from table",
+                                                 agrep("sourceid", colnames(upload_data()), 
+                                                       ignore.case = TRUE, value = TRUE)[1])
+      )
       shiny::updateSelectInput(session, "select_levelid",
-                               choices = c("QualityControlLevels Table", colnames(upload_data())),
-                               selected = agrep("qualitycontrollevelid", colnames(upload_data()), 
-                                     ignore.case = TRUE, value = TRUE)) 
+                               choices = c("Select from table", colnames(upload_data())),
+                               selected = ifelse(length(agrep("qualitycontrollevelid", colnames(upload_data()), 
+                                                              ignore.case = TRUE, value = TRUE)) == 0,
+                                                 "Select from table",
+                                                 agrep("qualitycontrollevelid", colnames(upload_data()), 
+                                                       ignore.case = TRUE, value = TRUE)[1]) 
+      )
     })
     ###########################################################################
     output$upload_table  <- DT::renderDT(
@@ -179,8 +206,8 @@ import_server <-
         odm_read_tbl(odm_tbl = "Sites", channel = connection) %>%
           dplyr::select(1:3) %>%
           dplyr::mutate_all(stringr::str_trunc, width = 128)},
-        options = list(pageLength = 3,
-                       lengthMenu = c(3, 10, 15, 20)),
+        options = list(pageLength = 5,
+                       lengthMenu = c(5, 10, 15, 20)),
         selection = "single"
       )
     ###########################################################################
@@ -189,8 +216,8 @@ import_server <-
         odm_read_tbl(odm_tbl = "Variables", channel = connection) %>%
           dplyr::select(1:3) %>%
           dplyr::mutate_all(stringr::str_trunc, width = 128)},
-        options = list(pageLength = 3,
-                       lengthMenu = c(3, 10, 15, 20)),
+        options = list(pageLength = 5,
+                       lengthMenu = c(5, 10, 15, 20)),
         selection = "single"
       )
     ###########################################################################
@@ -198,9 +225,20 @@ import_server <-
       DT::renderDT({
         odm_read_tbl(odm_tbl = "Methods", channel = connection) %>%
           dplyr::mutate_all(stringr::str_trunc, width = 128)},
-        options = list(pageLength = 3,
-                       lengthMenu = c(3, 10, 15, 20)),
+        options = list(pageLength = 5,
+                       lengthMenu = c(5, 10, 15, 20)),
         selection = "single"
+      )
+    ###########################################################################
+    output$qualifiers  <-
+      DT::renderDT({
+        odm_read_tbl(odm_tbl = "Qualifiers", channel = connection) %>%
+          dplyr::mutate_all(stringr::str_trunc, width = 128)},
+        options = list(
+          pageLength = 5,
+          lengthMenu = c(5, 10, 15, 20),
+          selection = "single"
+        )
       )
     ###########################################################################
     output$sources  <-
@@ -209,8 +247,8 @@ import_server <-
           dplyr::select(1:3) %>%
           dplyr::mutate_all(stringr::str_trunc, width = 128)},
         options = list(
-          pageLength = 3,
-          lengthMenu = c(3, 10, 15, 20),
+          pageLength = 5,
+          lengthMenu = c(5, 10, 15, 20),
           selection = "single"
         )
       )
@@ -221,11 +259,21 @@ import_server <-
           dplyr::select(-QualityControlLevelCode) %>%
           dplyr::mutate_all(stringr::str_trunc, width = 128)},
         options = list(
-          pageLength = 3,
-          lengthMenu = c(3, 10, 15, 20),
+          pageLength = 5,
+          lengthMenu = c(5, 10, 15, 20),
           selection = "single"
         )
       )
+    ###########################################################################
+    shiny::observe({
+      req(upload_data())
+      proxy %>% DT::selectColumns(as.character(which(
+        names(upload_data()) %in%
+          c(input$select_localdatetime, input$select_datavalues, input$select_siteid,
+            input$select_variableid, input$select_qualifierid, input$select_methodid,
+            input$select_levelid, input$select_sourceid)
+      )))
+    })
     ###########################################################################
     shiny::observeEvent(
       input$update, {
@@ -235,22 +283,22 @@ import_server <-
             date_time = anytime::anytime(data_to_import[, input$select_localdatetime]),
             data_value = data_to_import[, input$select_datavalues],
             utc_offset = as.numeric(input$select_utcoffset),
-            site_id = if(input$select_siteid == "Sites Table") {
+            site_id = if(input$select_siteid == "Select from table") {
               odm_read_tbl(odm_tbl = "Sites", channel = connection)[input$sites_rows_selected, "SiteID"]
-              } else {data_to_import[, input$select_siteid]},
-            variable_id = if(input$select_variableid == "Variables Table") {
+            } else {data_to_import[, input$select_siteid]},
+            variable_id = if(input$select_variableid == "Select from table") {
               odm_read_tbl(odm_tbl = "Variables", channel = connection)[input$variables_rows_selected, "VariableID"]
-              } else {data_to_import[, input$select_variableid]},
-            qualifier_id = if(input$select_qualifierid == "Default Value") {
-              "NULL"
+            } else {data_to_import[, input$select_variableid]},
+            qualifier_id = if(input$select_qualifierid == "Select from table") {
+              odm_read_tbl(odm_tbl = "Qualifiers", channel = connection)[input$qualifiers_rows_selected, "QualifierID"]
             } else {data_to_import[, input$select_qualifierid]},
-            method_id = if(input$select_methodid == "Methods Table") {
+            method_id = if(input$select_methodid == "Select from table") {
               odm_read_tbl(odm_tbl = "Methods", channel = connection)[input$methods_rows_selected, "MethodID"]
-              } else {data_to_import[, input$select_methodid]},
-            source_id = if(input$select_sourceid == "Sources Table") {
+            } else {data_to_import[, input$select_methodid]},
+            source_id = if(input$select_sourceid == "Select from table") {
               odm_read_tbl(odm_tbl = "Sources", channel = connection)[input$sources_rows_selected, "SourceID"]
-              } else {data_to_import[, input$select_sourceid]},
-            level_id = if(input$select_levelid == "QualityControlLevels Table") {
+            } else {data_to_import[, input$select_sourceid]},
+            level_id = if(input$select_levelid == "Select from table") {
               odm_read_tbl(odm_tbl = "QualityControlLevels", channel = connection)[input$QClevel_rows_selected, "QualityControlLevelID"]
             } else {data_to_import[, input$select_levelid]}
           ) %>%
@@ -290,15 +338,6 @@ import_server <-
           output$errors <- shiny::renderText({
             paste(e)
           })
-        })
-        ###########################################################################
-        shiny::observe({
-          proxy %>% DT::selectColumns(as.character(which(
-            names(upload_data()) %in%
-              c(input$select_localdatetime, input$select_datavalues, input$select_siteid,
-                input$select_variableid, input$select_qualifierid, input$select_methodid,
-                input$select_levelid, input$select_sourceid)
-          )))
         })
       }
     )
