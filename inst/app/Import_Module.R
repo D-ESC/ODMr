@@ -280,7 +280,7 @@ import_server <-
         tryCatch({
           data_to_import <- upload_data()
           data$ODMdata <- ODMr::odm_data(
-            date_time = anytime::anytime(data_to_import[, input$select_localdatetime]),
+            date_time = anytime::anytime(data_to_import[, input$select_localdatetime], tz = "UTC", asUTC = TRUE),
             data_value = data_to_import[, input$select_datavalues],
             utc_offset = as.numeric(input$select_utcoffset),
             site_id = if(input$select_siteid == "Select from table") {

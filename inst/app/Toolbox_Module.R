@@ -92,7 +92,7 @@ Toolbox_server <-
                           QualifierID = 106) %>%
             dplyr::mutate(edited = TRUE) %>%
             ODMr:::upsert(data, .)
-          output$tooloutput <- shiny::renderPrint({
+          output$tooloutput <- shiny::renderText({
             shiny::isolate(cat(paste(
               nrow(ODMr:::get_values(data, selected, active())), "values effected"
             )))
@@ -103,7 +103,7 @@ Toolbox_server <-
             dplyr::mutate(DataValue = NA, QualifierID = 102) %>%
             dplyr::mutate(edited = TRUE) %>%
             ODMr:::upsert(data, .)
-          output$tooloutput <- shiny::renderPrint({
+          output$tooloutput <- shiny::renderText({
             shiny::isolate(cat(paste(
               nrow(ODMr:::get_values(data, selected, active())), "values set to NA"
             )))
@@ -114,7 +114,7 @@ Toolbox_server <-
             dplyr::mutate(QualifierID = as.integer(input$flag)) %>%
             dplyr::mutate(edited = TRUE) %>%
             ODMr:::upsert(data, .)
-          output$tooloutput <- shiny::renderPrint({
+          output$tooloutput <- shiny::renderText({
             shiny::isolate(cat(paste(
               nrow(ODMr:::get_values(data, selected, active())), "flags set to", input$flag
             )))
@@ -147,7 +147,7 @@ Toolbox_server <-
             ) %>%
             dplyr::mutate(edited = TRUE) %>%
             ODMr:::upsert(data, .)
-          output$tooloutput <- shiny::renderPrint({
+          output$tooloutput <- shiny::renderText({
             shiny::isolate(cat(paste(
               nrow(ODMr:::get_values(data, selected, active())), "Values reverted to raw."
             )))
@@ -223,7 +223,7 @@ Toolbox_server <-
               check_before_load = FALSE
             )
           }
-          output$uploadoutput <- shiny::renderPrint({
+          output$uploadoutput <- shiny::renderText({
             shiny::isolate(cat(paste(
               sum(unlist(loadtext)), "data values effected"
             )))

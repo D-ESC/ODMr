@@ -63,7 +63,10 @@ odm_data <-
       stop("source_idshould be convertable to type integer.")
     if (!is.integer(as.integer(utc_offset[1])))
       stop("utc_offset should be convertable to type integer.")
-
+    
+    Old.TZ <- Sys.getenv("TZ")
+    Sys.setenv(TZ = "Etc/GMT")
+    
     if (utc_offset > 0)
       TZ <- gsub("!", abs(utc_offset), "Etc/GMT-!")
     else
@@ -81,5 +84,6 @@ odm_data <-
     Data$QualityControlLevelID <- as.integer(level_id)
 
     is_valid_odm(Data, channel = channel)
+    Sys.setenv(TZ = Old.TZ)
     return(Data)
   }

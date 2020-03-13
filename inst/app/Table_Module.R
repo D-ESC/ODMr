@@ -20,6 +20,7 @@ table_server <-
       data$ODMdata %>%
         dplyr::semi_join(data$meta[active(), ]) %>%
         dplyr::filter(index %in% selected()) %>%
+        dplyr::mutate(LocalDateTime = as.character(LocalDateTime)) %>%
         dplyr::select(LocalDateTime,
                       DataValue,
                       UTCOffset,

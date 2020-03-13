@@ -52,7 +52,7 @@ Stat_server <-
     output$diffstats <- shiny::renderTable({
       shiny::req(active())
       shiny::req(nrow(data$meta) > 1)
-      data$ODMdata %>%
+      Stat <- data$ODMdata %>%
         dplyr::mutate(
           LocalDateTime = lubridate::floor_date(LocalDateTime, "10 minutes")) %>%
         dplyr::filter(index %in% selected()) %>%
@@ -79,6 +79,8 @@ Stat_server <-
           p.95 = stats::quantile(Diff, 0.95, na.rm = TRUE),
           max = max(Diff, na.rm = TRUE)
         )
+      shiny::req(nrow(Stat) > 0)
+      Stat
     }, digits = 3, caption = "difference (x-y)",
     caption.placement = getOption("xtable.caption.placement", "top"))
   }

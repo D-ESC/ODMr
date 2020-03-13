@@ -29,7 +29,7 @@ Plot_server <- function(input, output, session, data) {
     if(length(key) < 1) {
       key = 1:nrow(data$ODMdata)
     }
-    return(key)
+    key
   })
   return(selected)
 }

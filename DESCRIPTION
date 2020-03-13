@@ -28,7 +28,8 @@ Imports:
     plotly (>= 4.9),
     shinyjs (>= 1.0),
     magrittr (>= 1.5),
-    rlang (>= 0.4)
+    rlang (>= 0.4),
+    shinydashboard (>= 0.7)
 RoxygenNote: 7.0.2
 Suggests: 
     knitr,
