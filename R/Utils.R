@@ -73,7 +73,7 @@ upsert <- function(data, insert) {
 
 is_valid_odm <- function(Data, channel = ODM) {
 
-  Sites <- odm_read_tbl(odm_tbl = "Seriescatalog", channel = channel)
+  Sites <- odm_read_tbl(odm_tbl = "Sites", channel = channel)
   Variables <- odm_read_tbl(odm_tbl = "Variables", channel = channel)
   Methods <- odm_read_tbl(odm_tbl = "Methods", channel = channel)
   Sources <- odm_read_tbl(odm_tbl = "Sources", channel = channel)
