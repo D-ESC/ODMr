@@ -12,5 +12,5 @@ library(shiny)
 library(ODMr)
 options(shiny.maxRequestSize = 50 * 1024^2)
 
-ODM <- pool::dbPool(odbc::odbc(), dsn = "ODM", database = "ODM",
-                      UID = "update", PWD = "update", Port = 53493)
+ODM <- pool::dbPool(odbc::odbc(), dsn = "ODM",
+                      UID = "update", PWD = "update")
