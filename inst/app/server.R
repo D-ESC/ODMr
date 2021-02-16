@@ -34,13 +34,23 @@ server <- function(input, output, session) {
   )
   output$downloadData <- shiny::downloadHandler(
     filename = function() {
-      paste("ODM_", gsub(":", "-", Sys.time()), ".csv", sep = "")
+      paste0("ODM_", gsub(":", "-", Sys.time()), ".csv.zip")
     },
     content = function(file) {
-      utils::write.csv(ODMdata$ODMdata %>% dplyr::select(-index),
-                       file,
-                       row.names = FALSE
-      )
-    }
+      tmpdir <- tempdir()
+      tm <- gsub(":", "-", Sys.time())
+      utils::write.csv(ODMdata$ODMdata %>% 
+                         dplyr::select(SiteID, LocalDateTime, UTCOffset, DataValue,
+                                       QualifierID, VariableID, MethodID, SourceID,
+                                       QualityControlLevelID),
+                       paste0(tmpdir, "\\", paste0("ODM_", tm, ".csv")),
+                       row.names = FALSE)
+      utils::write.csv(ODMdata$meta,
+                       paste0(tmpdir, "\\", paste0("meta_", tm, ".csv")),
+                       row.names = FALSE)
+      zip::zipr(zipfile = file, files = c(paste0(tmpdir, "\\", paste0("ODM_", tm, ".csv")),
+                                          paste0(tmpdir, "\\", paste0("meta_", tm, ".csv"))
+                                          ))
+    }, contentType = "application/zip"
   )
 }

@@ -13,5 +13,5 @@
 
 odm_tools <- function() {
   appdir <- system.file("app", package = "ODMr")
-  shiny::runApp(appdir)
+  shiny::runApp(appdir, launch.browser = TRUE)
 }
