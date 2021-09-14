@@ -60,7 +60,10 @@ Seriescatalog_ui <-
 
 ###############################################################################
 series_catalog_server <-
-  function(input, output, session, connection) {
+  function(id, connection) {
+    shiny::moduleServer(
+      id,
+      function(input, output, session) {
     ###########################################################################
     values <- shiny::reactiveValues(meta = NULL, ODMData = NULL)
     ###########################################################################
@@ -142,4 +145,5 @@ series_catalog_server <-
     })
     ###########################################################################
     return(values)
+      })
   }

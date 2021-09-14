@@ -13,12 +13,13 @@ stat_ui <-
 
 ###############################################################################
 Stat_server <-
-  function(input,
-           output,
-           session,
+  function(id,
            data,
            selected,
            active) {
+    shiny::moduleServer(
+      id,
+      function(input, output, session) {
     ###########################################################################
     output$stats <- shiny::renderTable({
       shiny::req(data$ODMdata)
@@ -83,4 +84,5 @@ Stat_server <-
       Stat
     }, digits = 3, caption = "difference (x-y)",
     caption.placement = getOption("xtable.caption.placement", "top"))
+      })
   }

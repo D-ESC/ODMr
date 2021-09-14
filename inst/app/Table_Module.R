@@ -8,12 +8,13 @@ table_ui <-
 
 ###############################################################################
 table_server <-
-  function(input,
-           output,
-           session,
+  function(id,
            data,
            selected,
            active) {
+    shiny::moduleServer(
+      id,
+      function(input, output, session) {
     ###########################################################################
     output$Dtbl2 <- DT::renderDataTable({
       shiny::req(data$ODMdata)
@@ -32,4 +33,5 @@ table_server <-
                       QualityControlLevelID) %>%
         DT::datatable(filter = "top", style = "bootstrap")
     })
-  }
+      } 
+  )}

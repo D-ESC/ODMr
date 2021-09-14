@@ -1,22 +1,15 @@
 server <- function(input, output, session) {
-  ODMdata <- shiny::callModule(
-    series_catalog_server, "getData", connection = ODM)
-  brushed <- shiny::callModule(
-    Plot_server, "getPlot", data = ODMdata)
-  shiny::callModule(
-    table_server, "getTable", data = ODMdata,
+  ODMdata <- series_catalog_server("getData", connection = ODM)
+  brushed <- Plot_server("getPlot", data = ODMdata)
+  table_server("getTable", data = ODMdata,
     selected = brushed, active = activerow1)
-  shiny::callModule(
-    Stat_server, "getStat", data = ODMdata,
+  Stat_server("getStat", data = ODMdata,
     selected = brushed, active = activerow1)
-  shiny::callModule(
-    Toolbox_server, "getToolbox", connection = ODM, data = ODMdata,
+  Toolbox_server("getToolbox", connection = ODM, data = ODMdata,
     selected = brushed, active = activerow1)
-  shiny::callModule(
-    console_server, "getConsole", data = ODMdata,
-    selected = brushed, active = activerow1)
-  shiny::callModule(
-    import_server, "getImport", connection = ODM, data = ODMdata)
+  console_server("getConsole", data = ODMdata,
+                   selected = brushed, active = activerow1)
+  import_server("getImport", connection = ODM, data = ODMdata)
   output$activeseries1 <- output$activeseries2 <-
     DT::renderDataTable(ODMdata$meta %>%
                           DT::datatable(style = 'bootstrap',

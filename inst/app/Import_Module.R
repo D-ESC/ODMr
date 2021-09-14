@@ -118,7 +118,10 @@ import_ui <-
 
 ###############################################################################
 import_server <-
-  function(input, output, session, connection, data) {
+  function(id, connection, data) {
+    shiny::moduleServer(
+      id,
+      function(input, output, session) {
     ###########################################################################
     upload_data <- shiny::reactive({
       shiny::req(input$dataset)
@@ -341,4 +344,5 @@ import_server <-
         })
       }
     )
+      })
   }

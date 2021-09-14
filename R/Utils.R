@@ -57,20 +57,6 @@ sqlmerge <- function(Data, TableName, By, Key, channel = ODM) {
   return(success)
 }
 
-get_values <- function(data, selected, active) {
-  data$ODMdata %>%
-    dplyr::semi_join(data$meta[active, ]) %>%
-    dplyr::filter(index %in% selected())
-}
-
-upsert <- function(data, insert) {
-  data$ODMdata <- data$ODMdata %>%
-    dplyr::anti_join(insert %>%
-                       dplyr::mutate(edited = TRUE),
-                     by = "index") %>%
-    dplyr::bind_rows(insert)
-}
-
 is_valid_odm <- function(Data, channel = ODM) {
 
   Sites <- odm_read_tbl(odm_tbl = "Sites", channel = channel)

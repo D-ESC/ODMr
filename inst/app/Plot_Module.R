@@ -3,27 +3,29 @@ Plot_ui <- function(id) {
   shiny::tagList(
     shinycssloaders::withSpinner(plotly::plotlyOutput(ns("plot"), height = "600px")),
     shiny::selectInput(inputId = ns("plot_color"),
-                label = "Colour/Group By:", choices = c("Series" = "label",
-                                              "Qualifier" = "QualifierID"))
+                       label = "Colour/Group By:", choices = c("Series" = "label",
+                                                               "Qualifier" = "QualifierID"))
   )
 }
 
-Plot_server <- function(input, output, session, data) {
-  output$plot <- plotly::renderPlotly({
-    shiny::req(data$ODMdata)
-    data$ODMdata %>%
-      plotly::plot_ly(
-        x = ~LocalDateTime,
-        y = ~DataValue,
-        key = data$ODMdata$index,
-        split = ~get(input$plot_color),
-        type = "scatter",
-        mode = "markers",
-        opacity = 0.8) %>%
-      plotly::layout(legend = list(orientation = "h")) %>%
-      plotly::toWebGL()
-  })
-
+Plot_server <- function(id, data) {
+  shiny::moduleServer(
+    id,
+    function(input, output, session) {
+      output$plot <- plotly::renderPlotly({
+        shiny::req(data$ODMdata)
+        data$ODMdata %>%
+          plotly::plot_ly(
+            x = ~LocalDateTime,
+            y = ~DataValue,
+            key = data$ODMdata$index,
+            split = ~get(input$plot_color),
+            type = "scattergl",
+            mode = "markers",
+            opacity = 0.8) %>%
+          plotly::layout(legend = list(orientation = "h"))
+      })
+  
   selected <- reactive({
     key = plotly::event_data("plotly_selected")$key
     if(length(key) < 1) {
@@ -31,5 +33,7 @@ Plot_server <- function(input, output, session, data) {
     }
     key
   })
+  
   return(selected)
+    })
 }
