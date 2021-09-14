@@ -12,6 +12,10 @@ library(shiny)
 library(ODMr)
 options(shiny.maxRequestSize = 50 * 1024^2)
 
-ODM <- pool::dbPool(odbc::odbc(), dsn = "ODM_2",
-                    database = "ODM_Dorset",
-                      UID = "sa", PWD = "$dorset20")
+ODM <- pool::dbPool(odbc::odbc(), 
+  Driver="SQL Server", 
+  Server="10.200.24.23\\SQLCHM", 
+  UID="sa", 
+  PWD="$dorset20", 
+  Database="ODM_Dorset", 
+  port=64450)
